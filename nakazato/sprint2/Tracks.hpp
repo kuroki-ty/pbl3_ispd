@@ -8,11 +8,16 @@
 class Tracks
 {
 public:
-  // コンストラクタ 座標とブロック数を初期化
+	// コンストラクタ 座標とブロック数を初期化
 
-
-  // 地図のブロックの初期化
-  void blockListInit();
+	// 地図のブロックの初期化
+	void blockListInit();
+	
+	//
+	void recordCoordinate(Coordinate coord)
+	{
+		this->map_point_list.push_back(coord);
+	}
 
 private:
 //  Coordinate max;

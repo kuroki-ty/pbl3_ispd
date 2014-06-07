@@ -29,19 +29,19 @@ public:
     this->X = 0;
     this->Y = 0;
   }
-  Coordinate(double coord_x, double coord_y){
+  Coordinate(float coord_x, float coord_y){
     this->X = coord_x;
     this->Y = coord_y;
   }
 
-  void setCoordinate(double coord_x, double coord_y){
+  void setCoordinate(float coord_x, float coord_y){
     this->X = coord_x;
     this->Y = coord_y;
   }
-  double getCoordinateX(){
+  float getX(){
     return this->X;
   }
-  double getCoordinateY(){
+  float getY(){
     return this->Y;
   }
 
@@ -92,23 +92,18 @@ public:
     return ((this->X == coord.X) && (this->Y == coord.Y));
   }  
 
-  double getX(){
-    return this->X;
-  }
-  double getY(){
-    return this->Y;
-  }
 
-  void setX(double x){
+
+  void setX(float x){
       this->X = x;
   }
-  void setY(double y){
+  void setY(float y){
       this->Y = y;
   }
 
 private:
-  double X;
-  double Y;
+  float X;
+  float Y;
   enum Mark mark;
 };
 

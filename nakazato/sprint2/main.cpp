@@ -21,8 +21,8 @@ int main()
 	
 	while(controller.getWallSearchFlag())	
 	{
-		controller.create.Run();
-		controller.checkBumper();	// バンパーに当たったら回避モードに移行
+		std::cout << getBumpsAndWheelDrops() << std::endl;
+		controller.checkState();	// バンパーに当たったら回避モードに移行
 	}
 	// Create発進
 	// 走行距離を、誤差を考慮して計算

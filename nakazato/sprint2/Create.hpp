@@ -21,7 +21,6 @@ enum State
     RUN,
     TURN,
 	BUMPER
-	
 };
 
 
@@ -29,22 +28,58 @@ enum State
 class Create
 {
 public:
+	Create()
+	{
+		this->present_direction = PLUS_X;
+		this->distance=0.0;
+		this->velocity=0.0; 
+		this->angle=0.0;
 
-void Run();
+	}
+
+// public method
+
+// 超音波センサを使って直進
+void goStraightWithSoner();
+
+// とにかく走らせる
+void run();
+
+// 障害物に衝突したときの方向転換
 void changeDirection();
 
+// 超音波センサが当たるポイントの座標（world座標）
+Coordinate sonerHitPoint();
+
+// set method
 void setDirection(enum Direction d)
 {
-	this->direction = d;
+	this->present_direction = d;
 }
 
+// get method
+int getCreateAngle()
+{
+	return this->angle;
+}
+
+void addAngle(int angle)
+{
+	this->angle += angle;
+}
+
+//public 変数
+bool Straight_Run;
+bool Right_Run;
+bool Left_Run;
 
 private:
-int present_direction;
-float distance;
-float velocity;
-enum Direction direction;
+int distance;
+int velocity;
+int angle;
 
+enum Direction present_direction;
+Coordinate present_coord;
 
 
 };
