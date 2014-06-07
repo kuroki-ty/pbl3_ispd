@@ -44,7 +44,7 @@ int main()
 	a = 0;
 	t = 0;
 
-	drive (200, 0);	
+	drive (200, 1);	
 	while(1){
 
 
