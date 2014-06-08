@@ -34,6 +34,7 @@ void Create::goStraightWithSoner()
 void Create::run()
 {
 	this->goStraightWithSoner();
+	this->state = RUN;
 }
 
 // 障害物に当たったので、方向転換する関数

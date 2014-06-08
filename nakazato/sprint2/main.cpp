@@ -17,7 +17,7 @@ int main()
 	Controller controller;
 	// 超音波ON
 //壁探索ループ
-	
+	controller.create.run();
 	
 	while(controller.getWallSearchFlag())	
 	{
