@@ -18,12 +18,22 @@ int main()
 	// 超音波ON
 //壁探索ループ
 	controller.create.run();
-	
-	while(controller.getWallSearchFlag())	
+	int counter = 0;
+	while(controller.create.distance < 5000 )	
 	{
-		std::cout << getBumpsAndWheelDrops() << std::endl;
+//std::cout << counter<< " distance " << controller.create.distance << std::endl;
+//std::cout << getBumpsAndWheelDrops() << std::endl;
 		controller.checkState();	// バンパーに当たったら回避モードに移行
+//		std::cout << controller.create.getTotalAngle()  << std::endl;
+
+	//std::cout << controller.create.getDistanceBySoner() <<std::endl;
 	}
+
+std::cout << "count:" << counter << std::endl;
+std::cout << "map_list_size" << controller.tracks.getMapListSize() << std::endl;
+std::cout << "obstacle_list_size" << controller.tracks.getObstacleListSize() << std::endl;
+std::cout << "distance" << controller.create.distance << std::endl;
+
 	// Create発進
 	// 走行距離を、誤差を考慮して計算
 	// if(距離>Createの大きさ/2)
@@ -54,8 +64,10 @@ int main()
 	// 発進
 	// if（）
 
-
 	stopOI();
+
+controller.output_MapList();
+controller.output_ObstacleList();
 
 	return 0;
 }

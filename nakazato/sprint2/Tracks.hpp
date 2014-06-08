@@ -45,6 +45,28 @@ public:
 		return coord.getY();
 	}
 
+	// map listの配列数を取得
+	int getMapListSize()
+	{
+		return this->map_point_list.size();
+	}
+	// obstacle list の配列数を取得
+	int getObstacleListSize()
+	{
+		return this->obstacle_point_list.size();
+	}
+
+std::vector<Coordinate> getMapPointList()
+{
+	return this->map_point_list;
+}
+
+std::vector<Coordinate> getObstaclePointList()
+{
+	return this->obstacle_point_list;
+}
+
+
 private:
 //  Coordinate max;
 	std::vector< std::vector<Block> > block_list;	// 探索用メッシュ

@@ -5,14 +5,16 @@
 // Createの現在座標の計算関数
 Coordinate Controller::calculateCreateCoordinate()
 {
-	int distance = getDistance();
+	int distance = this->create.getDistanceFromCreate();
+	this->create.addDistance(distance);
 	int last_angle = this->create.getTotalAngle();
+	float current_angle_r;// [rad]
 
 	float tmp_x, tmp_y; //計算用相対座標
 	float tmp_x1, tmp_x2, tmp_y1, tmp_y2;	// 計算用
 	float pri_x, pri_y; //1つ前に記録した座標
 	
-	float crt_angle_r = (float) this->create.getTotalAngle() * (PI / 180); //createの角度[rad]
+	float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
 
 	this->create.addAngle( this->create.getAngleFromCreate() );	// Create角度更新
 
@@ -20,8 +22,9 @@ Coordinate Controller::calculateCreateCoordinate()
 
 	if(this->create.Straight_Run)
 	{
-		tmp_x = (float) distance * cos(this->create.getTotalAngle());
-		tmp_y = (float) distance * sin(this->create.getTotalAngle());
+		current_angle_r = (float)this->create.getTotalAngle() * (M_PI / 180);
+		tmp_x = (float) distance * cos(current_angle_r);
+		tmp_y = (float) distance * sin(current_angle_r);
 		this->create.Straight_Run = false;
 	}
 	else
@@ -38,7 +41,7 @@ Coordinate Controller::calculateCreateCoordinate()
 			this->create.Left_Run = false;
 		}
 
-		angle_r = ( distance / radius );
+		angle_r = ( distance / radius ); //[rad]
 		tmp_x1 = radius * sin( angle_r + crt_angle_r);
 		tmp_x2 = radius * sin( crt_angle_r );
 		tmp_x = tmp_x1 - tmp_x2;
@@ -60,12 +63,13 @@ Coordinate Controller::calculateCreateCoordinate()
 Coordinate Controller::calculateCreateCoordinate(int distance, int angle)
 {
 	int last_angle = this->create.getTotalAngle();
+	float current_angle_r;//[rad]
 
 	float tmp_x, tmp_y; //計算用相対座標
 	float tmp_x1, tmp_x2, tmp_y1, tmp_y2;	// 計算用
 	float pri_x, pri_y; //1つ前に記録した座標
 	
-	float crt_angle_r = (float) this->create.getTotalAngle() * (PI / 180); //createの角度[rad]
+	float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
 
 	this->create.addAngle( angle );	// Create角度更新
 
@@ -73,8 +77,9 @@ Coordinate Controller::calculateCreateCoordinate(int distance, int angle)
 
 	if(this->create.Straight_Run)
 	{
-		tmp_x = (float) distance * cos(this->create.getTotalAngle());
-		tmp_y = (float) distance * sin(this->create.getTotalAngle());
+		current_angle_r = this->create.getTotalAngle();
+		tmp_x = (float) distance * cos(current_angle_r);
+		tmp_y = (float) distance * sin(current_angle_r);
 		this->create.Straight_Run = false;
 	}
 	else
@@ -116,17 +121,17 @@ Coordinate Controller::calculateCreateCoordinate(int distance, int angle)
 * 入力2:Createの現在のworld回転角度
 * 返り値：障害物座標（world）
 *************************************************************/
-Coordinate Controller::calculateSonerHitPointCoordinate()
+Coordinate Controller::calculateSonerHitPointCoordinate(float soner_distance)
 {
 	Coordinate obstacle_coord;
 	Coordinate create_coord;
 	create_coord = this->create.getPresentCoordinate();
-	int create_x = create_coord.getX();
-	int create_y = create_coord.getY();
-	int create_angle = this->create.getTotalAngle();
+	float create_x = create_coord.getX();
+	float create_y = create_coord.getY();
+	int create_angle_r = (float)this->create.getTotalAngle() * (M_PI / 180);
 
-	int obstacle_x = create_x + SONEROFFSET_X * cos(create_angle) + getDistanceBySoner() * cos(create_angle + SONEROFFSET_ANGLE);
-	int obstacle_y = create_y + SONEROFFSET_X * sin(create_angle) + getDistanceBySoner() * sin(create_angle + SONEROFFSET_ANGLE); 
+	float obstacle_x = create_x + SONEROFFSET_X * cos(create_angle_r) + soner_distance * cos(create_angle_r + SONEROFFSET_ANGLE);
+	float obstacle_y = create_y + SONEROFFSET_X * sin(create_angle_r) + soner_distance * sin(create_angle_r + SONEROFFSET_ANGLE); 
 
 	obstacle_coord.setX(obstacle_x);
 	obstacle_coord.setY(obstacle_y);
@@ -140,30 +145,30 @@ Coordinate Controller::calculateBumperHitPointCoordinate()
 	Coordinate obstacle_coord;
 	Coordinate create_coord;
 	create_coord = this->create.getPresentCoordinate();
-	int create_angle = this->create.getTotalAngle();
-	int create_x = create_coord.getX();
-	int create_y = create_coord.getY();
-	int obstacle_x, obstacle_y;
+	float create_angle_r = (float)this->create.getTotalAngle() * (M_PI / 180);
+	float create_x = create_coord.getX();
+	float create_y = create_coord.getY();
+	float obstacle_x, obstacle_y;
 
 	// 右バンパが押された場合
 	if(getBumpsAndWheelDrops() == 1)
 	{
-		obstacle_x = create_x + BUMPER_PLACE_OFFSET * cos(BUMPER_PLACE_ANGLE_R + create_angle);
-		obstacle_y = create_y + BUMPER_PLACE_OFFSET * sin(BUMPER_PLACE_ANGLE_R + create_angle);
+		obstacle_x = create_x + BUMPER_PLACE_OFFSET * cos(BUMPER_PLACE_ANGLE_R + create_angle_r);
+		obstacle_y = create_y + BUMPER_PLACE_OFFSET * sin(BUMPER_PLACE_ANGLE_R + create_angle_r);
 		this->create.push_bumper = RIGHT;
 	}
 	// 左バンパが押された場合
 	else if(getBumpsAndWheelDrops() == 2)
 	{
-		obstacle_x = create_x + BUMPER_PLACE_OFFSET * cos(BUMPER_PLACE_ANGLE_L + create_angle);
-		obstacle_y = create_y + BUMPER_PLACE_OFFSET * sin(BUMPER_PLACE_ANGLE_L + create_angle);
+		obstacle_x = create_x + BUMPER_PLACE_OFFSET * cos(BUMPER_PLACE_ANGLE_L + create_angle_r);
+		obstacle_y = create_y + BUMPER_PLACE_OFFSET * sin(BUMPER_PLACE_ANGLE_L + create_angle_r);
 		this->create.push_bumper = LEFT;
 	}
 	// 正面のバンパが押された場合
 	else
 	{
-		obstacle_x = create_x + BUMPER_PLACE_OFFSET * sin(create_angle);
-		obstacle_y = create_y + BUMPER_PLACE_OFFSET * cos(create_angle);
+		obstacle_x = create_x + BUMPER_PLACE_OFFSET * sin(create_angle_r);
+		obstacle_y = create_y + BUMPER_PLACE_OFFSET * cos(create_angle_r);
 		this->create.push_bumper = CENTER;	
 	}
 	obstacle_coord.setX(obstacle_x);
@@ -181,16 +186,23 @@ void Controller::checkState()
 	if(this->create.state == RUN && getBumpsAndWheelDrops() == 0)
 	{
 		this->tracks.push_back_MapPointList( this->calculateCreateCoordinate() );	//createのworld座標を計算してtracksに逐次記録
-		this->tracks.push_back_ObstaclePointList( this->calculateSonerHitPointCoordinate() );
+		float soner_distance = this->create.getDistanceBySoner();
+//std::cout << "soner_dist:" << soner_distance << std::endl;
+		// RECORD_OBSTACLE_TH 以上離れた障害物は記録しない
+		if(soner_distance < RECORD_OBSTACLE_TH)
+		{
+			this->tracks.push_back_ObstaclePointList( this->calculateSonerHitPointCoordinate( soner_distance ) );
+		}
 		this->create.run();
 	}
 	
 	// バンパセンサに衝突
 	else if( getBumpsAndWheelDrops() != 0)
 	{	
-		int distance = getDistance();
+		int distance = this->create.getDistanceFromCreate();
 		int angle 	 = this->create.getAngleFromCreate();
-		this->create.stopRun();
+		this->create.stopRun();//値だけ取得してストップ
+		this->create.addDistance(distance);// Distanceを更新、Angleは後のcalculateCreateCoordinate（）内で更新
 		this->tracks.push_back_MapPointList( this->calculateCreateCoordinate(distance, angle) );
 		this->tracks.push_back_ObstaclePointList( this->calculateBumperHitPointCoordinate() );
 		this->create.changeDirection();	// 方向転換
