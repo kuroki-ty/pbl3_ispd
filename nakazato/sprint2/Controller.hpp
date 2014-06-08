@@ -11,7 +11,7 @@ public:
 	{
 		this->tracks.blockListInit();
 		this->create.setDirection(PLUS_X);
-		this->tracks.map_point_list.push_back(this->create.present_coord);
+		this->tracks.push_back_MapPointList(this->create.getPresentCoordinate());
 		this->wall_search_flag = true;
 
 		this->create.Straight_Run = false;
@@ -19,6 +19,13 @@ public:
 		this->create.Left_Run     = false;
 	}
 
+
+// Createの現在座標（world）を計算
+Coordinate calculateCreateCoordinate();
+Coordinate calculateCreateCoordinate(int distance, int angle);
+// 超音波センサが当たる部分の座標（world）の計算
+Coordinate calculateSonerHitPointCoordinate();
+Coordinate calculateBumperHitPointCoordinate();
 
 void checkState();
 
@@ -28,11 +35,22 @@ bool getWallSearchFlag()
 	return wall_search_flag;
 }
 
-void calculateCreateCoordinate();
-
-void recordCoordinate( Coordinate coord; )
+// 最大絶対値を360にしてCreateから角度を取得
+int getAngleFromCreate()
 {
-	this->tracks.recordCoordinate( coord );	// world座標に記録
+	return getAngle() % 360;
+}
+
+
+// Createの座標を記録
+void recordCreateCoordinate( Coordinate coord )
+{
+	this->tracks.push_back_MapPointList( coord );	// world座標に記録
+}
+
+void recordObstacleCoordinate( Coordinate coord )
+{
+	this->tracks.push_back_ObstaclePointList( coord );
 }
 
 
