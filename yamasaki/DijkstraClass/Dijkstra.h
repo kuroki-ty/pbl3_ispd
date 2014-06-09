@@ -21,8 +21,15 @@
 #define		N			9
 #define		START		0
 #define		COST_MAX	999
-#define     UNSEARCH    0
-#define     SEARCHED    1
+
+/*****************************************************************************
+ ** enum
+ *****************************************************************************/
+enum SearchMark
+{
+    UNSEARCH,   //未探索
+    SEARCHED    //探索済
+};
 
 /*****************************************************************************
  ** Structure
@@ -30,7 +37,7 @@
 struct Mesh{
     int num;            //メッシュ番号
     int prev;           //直前のメッシュ番号
-    int mark;           //探索済みか否か判断するマーカー
+    SearchMark mark;    //探索済みか否か判断するマーカー
     int distance;       //スタートからそのノードに向かうまでの距離コスト
 //    float center_x;     //メッシュの中心x座標
 //    float center_y;     //メッシュの中心y座標
@@ -54,6 +61,7 @@ private:
     int next;   //次に向かうノード
     int min;    //現在の最短距離コスト
     std::vector<Mesh> mesh;
+    std::vector<Mesh> route;
     std::vector< std::vector<int> > cost;
     
 };

@@ -16,6 +16,7 @@ Dijkstra::Dijkstra(){
     {
         Mesh tmp;
         mesh.push_back(setMesh(i, tmp));
+        route.push_back(setMesh(i, tmp));
     }
     
     std::vector<int> list;
@@ -123,13 +124,18 @@ void Dijkstra::searchRoute()
 
 void Dijkstra::showRoute()
 {
-    std::cout << "点   直前の点   最短距離" << std::endl;
-	for(int i=0; i<N; i++)
+    int count = 0;
+    route[count] = mesh[N-1];
+    do
     {
-        if(i != START && mesh[i].mark)
-        {
-            std::cout << mesh[i].num << "       " << mesh[i].prev << "      " << mesh[i].distance << std::endl;
-        }
+        route[count+1] = mesh[route[count].prev];
+        count++;
+    }while(route[count-1].num != 0);
+    
+    std::cout << "点   直前の点   最短距離" << std::endl;
+	for(int i=count-1; i>=0; i--)
+    {
+        std::cout << route[i].num << "       " << route[i].prev << "      " << route[i].distance << std::endl;
     }
 }
 
