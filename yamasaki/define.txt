@@ -1,0 +1,4 @@
+・Dijkstra.h
+#define		N			9       //ノード数
+#define		START		0       //スタートノード
+#define		COST_MAX	999     //仮無限値
