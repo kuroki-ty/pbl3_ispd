@@ -20,9 +20,9 @@ Block::Block()
     
     //ノード間移動コスト配列の初期設定
     std::vector<int> list_c;
-    for(int i=0; i<total_block_y; i++)
+    for(int i=0; i<total_block_x*total_block_y; i++)
     {
-        for(int j=0; j<total_block_x; j++)
+        for(int j=0; j<total_block_x*total_block_y; j++)
         {
             list_c.push_back(COST_BIG);
         }
@@ -66,18 +66,18 @@ void Block::addCost(int num, IRobotDirecton direction)
     
     switch(current_create_direction){
         case UP:
-            for(int i=current_mesh_num; (i%total_block_x)==total_block_x-1; i++)
+            for(int i=current_mesh_num; (i%total_block_x)!=total_block_x-1; i++)
             {
                 cost[i][i+1] = COST_LITTLE;
-                cost[i+1][i] = COST_LITTLE;
+//                cost[i+1][i] = COST_LITTLE;
             }
             break;
         
         case DOWN:
-            for(int i=current_mesh_num; (i%total_block_x)==total_block_x; i--)
+            for(int i=current_mesh_num; (i%total_block_x)!=0; i--)
             {
                 cost[i][i-1] = COST_LITTLE;
-                cost[i-1][i] = COST_LITTLE;
+//                cost[i-1][i] = COST_LITTLE;
             }
             break;
             
@@ -85,7 +85,7 @@ void Block::addCost(int num, IRobotDirecton direction)
             for(int i=current_mesh_num; i>total_block_y-1; i-=total_block_y)
             {
                 cost[i][i-total_block_x] = COST_LITTLE;
-                cost[i-total_block_x][i] = COST_LITTLE;
+//                cost[i-total_block_x][i] = COST_LITTLE;
             }
             break;
             
@@ -93,7 +93,7 @@ void Block::addCost(int num, IRobotDirecton direction)
             for(int i=current_mesh_num; i<total_block_y*total_block_x-total_block_x; i+=total_block_y)
             {
                 cost[i][i+total_block_x] = COST_LITTLE;
-                cost[i+total_block_x][i] = COST_LITTLE;
+//                cost[i+total_block_x][i] = COST_LITTLE;
             }
             break;
         
@@ -107,6 +107,7 @@ void Block::calcRoute()
 {
 /*テスト用*/
     
+    std::cout << total_block_x << " " << total_block_y << std::endl;
     std::cout << "メッシュ番号    マーカー    (x, y)" << std::endl;
     for(int i=0; i<total_block_y; i++)
     {
@@ -115,13 +116,51 @@ void Block::calcRoute()
         }
     }
     
-    for(int i=0; i<total_block_y; i++)
+    //横移動のコスト　ノード小→大
+    std::cout << "横移動のコスト ノード小→大" << std::endl;
+    for(int i=0; i<total_block_x*total_block_y; i++)
     {
-        for(int j=0; j<total_block_x; j++)
+        if(i%total_block_x != total_block_x-1)
         {
-            std::cout << cost[i][j] << "  ";
+            std::cout <<  cost[i][i+1] << ", ";
         }
-        std::cout << std::endl;
+        else
+        {
+            std::cout << std::endl;
+        }
+    }
+    //横移動のコスト　ノード大→小
+    std::cout << "横移動のコスト ノード大→小" << std::endl;
+    for(int i=0; i<total_block_x*total_block_y; i++)
+    {
+        if(i%total_block_x != total_block_x-1)
+        {
+            std::cout <<  cost[i+1][i] << ", ";
+        }
+        else
+        {
+            std::cout << std::endl;
+        }
+    }
+    
+    //縦移動のコスト　ノード小→大
+    std::cout << "縦移動のコスト ノード小→大" << std::endl;
+    for(int i=0; i<total_block_x*total_block_y-total_block_x; i++)
+    {
+        std::cout <<  cost[i][i+total_block_x] << ", ";
+        if(i%total_block_x == total_block_x-1){
+            std::cout << std::endl;
+        }
+    }
+    
+    //縦移動のコスト　ノード大→小
+    std::cout << "縦移動のコスト ノード大→小" << std::endl;
+    for(int i=0; i<total_block_x*total_block_y-total_block_x; i++)
+    {
+        std::cout <<  cost[i+total_block_x][i] << ", ";
+        if(i%total_block_x == total_block_x-1){
+            std::cout << std::endl;
+        }
     }
 
 }
