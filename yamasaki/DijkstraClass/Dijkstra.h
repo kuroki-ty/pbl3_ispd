@@ -18,9 +18,9 @@
 /*****************************************************************************
  ** Define
  *****************************************************************************/
-#define		N			9
-#define		START		0
-#define		COST_MAX	999
+#define		N			9       //ノード数
+#define		START		0       //スタートノード
+#define		COST_MAX	999     //仮無限値
 
 /*****************************************************************************
  ** enum
@@ -28,7 +28,7 @@
 enum SearchMark
 {
     UNSEARCH,   //未探索
-    SEARCHED    //探索済
+    SEARCHED    //障害物
 };
 
 /*****************************************************************************
@@ -39,8 +39,6 @@ struct Mesh{
     int prev;           //直前のメッシュ番号
     SearchMark mark;    //探索済みか否か判断するマーカー
     int distance;       //スタートからそのノードに向かうまでの距離コスト
-//    float center_x;     //メッシュの中心x座標
-//    float center_y;     //メッシュの中心y座標
 };
 
 /*****************************************************************************
@@ -49,17 +47,34 @@ struct Mesh{
 class Dijkstra{
 public:
     //メソッド
-    Mesh setMesh(int, Mesh);
-    void readCost();    //メッシュ情報を格納する
+    Mesh addFirstMesh(int, Mesh);    //メッシュの初期値をセットする
+//    void readCost();    //メッシュ情報を格納する
     void searchRoute(); //経路探索を行う
     void showRoute();   //最短経路を表示する
     int init();        //初期化を行う
     Dijkstra();    //コンストラクタ
+    Dijkstra(int);    //コンストラクタ
+    
+    //set Method
+    //Blockクラスのコスト情報をセットする *p:Blockクラスのcost配列の先頭ポインタ
+    void setCost(std::vector< std::vector<int> > &p)
+    {
+        for(int i=0; i<mesh_N; i++)
+        {
+            for(int j=0; j<mesh_N; j++)
+            {
+                cost[i][j] = p[i][j];
+                std::cout << cost[i][j] << ",";
+            }
+            std::cout << std::endl;
+        }
+    }
     
 private:
     //変数
     int next;   //次に向かうノード
     int min;    //現在の最短距離コスト
+    int mesh_N; //メッシュ配列の要素数
     std::vector<Mesh> mesh;
     std::vector<Mesh> route;
     std::vector< std::vector<int> > cost;

@@ -7,6 +7,7 @@
 //
 
 #include "Block.h"
+#include "Dijkstra.h"
 
 /*****************************************************************************
  ** Construtor
@@ -31,14 +32,14 @@ Block::Block()
     }
     
     //メッシュ配列の初期設定
-    std::vector<Mesh> list_b;
+    std::vector<DijkstraMesh> list_b;
     int count = 0;
     for(int i=0; i<total_block_y; i++)
     {
         for(int j=0; j<total_block_x; j++)
         {
-            Mesh tmp;
-            list_b.push_back(pushBackBlock(i, j, count, tmp));
+            DijkstraMesh tmp;
+            list_b.push_back(addFirstBlock(i, j, count, tmp));
             count++;
         }
         block.push_back(list_b);
@@ -46,10 +47,10 @@ Block::Block()
     }
 }
 
-Mesh Block::pushBackBlock(int y, int x, int count, Mesh tmp)
+DijkstraMesh Block::addFirstBlock(int y, int x, int count, DijkstraMesh tmp)
 {
     tmp.num = count;
-    tmp.mark = UNSEARCH;
+    tmp.mark = UNKNOWN;
     tmp.center_x = x*block_x+block_x/2.0;
     tmp.center_y = y*block_y+block_y/2.0;
     
@@ -115,14 +116,18 @@ void Block::addCost(int num, IRobotDirecton direction)
         
         default:
             break;
-    }
-    
+    }    
 }
 
 void Block::calcRoute()
 {
 /*テスト用*/
+    Dijkstra dijkstra(total_block_x*total_block_y);
+    dijkstra.setCost(cost);
+    dijkstra.searchRoute();
+    dijkstra.showRoute();
     
+/*
     std::cout << total_block_x << " " << total_block_y << std::endl;
     std::cout << "メッシュ番号    マーカー    (x, y)" << std::endl;
     for(int i=0; i<total_block_y; i++)
@@ -189,7 +194,7 @@ void Block::calcRoute()
         }
         std::cout << std::endl;
     }
-    
+*/
     
 
 }
