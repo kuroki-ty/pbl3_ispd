@@ -24,7 +24,7 @@ Block::Block()
     {
         for(int j=0; j<total_block_x*total_block_y; j++)
         {
-            list_c.push_back(COST_BIG);
+            list_c.push_back(COST_MAX);
         }
         cost.push_back(list_c);
         list_c.clear();
@@ -61,8 +61,24 @@ void Block::addCost(int num, IRobotDirecton direction)
     current_mesh_num = num;
     current_create_direction = direction;
     
-    /*行が変わるところはCOST_MAXを入れないといけない*/
-    /*実装予定*/
+    for(int i=0; i<total_block_x*total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x*total_block_y; j++)
+        {
+            if((i==j+1) || (j==i+1) || (i==j+total_block_x) || (j==i+total_block_x))
+            {
+                cost[i][j] = COST_BIG;
+                if(((i%total_block_x)==total_block_x-1) && (j==i+1))
+                {
+                    cost[i][j] = COST_MAX;
+                }
+                if(((j%total_block_x)==total_block_x-1) && (i==j+1))
+                {
+                    cost[i][j] = COST_MAX;
+                }
+            }
+        }
+    }
     
     switch(current_create_direction){
         case UP:
@@ -90,7 +106,7 @@ void Block::addCost(int num, IRobotDirecton direction)
             break;
             
         case LEFT:
-            for(int i=current_mesh_num; i<total_block_y*total_block_x-total_block_x; i+=total_block_y)
+            for(int i=current_mesh_num; i<total_block_x*total_block_y-total_block_x; i+=total_block_y)
             {
                 cost[i][i+total_block_x] = COST_LITTLE;
 //                cost[i+total_block_x][i] = COST_LITTLE;
@@ -162,6 +178,19 @@ void Block::calcRoute()
             std::cout << std::endl;
         }
     }
+    
+    //全コスト
+    for(int i=0; i<total_block_x*total_block_y; i++)
+    {
+        std::cout << "[" << i << "]" << std::endl;
+        for(int j=0; j<total_block_x*total_block_y; j++)
+        {
+            std::cout << cost[i][j] << ",";
+        }
+        std::cout << std::endl;
+    }
+    
+    
 
 }
 
@@ -170,6 +199,10 @@ int Block::meshNumToCurrentPosition(float x, float y){
     
     return 0;
 }
+
+/*****************************************************************************
+ ** TestMain
+******************************************************************************/
 
 int main(){
     Block block;
