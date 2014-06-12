@@ -16,7 +16,6 @@ Dijkstra::Dijkstra(){
     {
         Mesh tmp;
         mesh.push_back(addFirstMesh(i, tmp));
-        route.push_back(addFirstMesh(i, tmp));
     }
     
     std::vector<int> list;
@@ -31,14 +30,15 @@ Dijkstra::Dijkstra(){
     }
 }
 
-Dijkstra::Dijkstra(int m_N){
+Dijkstra::Dijkstra(int s, int g, int m_N){
+    start = s;
+    goal = g;
     mesh_N = m_N;
     
     for(int i=0; i<mesh_N; i++)
     {
         Mesh tmp;
         mesh.push_back(addFirstMesh(i, tmp));
-        route.push_back(addFirstMesh(i, tmp));
     }
     
     std::vector<int> list;
@@ -71,40 +71,10 @@ Mesh Dijkstra::addFirstMesh(int num, Mesh tmp)
     return tmp;
 }
 
-/*
-void Dijkstra::readCost()
-{
-	cost[0][1] = 1;
-	cost[1][0] = 2;
-	cost[1][2] = 2;
-	cost[2][1] = 1;
-	cost[3][4] = 2;
-	cost[4][3] = 3;
-	cost[4][5] = 1;
-	cost[5][4] = 3;
-	cost[6][7] = 2;
-	cost[7][6] = 1;
-	cost[7][8] = 1;
-	cost[8][7] = 2;
-	cost[0][3] = 1;
-	cost[3][0] = 2;
-	cost[3][6] = 2;
-	cost[6][3] = 1;
-	cost[1][4] = 3;
-	cost[4][1] = 1;
-	cost[4][7] = 4;
-	cost[7][4] = 1;
-	cost[2][5] = 2;
-	cost[5][2] = 2;
-	cost[5][8] = 7;
-	cost[8][5] = 1;
-}
-*/
-
 void Dijkstra::searchRoute()
 {
-	mesh[START].distance = 0;
-	next = START;
+	mesh[start].distance = 0;
+	next = start;
 	
     int k;  //iの代用
     do
@@ -132,21 +102,37 @@ void Dijkstra::searchRoute()
 	}while(min < COST_MAX);
 }
 
-void Dijkstra::showRoute()
+void Dijkstra::writeRoute()
 {
+    std::vector<int> tmp;
+    for(int i=0; i<mesh_N; i++)
+    {
+        tmp.push_back(0);
+    }
+    
     int count = 0;
-    route[count] = mesh[mesh_N-1];
+    tmp[count] = mesh[goal].num;
     do
     {
-        route[count+1] = mesh[route[count].prev];
+        tmp[count+1] = mesh[tmp[count]].prev;
         count++;
-    }while(route[count-1].num != 0);
+    }while(tmp[count-1] != start);
     
-    std::cout << "点   直前の点   最短距離" << std::endl;
-	for(int i=count-1; i>=0; i--)
+    for(int i=0; i<count; i++)
     {
-        std::cout << route[i].num << "       " << route[i].prev << "      " << route[i].distance << std::endl;
+        route.push_back(0);
     }
+
+	for(int i=0; i<count; i++)
+    {
+        route[i] = tmp[count-i-1];
+    }
+}
+
+void Dijkstra::useDijkstra()
+{
+    searchRoute();
+    writeRoute();
 }
 
 /*****************************************************************************

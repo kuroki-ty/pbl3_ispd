@@ -45,6 +45,12 @@ Block::Block()
         block.push_back(list_b);
         list_b.clear();
     }
+    
+    //ルート配列の初期設定
+    for(int i=0; i<total_block_x*total_block_y; i++)
+    {
+        route.push_back(0);
+    }
 }
 
 DijkstraMesh Block::addFirstBlock(int y, int x, int count, DijkstraMesh tmp)
@@ -86,7 +92,6 @@ void Block::addCost(int num, IRobotDirecton direction)
             for(int i=current_mesh_num; (i%total_block_x)!=total_block_x-1; i++)
             {
                 cost[i][i+1] = COST_LITTLE;
-//                cost[i+1][i] = COST_LITTLE;
             }
             break;
         
@@ -94,7 +99,6 @@ void Block::addCost(int num, IRobotDirecton direction)
             for(int i=current_mesh_num; (i%total_block_x)!=0; i--)
             {
                 cost[i][i-1] = COST_LITTLE;
-//                cost[i-1][i] = COST_LITTLE;
             }
             break;
             
@@ -102,7 +106,6 @@ void Block::addCost(int num, IRobotDirecton direction)
             for(int i=current_mesh_num; i>total_block_y-1; i-=total_block_y)
             {
                 cost[i][i-total_block_x] = COST_LITTLE;
-//                cost[i-total_block_x][i] = COST_LITTLE;
             }
             break;
             
@@ -110,7 +113,6 @@ void Block::addCost(int num, IRobotDirecton direction)
             for(int i=current_mesh_num; i<total_block_x*total_block_y-total_block_x; i+=total_block_y)
             {
                 cost[i][i+total_block_x] = COST_LITTLE;
-//                cost[i+total_block_x][i] = COST_LITTLE;
             }
             break;
         
@@ -122,81 +124,16 @@ void Block::addCost(int num, IRobotDirecton direction)
 void Block::calcRoute()
 {
 /*テスト用*/
-    Dijkstra dijkstra(total_block_x*total_block_y);
+    Dijkstra dijkstra(0, 8, total_block_x*total_block_y);
     dijkstra.setCost(cost);
-    dijkstra.searchRoute();
-    dijkstra.showRoute();
+    dijkstra.useDijkstra();
+    route = dijkstra.getRoute();
     
-/*
-    std::cout << total_block_x << " " << total_block_y << std::endl;
-    std::cout << "メッシュ番号    マーカー    (x, y)" << std::endl;
-    for(int i=0; i<total_block_y; i++)
+    std::cout << "点" << std::endl;
+	for(int i=0; i<total_block_x*total_block_y; i++)
     {
-        for(int j=0; j<total_block_x; j++){
-            std::cout << block[i][j].num << ", " << block[i][j].mark << ", (" << block[i][j].center_x << ", " << block[i][j].center_y << ")" << std::endl;
-        }
+        std::cout << route[i] << std::endl;
     }
-    
-    //横移動のコスト　ノード小→大
-    std::cout << "横移動のコスト ノード小→大" << std::endl;
-    for(int i=0; i<total_block_x*total_block_y; i++)
-    {
-        if(i%total_block_x != total_block_x-1)
-        {
-            std::cout <<  cost[i][i+1] << ", ";
-        }
-        else
-        {
-            std::cout << std::endl;
-        }
-    }
-    //横移動のコスト　ノード大→小
-    std::cout << "横移動のコスト ノード大→小" << std::endl;
-    for(int i=0; i<total_block_x*total_block_y; i++)
-    {
-        if(i%total_block_x != total_block_x-1)
-        {
-            std::cout <<  cost[i+1][i] << ", ";
-        }
-        else
-        {
-            std::cout << std::endl;
-        }
-    }
-    
-    //縦移動のコスト　ノード小→大
-    std::cout << "縦移動のコスト ノード小→大" << std::endl;
-    for(int i=0; i<total_block_x*total_block_y-total_block_x; i++)
-    {
-        std::cout <<  cost[i][i+total_block_x] << ", ";
-        if(i%total_block_x == total_block_x-1){
-            std::cout << std::endl;
-        }
-    }
-    
-    //縦移動のコスト　ノード大→小
-    std::cout << "縦移動のコスト ノード大→小" << std::endl;
-    for(int i=0; i<total_block_x*total_block_y-total_block_x; i++)
-    {
-        std::cout <<  cost[i+total_block_x][i] << ", ";
-        if(i%total_block_x == total_block_x-1){
-            std::cout << std::endl;
-        }
-    }
-    
-    //全コスト
-    for(int i=0; i<total_block_x*total_block_y; i++)
-    {
-        std::cout << "[" << i << "]" << std::endl;
-        for(int j=0; j<total_block_x*total_block_y; j++)
-        {
-            std::cout << cost[i][j] << ",";
-        }
-        std::cout << std::endl;
-    }
-*/
-    
-
 }
 
 //後から実装する．とりあえず0を返す．

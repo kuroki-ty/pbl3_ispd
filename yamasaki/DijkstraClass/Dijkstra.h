@@ -47,13 +47,15 @@ struct Mesh{
 class Dijkstra{
 public:
     //メソッド
-    Mesh addFirstMesh(int, Mesh);    //メッシュの初期値をセットする
-//    void readCost();    //メッシュ情報を格納する
-    void searchRoute(); //経路探索を行う
-    void showRoute();   //最短経路を表示する
-    int init();        //初期化を行う
     Dijkstra();    //コンストラクタ
-    Dijkstra(int);    //コンストラクタ
+    Dijkstra(int, int, int);    //コンストラクタ
+    void useDijkstra();     //ダイクストラ法を使う
+    
+    //get method
+    std::vector<int> getRoute()
+    {
+        return (route);
+    }
     
     //set Method
     //Blockクラスのコスト情報をセットする *p:Blockクラスのcost配列の先頭ポインタ
@@ -64,20 +66,26 @@ public:
             for(int j=0; j<mesh_N; j++)
             {
                 cost[i][j] = p[i][j];
-                std::cout << cost[i][j] << ",";
             }
-            std::cout << std::endl;
         }
     }
     
 private:
     //変数
+    int start;  //スタートノード
+    int goal;   //ゴールノード
     int next;   //次に向かうノード
     int min;    //現在の最短距離コスト
     int mesh_N; //メッシュ配列の要素数
     std::vector<Mesh> mesh;
-    std::vector<Mesh> route;
+    std::vector<int> route;
     std::vector< std::vector<int> > cost;
+    
+    //メソッド
+    Mesh addFirstMesh(int, Mesh);    //メッシュの初期値をセットする
+    int init();        //初期化を行う
+    void searchRoute(); //経路探索を行う
+    void writeRoute();   //最短経路をrouteに書き込む
     
 };
 

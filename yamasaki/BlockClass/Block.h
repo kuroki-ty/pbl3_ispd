@@ -22,9 +22,9 @@
 #define     COST_LITTLE 1       //移動コスト小
 #define     COST_BIG    2       //移動コスト大
 #define		COST_MAX	999     //仮無限値
-#define     FIERD_X     2000.0  //フィールドの横の長さ[mm](x座標)
-#define     FIELD_Y     2000.0  //フィールドの縦の長さ[mm](y座標)
-#define     IROBOT_D    330     //iRobotCreateの直径[mm] 330
+#define     FIERD_X     1500.0  //フィールドの横の長さ[mm](x座標)
+#define     FIELD_Y     1500.0  //フィールドの縦の長さ[mm](y座標)
+#define     IROBOT_D    500     //iRobotCreateの直径[mm] 330
 
 /*****************************************************************************
  ** enum
@@ -62,14 +62,11 @@ class Block{
 public:
     //メソッド
     Block();   //コンストラクタ
-    DijkstraMesh addFirstBlock(int, int, int, DijkstraMesh);    //メッシュの初期値をセットする
-    void addCost(int, IRobotDirecton);     //ノード間の重み付けを行う
     void calcRoute();   //Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
-    int meshNumToCurrentPosition(float, float);     //Createの現在座標からメッシュ番号に変換する
     
-    //set method
-    void setMark();     //メッシュマーカーをセットする
-    void setMesh();     //メッシュ情報をセットする
+    /*いずれはprivateに突っ込む*/
+    void addCost(int, IRobotDirecton);     //ノード間の重み付けを行う
+    int meshNumToCurrentPosition(float, float);     //Createの現在座標からメッシュ番号に変換する
     
 private:
     //変数
@@ -79,8 +76,12 @@ private:
     int total_block_y;  //縦のメッシュ数
     int current_mesh_num;   //Createの現在座標のメッシュ番号
     IRobotDirecton current_create_direction;    //現在のCreateの方向
+    std::vector<int> route;     //Dijkstraクラスで計算したルートを格納するための配列
     std::vector< std::vector<int> > cost;    //メッシュ間の移動コスト
     std::vector< std::vector<DijkstraMesh> > block;  //メッシュ情報
+    
+    //メソッド
+    DijkstraMesh addFirstBlock(int, int, int, DijkstraMesh);    //メッシュの初期値をセットする
     
 };
 
