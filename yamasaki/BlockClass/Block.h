@@ -62,7 +62,7 @@ class Block{
 public:
     //メソッド
     Block();   //コンストラクタ
-    void calcRoute();   //Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
+    void calcRoute(int, int, IRobotDirecton, int);   //Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
     
     /*いずれはprivateに突っ込む*/
     void addCost(int, IRobotDirecton);     //ノード間の重み付けを行う

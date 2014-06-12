@@ -121,14 +121,19 @@ void Block::addCost(int num, IRobotDirecton direction)
     }    
 }
 
-void Block::calcRoute()
+void Block::calcRoute(int x, int y, IRobotDirecton direction, int goal)
 {
-/*テスト用*/
-    Dijkstra dijkstra(0, 8, total_block_x*total_block_y);
+    int start;
+    
+    start = meshNumToCurrentPosition(x, y);
+    addCost(start, direction);
+    
+    Dijkstra dijkstra(start, goal, total_block_x*total_block_y);
     dijkstra.setCost(cost);
     dijkstra.useDijkstra();
     route = dijkstra.getRoute();
     
+    /*ここ，getRoute的なやつでControllerクラスに投げる仕様にする*/
     std::cout << "点" << std::endl;
 	for(int i=0; i<total_block_x*total_block_y; i++)
     {
@@ -139,18 +144,18 @@ void Block::calcRoute()
 //後から実装する．とりあえず0を返す．
 int Block::meshNumToCurrentPosition(float x, float y){
     
-    return 0;
+    return 3;
 }
 
 /*****************************************************************************
  ** TestMain
-******************************************************************************/
 
 int main(){
     Block block;
-    block.addCost(block.meshNumToCurrentPosition(0, 0), UP);
-    block.calcRoute();
+    block.calcRoute(0, 0, UP, 0, 8);
     
     return 0;
 }
+ 
+******************************************************************************/
 
