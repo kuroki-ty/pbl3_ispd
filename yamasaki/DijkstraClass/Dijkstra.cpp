@@ -11,25 +11,6 @@
 /*****************************************************************************
  ** Construtor
  *****************************************************************************/
-Dijkstra::Dijkstra(){
-    for(int i=0; i<N; i++)
-    {
-        Mesh tmp;
-        mesh.push_back(addFirstMesh(i, tmp));
-    }
-    
-    std::vector<int> list;
-    for(int i=0; i<N; i++)
-    {
-        for(int j=0; j<N; j++)
-        {
-            list.push_back(COST_MAX);
-        }
-        cost.push_back(list);
-        list.clear();
-    }
-}
-
 Dijkstra::Dijkstra(int s, int g, int m_N){
     start = s;
     goal = g;

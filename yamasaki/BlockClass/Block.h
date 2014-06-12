@@ -22,9 +22,9 @@
 #define     COST_LITTLE 1       //移動コスト小
 #define     COST_BIG    2       //移動コスト大
 #define		COST_MAX	999     //仮無限値
-#define     FIERD_X     1500.0  //フィールドの横の長さ[mm](x座標)
-#define     FIELD_Y     1500.0  //フィールドの縦の長さ[mm](y座標)
-#define     IROBOT_D    500     //iRobotCreateの直径[mm] 330
+#define     FIERD_X     2000.0  //フィールドの横の長さ[mm](x座標)
+#define     FIELD_Y     2000.0  //フィールドの縦の長さ[mm](y座標)
+#define     IROBOT_D    330     //iRobotCreateの直径[mm] 330
 
 /*****************************************************************************
  ** enum
@@ -33,8 +33,8 @@
 enum DijkstraSearchMark
 {
     UNKNOWN,   //未探索
-    OBSTACLE,   //障害物
-    WALL        //壁
+    BLANK,     //空白(探索済)
+    OBSTACLE   //障害物(探索済)
 };
 
 enum IRobotDirecton

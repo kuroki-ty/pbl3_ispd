@@ -12,7 +12,7 @@
 int main(){
     
     Block block;
-    block.calcRoute(1, 1, UP, 8);
+    block.calcRoute(0, 0, UP, 6);
     
     return 0;
 }

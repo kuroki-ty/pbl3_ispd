@@ -144,7 +144,7 @@ void Block::calcRoute(int x, int y, IRobotDirecton direction, int goal)
 //後から実装する．とりあえず0を返す．
 int Block::meshNumToCurrentPosition(float x, float y){
     
-    return 3;
+    return 0;
 }
 
 /*****************************************************************************
