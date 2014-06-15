@@ -13,12 +13,13 @@ float Create::getDistanceBySoner()
 
 void Create::goStraightWithSoner()
 {
-	if((this->getDistanceBySoner() >= WALL_DISTANCE_LOW) && (this->getDistanceBySoner() <= WALL_DISTANCE_HIGH))
+	float soner_distance = this->getDistanceBySoner();
+	if((soner_distance >= WALL_DISTANCE_LOW) && (soner_distance <= WALL_DISTANCE_HIGH))
 	{
 		this->Straight_Run = true;
 		drive(VELOCITY, 0);	//壁との距離が範囲内であれば直進
 	}
-	else if(this->getDistanceBySoner() < WALL_DISTANCE_LOW)
+	else if(soner_distance < WALL_DISTANCE_LOW)
 	{
 		this->Left_Run = true;
 		drive(VELOCITY, RADIUS_LEFT);	//壁と近い場合、左向きに直進
@@ -28,6 +29,7 @@ void Create::goStraightWithSoner()
 		this->Right_Run = true;
 		drive(VELOCITY, -RADIUS_RIGHT);	//壁と遠い場合、右向きに直進
 	}
+//std::cout << soner_distance << std::endl;
 }
 
 
@@ -37,7 +39,7 @@ void Create::run()
 	this->state = RUN;
 }
 
-// 障害物に当たったので、方向転換する関数
+// 障害物に当たったら、方向転換する関数
 void Create::changeDirection()
 {
 	int angle = this->total_angle;
@@ -79,4 +81,220 @@ void Create::changeDirection()
 		turn(VELOCITY,1,90,0); // 半時計回り
 		this->total_angle += 90;
 	}
+}
+
+
+// Createの現在座標の計算関数
+Coordinate Create::calcCurrentCoordinate()
+{
+	int distance = this->getDistanceFromCreate();
+	this->addDistance(distance);
+	int last_angle = this->getTotalAngle();
+	float current_angle_r;// [rad]
+
+	float tmp_x, tmp_y; //計算用相対座標
+	float tmp_x1, tmp_x2, tmp_y1, tmp_y2;	// 計算用
+	
+	float pri_x, pri_y;
+	
+	float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
+
+	this->addAngle( this->getAngleFromCreate() );	// Create角度更新
+
+	float angle_r; //[rad]
+
+	if(this->Straight_Run)
+	{
+		current_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
+		tmp_x = (float) distance * cos(current_angle_r);
+		tmp_y = (float) distance * sin(current_angle_r);
+		this->Straight_Run = false;
+	}
+	else
+	{
+		int radius;	// 回転半径
+		if  (this->Right_Run) 
+		{
+			radius = RADIUS_RIGHT;
+			this->Right_Run = false;
+		}
+		else//(this->Left_Run)
+		{
+			radius = RADIUS_LEFT;
+			this->Left_Run = false;
+		}
+
+		angle_r = ( distance / radius ); //[rad]
+		tmp_x1 = radius * sin( angle_r + crt_angle_r);
+		tmp_x2 = radius * sin( crt_angle_r );
+		tmp_x = tmp_x1 - tmp_x2;
+
+		tmp_y1 = 2 * radius * sin( ( angle_r + crt_angle_r ) / 2 ) * sin( ( angle_r + crt_angle_r ) / 2 );
+		tmp_y2 = 2 * radius * sin( crt_angle_r / 2 ) * sin( crt_angle_r / 2 );
+		tmp_y = tmp_y1 - tmp_y2;
+	}
+
+	pri_x= this->current_coord.getX();	//map_point_list内の最新の座標を得る（前回記録した位置）
+	pri_y= this->current_coord.getY();
+
+	std::cout << "(" << pri_x << ", " << pri_y << ")" << std::endl;
+
+	this->updateCurrentCoordinateXY( pri_x + tmp_x, pri_y + tmp_y );	// Createの現在座標を更新
+
+	return this->getCurrentCoordinate();
+}
+
+// 距離と角度を引数にした、Createの現在座標の計算関数
+Coordinate Create::calcCurrentCoordinate(int distance, int angle)
+{
+	int last_angle = this->getTotalAngle();
+	float current_angle_r;//[rad]
+
+	float tmp_x, tmp_y; //計算用相対座標
+	float tmp_x1, tmp_x2, tmp_y1, tmp_y2;	// 計算用
+	float pri_x, pri_y; //1つ前に記録した座標
+	
+	float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
+
+	this->addAngle( angle );	// Create角度更新
+
+	float angle_r; //[rad]
+
+	if(this->Straight_Run)
+	{
+		current_angle_r = this->getTotalAngle();
+		tmp_x = (float) distance * cos(current_angle_r);
+		tmp_y = (float) distance * sin(current_angle_r);
+		this->Straight_Run = false;
+	}
+	else
+	{
+		int radius;	// 回転半径
+		if  (this->Right_Run) 
+		{
+			radius = RADIUS_RIGHT;
+			this->Right_Run = false;
+		}
+		else//(this->Left_Run)
+		{
+			radius = RADIUS_LEFT;
+			this->Left_Run = false;
+		}
+
+		angle_r = ( distance / radius );
+		tmp_x1 = radius * sin( angle_r + crt_angle_r);
+		tmp_x2 = radius * sin( crt_angle_r );
+		tmp_x = tmp_x1 - tmp_x2;
+
+		tmp_y1 = 2 * radius * sin( ( angle_r + crt_angle_r ) / 2 ) * sin( ( angle_r + crt_angle_r ) / 2 );
+		tmp_y2 = 2 * radius * sin( crt_angle_r / 2 ) * sin( crt_angle_r / 2 );
+		tmp_y = tmp_y1 - tmp_y2;
+	}
+
+	pri_x= this->current_coord.getX();	//map_point_list内の最新の座標を得る（前回記録した位置）
+	pri_y= this->current_coord.getY();
+
+	this->updateCurrentCoordinateXY( pri_x + tmp_x, pri_y + tmp_y );	// Createの現在座標を更新
+
+	return this->getCurrentCoordinate();
+}
+
+
+/************************************************************
+* 超音波センサが当たったところのCreateからの相対座標を計算
+* 入力1：Createの現在のworld座標
+* 入力2:Createの現在のworld回転角度
+* 返り値：障害物座標（world）
+*************************************************************/
+Coordinate Create::calcSonerHitPointCoordinate(float soner_distance)
+{
+	
+	Coordinate obstacle_coord;
+	Coordinate create_coord;
+	create_coord = this->getCurrentCoordinate();
+	float create_x = create_coord.getX();
+	float create_y = create_coord.getY();
+
+	int create_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
+
+	float obstacle_x = create_x + SONEROFFSET_X * cos(create_angle_r) + soner_distance * cos(create_angle_r + SONEROFFSET_ANGLE);
+	float obstacle_y = create_y + SONEROFFSET_X * sin(create_angle_r) + soner_distance * sin(create_angle_r + SONEROFFSET_ANGLE); 
+
+	obstacle_coord.setX(obstacle_x);
+	obstacle_coord.setY(obstacle_y);
+
+	return obstacle_coord;
+
+}
+
+Coordinate Create::calcBumperHitPointCoordinate()
+{
+	Coordinate obstacle_coord;
+	Coordinate create_coord;
+	create_coord = this->getCurrentCoordinate();
+	float create_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
+	float create_x = create_coord.getX();
+	float create_y = create_coord.getY();
+	float obstacle_x, obstacle_y;
+
+	// 右バンパが押された場合
+	if(getBumpsAndWheelDrops() == 1)
+	{
+		obstacle_x = create_x + BUMPER_PLACE_OFFSET * cos(BUMPER_PLACE_ANGLE_R + create_angle_r);
+		obstacle_y = create_y + BUMPER_PLACE_OFFSET * sin(BUMPER_PLACE_ANGLE_R + create_angle_r);
+		this->push_bumper = RIGHT;
+	}
+	// 左バンパが押された場合
+	else if(getBumpsAndWheelDrops() == 2)
+	{
+		obstacle_x = create_x + BUMPER_PLACE_OFFSET * cos(BUMPER_PLACE_ANGLE_L + create_angle_r);
+		obstacle_y = create_y + BUMPER_PLACE_OFFSET * sin(BUMPER_PLACE_ANGLE_L + create_angle_r);
+		this->push_bumper = LEFT;
+	}
+	// 正面のバンパが押された場合
+	else
+	{
+		obstacle_x = create_x + BUMPER_PLACE_OFFSET * sin(create_angle_r);
+		obstacle_y = create_y + BUMPER_PLACE_OFFSET * cos(create_angle_r);
+		this->push_bumper = CENTER;	
+	}
+	obstacle_coord.setX(obstacle_x);
+	obstacle_coord.setY(obstacle_y);
+
+	return obstacle_coord;
+
+}
+
+
+// checState->バンパーに衝突
+void Create::doBumperHitMode(Coordinate &create, Coordinate &obstacle)
+{
+	int distance = this->getDistanceFromCreate();
+	int angle 	 = this->getAngleFromCreate();
+
+	this->stopRun();//値だけ取得してストップ
+	this->addDistance(distance);// Distanceを更新、Angleは後のcalculateCreateCoordinate（）内で更新
+	
+	// 各座標の計算
+	create = this->calcCurrentCoordinate(distance, angle);
+	obstacle = this->calcBumperHitPointCoordinate();
+
+	this->changeDirection();	// 方向転換
+
+}
+
+// checState->通常時 
+void Create::doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner_distance)
+{
+		create = this->calcCurrentCoordinate();
+
+		soner_distance = this->getDistanceBySoner();	
+		// RECORD_OBSTACLE_TH 以上離れた障害物は記録しない
+		if(soner_distance < RECORD_OBSTACLE_TH)
+		{
+			// 超音波センサの観測座標を計算してobstacle_listにプッシュバック
+			obstacle = this->calcSonerHitPointCoordinate(soner_distance);
+		}
+		this->run();
+
 }

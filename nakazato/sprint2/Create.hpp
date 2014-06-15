@@ -1,25 +1,33 @@
 #include <createoi.h>
 
-#define VELOCITY 200			//直進速度[mm/s]
+
+/*****************************************************************************
+ ** Define
+ *****************************************************************************/
+#define VELOCITY 150			//直進速度[mm/s]
 #define RADIUS_LEFT  230		//左回り回転半径[mm]
 #define RADIUS_RIGHT 320		//右回り回転半径[mm]
-#define WALL_DISTANCE_LOW  150.0	//壁とCreateの距離_低[cm]
-#define WALL_DISTANCE_HIGH 200.0	//壁とCreateの距離_高[cm]
+#define WALL_DISTANCE_LOW  200.0	//壁とCreateの距離_低[cm]
+#define WALL_DISTANCE_HIGH 300.0	//壁とCreateの距離_高[cm]
 
 #define CREATE_SIZE 340 // 縦 [mm]
 // 横330[mm]
 
 // soner
 #define SONEROFFSET_X 		150 // [mm]
-#define SONEROFFSET_ANGLE	(45 * (M_PI / 180)) 			//rad
+#define SONEROFFSET_ANGLE	(-45 * (M_PI / 180)) 			//rad
 #define SONEROFFSET_ANGLE_L	((180-SONEROFFSET_ANGLE_R) * (M_PI / 180))	//[rad]
 // bumper
 #define BUMPER_PLACE_OFFSET 170 //[mm]
 #define BUMPER_PLACE_ANGLE_R  (45 * (M_PI / 180))		//[rad]
 #define BUMPER_PLACE_ANGLE_L  ((180-BUMPER_PLACE_ANGLE_R) * (M_PI / 180))
 
+// 超音波センサで障害物の座標を記録する際の閾値　この距離より遠い座標は記録しない
+#define RECORD_OBSTACLE_TH 500
 
-
+/*****************************************************************************
+ ** enum
+ *****************************************************************************/
 enum Direction
 {
 	PLUS_X,
@@ -45,13 +53,15 @@ enum Bumper
 };
 
 
-
+/*****************************************************************************
+ ** Classes
+ *****************************************************************************/
 class Create
 {
 public:
 	Create()
 	{
-		this->present_direction = PLUS_X;
+		this->current_direction = PLUS_X;
 		this->distance=0;
 		this->velocity=0; 
 		this->total_angle=0;
@@ -71,8 +81,27 @@ public:
 		drive(0,0);
 	}
 
+
+	// Createの現在座標（world）を計算
+	Coordinate calcCurrentCoordinate();
+	Coordinate calcCurrentCoordinate(int distance, int angle);
+
+	// 超音波センサが当たる部分の座標（world）の計算
+	Coordinate calcSonerHitPointCoordinate(float soner_distance);
+
+	// バンパーセンサが当たった部分の座標（world）の計算
+	Coordinate calcBumperHitPointCoordinate();
+
 	// 障害物に衝突したときの方向転換
 	void changeDirection();
+
+// checkState時に使用する関数
+	// バンパー衝突時
+	void doBumperHitMode(Coordinate &create, Coordinate &obstacle);
+	// 通常時
+	void doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner_distance);
+
+
 	// 超音波センサから距離値を得る[mm]	
 	float getDistanceBySoner();
 
@@ -81,7 +110,7 @@ public:
 // set method
 	void setDirection(enum Direction d)
 	{
-		this->present_direction = d;
+		this->current_direction = d;
 	}
 
 	// Createの角度を加える
@@ -97,10 +126,10 @@ public:
 	}
 
 	// 現在座標の値を更新
-	void updatePresentCoordinateXY(float X, float Y)
+	void updateCurrentCoordinateXY(float X, float Y)
 	{
-		this->present_coord.setX(X);
-		this->present_coord.setY(Y);
+		this->current_coord.setX(X);
+		this->current_coord.setY(Y);
 	}
 
 
@@ -120,9 +149,9 @@ public:
 		return getDistance();
 	}	
 
-	Coordinate getPresentCoordinate()
+	Coordinate getCurrentCoordinate()
 	{
-		return this->present_coord;
+		return this->current_coord;
 	}
 
 
@@ -140,9 +169,9 @@ private:
 	int velocity;
 	int total_angle;
 
-	enum Direction present_direction;
+	enum Direction current_direction;
 
-	Coordinate present_coord;
+	Coordinate current_coord;
 
 
 };

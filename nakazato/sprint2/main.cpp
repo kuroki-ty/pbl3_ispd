@@ -19,7 +19,7 @@ int main()
 //壁探索ループ
 	controller.create.run();
 	int counter = 0;
-	while(controller.create.distance < 5000 )	
+	while(controller.create.distance < 1000 )	
 	{
 //std::cout << counter<< " distance " << controller.create.distance << std::endl;
 //std::cout << getBumpsAndWheelDrops() << std::endl;
