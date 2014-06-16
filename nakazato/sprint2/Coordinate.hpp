@@ -25,86 +25,91 @@ enum Mark
 
 class Coordinate {
 public:
-  Coordinate(){
-    this->X = 0;
-    this->Y = 0;
-  }
-  Coordinate(float coord_x, float coord_y){
-    this->X = coord_x;
-    this->Y = coord_y;
-  }
+/***********************************
+**constracta
+************************************/
+	Coordinate(){
+		this->X = 0;
+		this->Y = 0;
+	}
+	Coordinate(float coord_x, float coord_y){
+		this->X = coord_x;
+		this->Y = coord_y;
+	}
 
-  void setCoordinate(float coord_x, float coord_y){
-    this->X = coord_x;
-    this->Y = coord_y;
-  }
-  float getX(){
-    return this->X;
-  }
-  float getY(){
-    return this->Y;
-  }
+/***********************************
+**set method
+************************************/
+	void setCoordinate(float coord_x, float coord_y){
+		this->X = coord_x;
+		this->Y = coord_y;
+	}
+	void setX(float x){
+		this->X = x;
+	}
+	void setY(float y){
+		this->Y = y;
+	}
+/***********************************
+**get method
+************************************/
+	float getX(){
+		return this->X;
+	}
+	float getY(){
+		return this->Y;
+	}
+/***********************************
+**operation of Cordinate
+************************************/
+	bool operator<(const Coordinate &coord) const{
+		return ( this->X < coord.X && this->Y < coord.Y);
+	}
 
-  /***********************************
-  **operation of Cordinate
-  ************************************/
-  bool operator<(const Coordinate &coord) const{
-    return ( this->X < coord.X && this->Y < coord.Y);
-  }
+	bool operator>(const Coordinate &coord) const{
+		return ( (this->X > coord.X) && (this->Y > coord.Y));
+	}
 
-  bool operator>(const Coordinate &coord) const{
-    return ( (this->X > coord.X) && (this->Y > coord.Y));
-  }
-
-  Coordinate & operator=(const Coordinate &coord){
-    this->X = coord.X;
-    this->Y = coord.Y;
-    return *this;
-  }
+	Coordinate & operator=(const Coordinate &coord){
+		this->X = coord.X;
+		this->Y = coord.Y;
+		return *this;
+	}
   
-  Coordinate operator+(Coordinate &coord1){
-    Coordinate coord2;
-    coord2.X = this->X + coord1.X;
-    coord2.X = this->X + coord1.X;
-    return coord2;
-  } 
+	Coordinate operator+(Coordinate &coord1){
+		Coordinate coord2;
+		coord2.X = this->X + coord1.X;
+		coord2.X = this->X + coord1.X;
+		return coord2;
+	} 
 
-  Coordinate &operator+=(const Coordinate &coord){
-    this->X += coord.X;
-    this->Y += coord.Y;
-    return *this;
-  }
+	Coordinate &operator+=(const Coordinate &coord){
+		this->X += coord.X;
+		this->Y += coord.Y;
+		return *this;
+	}
   
-  Coordinate operator-(Coordinate &coord1){
-    Coordinate coord2;
-    coord2.X = this->X - coord1.X;
-    coord2.X = this->X - coord1.X;
-    return coord2;
-  } 
+	Coordinate operator-(Coordinate &coord1){
+		Coordinate coord2;
+		coord2.X = this->X - coord1.X;
+		coord2.X = this->X - coord1.X;
+		return coord2;
+	} 
 
-  Coordinate &operator-=(const Coordinate &coord){
-    this->X -= coord.X;
-    this->Y -= coord.Y;
-    return *this;
-  }
+	Coordinate &operator-=(const Coordinate &coord){
+		this->X -= coord.X;
+		this->Y -= coord.Y;
+		return *this;
+	}
 
-  bool operator==(const Coordinate &coord)const{
-    return ((this->X == coord.X) && (this->Y == coord.Y));
-  }  
-
-
-
-  void setX(float x){
-      this->X = x;
-  }
-  void setY(float y){
-      this->Y = y;
-  }
+	bool operator==(const Coordinate &coord)const{
+		return ((this->X == coord.X) && (this->Y == coord.Y));
+	}  
 
 private:
-  float X;
-  float Y;
-  enum Mark mark;
+	float X;
+	float Y;
+	enum Mark mark;
 };
 
 /*****************************************************************************

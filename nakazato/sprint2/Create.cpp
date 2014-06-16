@@ -112,7 +112,7 @@ Coordinate Create::calcCurrentCoordinate()
 	}
 	else
 	{
-		int radius;	// 回転半径
+		float radius;	// 回転半径
 		if  (this->Right_Run) 
 		{
 			radius = RADIUS_RIGHT;
@@ -123,7 +123,7 @@ Coordinate Create::calcCurrentCoordinate()
 			radius = RADIUS_LEFT;
 			this->Left_Run = false;
 		}
-
+/*
 		angle_r = ( distance / radius ); //[rad]
 		tmp_x1 = radius * sin( angle_r + crt_angle_r);
 		tmp_x2 = radius * sin( crt_angle_r );
@@ -132,12 +132,18 @@ Coordinate Create::calcCurrentCoordinate()
 		tmp_y1 = 2 * radius * sin( ( angle_r + crt_angle_r ) / 2 ) * sin( ( angle_r + crt_angle_r ) / 2 );
 		tmp_y2 = 2 * radius * sin( crt_angle_r / 2 ) * sin( crt_angle_r / 2 );
 		tmp_y = tmp_y1 - tmp_y2;
+*/
+		angle_r = (float)( distance / radius ); //[rad]
+		tmp_x = 2 * radius * sin(angle_r/2) * cos(angle_r/2) * cos(crt_angle_r);
+		tmp_y = 2 * radius * sin(angle_r/2) * sin(angle_r/2) * sin(crt_angle_r);
+//std::cout << "(" << tmp_x << ", " << tmp_y << ")" << distance << ":" << radius << ":" << distance/radius << std::endl;
+
 	}
 
 	pri_x= this->current_coord.getX();	//map_point_list内の最新の座標を得る（前回記録した位置）
 	pri_y= this->current_coord.getY();
 
-	std::cout << "(" << pri_x << ", " << pri_y << ")" << std::endl;
+	std::cout << "(" << pri_x << ", " << pri_y << ")" << crt_angle_r * (180/M_PI) << ":"<< angle_r << std::endl;
 
 	this->updateCurrentCoordinateXY( pri_x + tmp_x, pri_y + tmp_y );	// Createの現在座標を更新
 

@@ -8,9 +8,8 @@ class Controller
 public:
 	Controller()
 	{
-		this->tracks.blockListInit();
 		this->create.setDirection(PLUS_X);
-		this->tracks.push_back_MapPointList(this->create.getCurrentCoordinate());
+		this->tracks.push_back_CreatePointList(this->create.getCurrentCoordinate());
 		this->wall_search_flag = true;
 
 		this->create.Straight_Run = false;
@@ -32,7 +31,7 @@ int getAngleFromCreate()
 // Createの座標を記録
 void recordCreateCoordinate( Coordinate coord )
 {
-	this->tracks.push_back_MapPointList( coord );	// world座標に記録
+	this->tracks.push_back_CreatePointList( coord );	// world座標に記録
 }
 
 void recordObstacleCoordinate( Coordinate coord )
@@ -40,15 +39,15 @@ void recordObstacleCoordinate( Coordinate coord )
 	this->tracks.push_back_ObstaclePointList( coord );
 }
 
-void output_MapList()
+void output_CreateList()
 {
-	std::vector<Coordinate> map_list;
-	map_list = this->tracks.getMapPointList();
+	std::vector<Coordinate> create_list;
+	create_list = this->tracks.getCreatePointList();
 
-	std::ofstream ofs("./output/map_list");
-	for(int i=0;i<this->tracks.getMapListSize();i++)
+	std::ofstream ofs("./output/create_list");
+	for(int i=0;i<this->tracks.getCreateListSize();i++)
 	{
-		ofs << i << "\t" << map_list[i].getX() << "\t" << map_list[i].getY() << std::endl;
+		ofs << i << "\t" << create_list[i].getX() << "\t" << create_list[i].getY() << std::endl;
 	}
 	ofs.close();
 }
@@ -59,7 +58,7 @@ void output_ObstacleList()
 	obstacle_list = this->tracks.getObstaclePointList();
 
 	std::ofstream ofs("./output/obstacle_list");
-	for(int i=0;i<this->tracks.getMapListSize();i++)
+	for(int i=0;i<this->tracks.getObstacleListSize();i++)
 	{
 		ofs << i << "\t" << obstacle_list[i].getX() << "\t" << obstacle_list[i].getY() << std::endl;
 	}

@@ -4,11 +4,11 @@
 /*****************************************************************************
  ** Define
  *****************************************************************************/
-#define VELOCITY 150			//直進速度[mm/s]
-#define RADIUS_LEFT  230		//左回り回転半径[mm]
-#define RADIUS_RIGHT 320		//右回り回転半径[mm]
-#define WALL_DISTANCE_LOW  200.0	//壁とCreateの距離_低[cm]
-#define WALL_DISTANCE_HIGH 300.0	//壁とCreateの距離_高[cm]
+#define VELOCITY 200			//直進速度[mm/s]
+#define RADIUS_LEFT  230.0		//左回り回転半径[mm]
+#define RADIUS_RIGHT 320.0		//右回り回転半径[mm]
+#define WALL_DISTANCE_LOW  150.0	//壁とCreateの距離_低[cm]
+#define WALL_DISTANCE_HIGH 200.0	//壁とCreateの距離_高[cm]
 
 #define CREATE_SIZE 340 // 縦 [mm]
 // 横330[mm]

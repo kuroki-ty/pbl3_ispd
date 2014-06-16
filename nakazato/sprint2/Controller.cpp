@@ -14,7 +14,7 @@ void Controller::checkState()
 		Coordinate pre_obstacle;
 
 		this->create.doNormalMode(create, obstacle, soner_distance);
-		this->tracks.push_back_MapPointList( create );	//createの現在座標を計算してプッシュバック
+		this->tracks.push_back_CreatePointList( create );	//createの現在座標を計算してプッシュバック
 		
 		// RECORD_OBSTACLE_TH 以上離れた障害物は記録しない
 		if(soner_distance < RECORD_OBSTACLE_TH)
@@ -31,7 +31,7 @@ void Controller::checkState()
 		// バンパーヒットモードに切り替え→現在座標とバンパーヒット位置を計算
 		this->create.doBumperHitMode(create, obstacle);
 		// 各座表の情報を渡す
-		this->tracks.push_back_MapPointList( create );	
+		this->tracks.push_back_CreatePointList( create );	
 		this->tracks.push_back_ObstaclePointList( obstacle );
 	}
 }

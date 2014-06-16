@@ -19,7 +19,7 @@ int main()
 //壁探索ループ
 	controller.create.run();
 	int counter = 0;
-	while(controller.create.distance < 1000 )	
+	while(controller.create.distance < 2000 )	
 	{
 //std::cout << counter<< " distance " << controller.create.distance << std::endl;
 //std::cout << getBumpsAndWheelDrops() << std::endl;
@@ -30,7 +30,7 @@ int main()
 	}
 
 std::cout << "count:" << counter << std::endl;
-std::cout << "map_list_size" << controller.tracks.getMapListSize() << std::endl;
+std::cout << "map_list_size" << controller.tracks.getCreateListSize() << std::endl;
 std::cout << "obstacle_list_size" << controller.tracks.getObstacleListSize() << std::endl;
 std::cout << "distance" << controller.create.distance << std::endl;
 
@@ -66,7 +66,7 @@ std::cout << "distance" << controller.create.distance << std::endl;
 
 	stopOI();
 
-controller.output_MapList();
+controller.output_CreateList();
 controller.output_ObstacleList();
 
 	return 0;

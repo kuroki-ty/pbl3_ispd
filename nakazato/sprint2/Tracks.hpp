@@ -9,16 +9,13 @@ class Tracks
 {
 public:
 	// コンストラクタ 座標とブロック数を初期化
-
-	// 地図のブロックの初期化
-	void blockListInit();
 	
 
 // set method
 	// createの座標リストをプッシュバック
-	void push_back_MapPointList(Coordinate coord)
+	void push_back_CreatePointList(Coordinate coord)
 	{
-		this->map_point_list.push_back( coord );
+		this->create_point_list.push_back( coord );
 	}
 
 	// 障害物の座標リストをプッシュバック
@@ -28,27 +25,27 @@ public:
 	}
 
 // get method
-	float getCurrentMapPoint_X()
+	float getCurrentCreatePoint_X()
 	{
 		Coordinate coord;
 		std::vector<Coordinate>::iterator iterator;
-		iterator = this->map_point_list.end();
+		iterator = this->create_point_list.end();
 		coord = *iterator;
 		return coord.getX();
 	}
-	float getCurrentMapPoint_Y()
+	float getCurrentCreatePoint_Y()
 	{
 		Coordinate coord;
 		std::vector<Coordinate>::iterator iterator;
-		iterator = this->map_point_list.end();
+		iterator = this->create_point_list.end();
 		coord = *iterator;
 		return coord.getY();
 	}
 
-	// map listの配列数を取得
-	int getMapListSize()
+	// create listの配列数を取得
+	int getCreateListSize()
 	{
-		return this->map_point_list.size();
+		return this->create_point_list.size();
 	}
 	// obstacle list の配列数を取得
 	int getObstacleListSize()
@@ -56,9 +53,9 @@ public:
 		return this->obstacle_point_list.size();
 	}
 
-std::vector<Coordinate> getMapPointList()
+std::vector<Coordinate> getCreatePointList()
 {
-	return this->map_point_list;
+	return this->create_point_list;
 }
 
 std::vector<Coordinate> getObstaclePointList()
@@ -69,21 +66,7 @@ std::vector<Coordinate> getObstaclePointList()
 
 private:
 //  Coordinate max;
-	std::vector< std::vector<Block> > block_list;	// 探索用メッシュ
-	std::vector<Coordinate> map_point_list;			// create座標リスト
+	std::vector<Coordinate> create_point_list;			// create座標リスト
 	std::vector<Coordinate> obstacle_point_list;	// （マップ生成用）障害物座標リスト
-
-//  std::vector< Block > wall_list;
-//  Block* current_block;
-// Block* next_block;
-//  std::queue<Block *> qu_path;
-// MapGraph mapgraph;
-//  double angle_to_next;
-//  double distance_to_next;
-//  std::queue<Block *> qu_obstacle;
-//  Block* next_obstacle;
-//  int flg_border;
-
 };
 
-#include "Tracks.cpp"
