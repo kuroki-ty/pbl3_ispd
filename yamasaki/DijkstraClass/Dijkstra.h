@@ -14,6 +14,7 @@
  *****************************************************************************/
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 /*****************************************************************************
  ** Define
@@ -23,7 +24,7 @@
 /*****************************************************************************
  ** enum
  *****************************************************************************/
-enum SearchMark
+enum DijkstraSearchMark
 {
     UNSEARCH,   //未探索
     SEARCHED    //障害物
@@ -32,11 +33,11 @@ enum SearchMark
 /*****************************************************************************
  ** Structure
  *****************************************************************************/
-struct Mesh{
+struct DijkstraMesh{
     int num;            //メッシュ番号
     int prev;           //直前のメッシュ番号
     int distance;       //スタートからそのノードに向かうまでの距離コスト
-    SearchMark mark;    //探索済みか否か判断するマーカー
+    DijkstraSearchMark mark;    //探索済みか否か判断するマーカー
 };
 
 /*****************************************************************************
@@ -45,7 +46,6 @@ struct Mesh{
 class Dijkstra{
 public:
     //メソッド
-    Dijkstra();    //コンストラクタ
     Dijkstra(int, int, int);    //コンストラクタ
     void useDijkstra();     //ダイクストラ法を使う
     
@@ -56,7 +56,7 @@ public:
     }
     
     //set Method
-    //Blockクラスのコスト情報をセットする *p:Blockクラスのcost配列の先頭ポインタ
+    //Blockクラスのコスト情報をセットする &p:Blockクラスのcost配列の先頭ポインタ
     void setCost(std::vector< std::vector<int> > &p)
     {
         for(int i=0; i<mesh_N; i++)
@@ -75,12 +75,12 @@ private:
     int next;   //次に向かうノード
     int min;    //現在の最短距離コスト
     int mesh_N; //メッシュ配列の要素数
-    std::vector<Mesh> mesh;
-    std::vector<int> route;
-    std::vector< std::vector<int> > cost;
+    std::vector<DijkstraMesh> mesh;         //メッシュ格納用配列
+    std::vector<int> route;                 //最短ルート格納用配列
+    std::vector< std::vector<int> > cost;   //ノードコスト格納用配列
     
     //メソッド
-    Mesh addFirstMesh(int, Mesh);    //メッシュの初期値をセットする
+    DijkstraMesh addFirstMesh(int, DijkstraMesh);    //メッシュの初期値をセットする
     int init();        //初期化を行う
     void searchRoute(); //経路探索を行う
     void writeRoute();   //最短経路をrouteに書き込む

@@ -11,17 +11,20 @@
 /*****************************************************************************
  ** Construtor
  *****************************************************************************/
-Dijkstra::Dijkstra(int s, int g, int m_N){
-    start = s;
-    goal = g;
-    mesh_N = m_N;
+Dijkstra::Dijkstra(int s, int g, int m_N)
+{
+    start = s;      //スタートノード決定
+    goal = g;       //ゴールノード決定
+    mesh_N = m_N;   //メッシュサイズ決定
     
+    //探索後のノード情報を格納する配列の初期設定
     for(int i=0; i<mesh_N; i++)
     {
-        Mesh tmp;
+        DijkstraMesh tmp;
         mesh.push_back(addFirstMesh(i, tmp));
     }
     
+    //ノードコストを格納する配列の初期設定
     std::vector<int> list;
     for(int i=0; i<mesh_N; i++)
     {
@@ -41,8 +44,10 @@ int Dijkstra::init()
 {
     return 0;
 }
-    
-Mesh Dijkstra::addFirstMesh(int num, Mesh tmp)
+
+/*vectorで動的配列を作成するためのメソッド
+構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
+DijkstraMesh Dijkstra::addFirstMesh(int num, DijkstraMesh tmp)
 {
     tmp.num = num;
     tmp.prev = init();
@@ -52,6 +57,7 @@ Mesh Dijkstra::addFirstMesh(int num, Mesh tmp)
     return tmp;
 }
 
+//ダイクストラ法でルートを探索するメソッド
 void Dijkstra::searchRoute()
 {
 	mesh[start].distance = 0;
@@ -83,31 +89,25 @@ void Dijkstra::searchRoute()
 	}while(min < COST_MAX);
 }
 
+/*メッシュ配列に格納されている経路情報から最短ルートのみを抽出するためのメソッド
+ 最短経路はroute配列に格納される*/
 void Dijkstra::writeRoute()
 {
-    std::vector<int> tmp;
-    for(int i=0; i<mesh_N; i++)
-    {
-        tmp.push_back(0);
-    }
+    int tmp;                        //ルートノードを一時格納する変数
+    int pri_tmp = mesh[goal].num;   //直前ノードを一時格納する変数
+    route.push_back(pri_tmp);
     
-    int count = 0;
-    tmp[count] = mesh[goal].num;
-    do
+    //ルートノードがstartノードになるまでループ
+    while(tmp != start)
     {
-        tmp[count+1] = mesh[tmp[count]].prev;
-        count++;
-    }while(tmp[count-1] != start);
-    
-    for(int i=0; i<count; i++)
-    {
-        route.push_back(0);
+        tmp = mesh[pri_tmp].prev;
+        pri_tmp = tmp;
+        route.push_back(tmp);
     }
 
-	for(int i=0; i<count; i++)
-    {
-        route[i] = tmp[count-i-1];
-    }
+    
+    std::reverse(route.begin(), route.end());   //route配列の順序入れ替え
+    
 }
 
 void Dijkstra::useDijkstra()

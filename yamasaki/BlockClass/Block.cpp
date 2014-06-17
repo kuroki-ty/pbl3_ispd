@@ -32,13 +32,13 @@ Block::Block()
     }
     
     //メッシュ配列の初期設定
-    std::vector<DijkstraMesh> list_b;
+    std::vector<Mesh> list_b;
     int count = 0;
     for(int i=0; i<total_block_y; i++)
     {
         for(int j=0; j<total_block_x; j++)
         {
-            DijkstraMesh tmp;
+            Mesh tmp;
             list_b.push_back(addFirstBlock(i, j, count, tmp));
             count++;
         }
@@ -53,7 +53,9 @@ Block::Block()
     }
 }
 
-DijkstraMesh Block::addFirstBlock(int y, int x, int count, DijkstraMesh tmp)
+/*vectorで動的配列を作成するためのメソッド
+ 構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
+Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
 {
     tmp.num = count;
     tmp.mark = UNKNOWN;
@@ -63,11 +65,13 @@ DijkstraMesh Block::addFirstBlock(int y, int x, int count, DijkstraMesh tmp)
     return tmp;
 }
 
+//ノード間コストを決定するためのメソッド
 void Block::addCost(int num, IRobotDirecton direction)
 {
-    current_mesh_num = num;
-    current_create_direction = direction;
+    current_mesh_num = num;                 //Createの現在位置のメッシュ番号
+    current_create_direction = direction;   //Createの現在方向
     
+    //隣り合うノード間はCOST_BIG，斜めに位置するノード間はCOST_MAX
     for(int i=0; i<total_block_x*total_block_y; i++)
     {
         for(int j=0; j<total_block_x*total_block_y; j++)
@@ -87,6 +91,7 @@ void Block::addCost(int num, IRobotDirecton direction)
         }
     }
     
+    //Createの向いている方向は回転なしで移動できるため，移動コストを最小にする
     switch(current_create_direction){
         case UP:
             for(int i=current_mesh_num; (i%total_block_x)!=total_block_x-1; i++)
@@ -121,6 +126,7 @@ void Block::addCost(int num, IRobotDirecton direction)
     }    
 }
 
+//ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
 void Block::calcRoute(int x, int y, IRobotDirecton direction, int goal)
 {
     int start;
@@ -132,13 +138,6 @@ void Block::calcRoute(int x, int y, IRobotDirecton direction, int goal)
     dijkstra.setCost(cost);
     dijkstra.useDijkstra();
     route = dijkstra.getRoute();
-    
-    /*ここ，getRoute的なやつでControllerクラスに投げる仕様にする*/
-    std::cout << "点" << std::endl;
-	for(int i=0; i<total_block_x*total_block_y; i++)
-    {
-        std::cout << route[i] << std::endl;
-    }
 }
 
 //後から実装する．とりあえず0を返す．

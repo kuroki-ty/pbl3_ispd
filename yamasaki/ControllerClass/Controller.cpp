@@ -11,8 +11,17 @@
 
 int main(){
     
+    std::vector<int> route;
+    
     Block block;
-    block.calcRoute(0, 0, UP, 6);
+    block.calcRoute(0, 0, UP, 40);
+    route = block.getRouteCoordinate();
+    
+    std::cout << "点" << std::endl;
+	for(int i=0; i<route.size(); i++)
+    {
+        std::cout << route[i] << std::endl;
+    }
     
     return 0;
 }

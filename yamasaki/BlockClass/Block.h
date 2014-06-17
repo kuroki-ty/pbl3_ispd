@@ -30,7 +30,7 @@
  ** enum
  *****************************************************************************/
 //フィールドのマーク情報
-enum DijkstraSearchMark
+enum SearchMark
 {
     UNKNOWN,   //未探索
     BLANK,     //空白(探索済)
@@ -48,11 +48,11 @@ enum IRobotDirecton
 /*****************************************************************************
  ** Structure
  *****************************************************************************/
-struct DijkstraMesh{
+struct Mesh{
     int num;            //メッシュ番号
     float center_x;     //メッシュの中心x座標
     float center_y;     //メッシュの中心y座標
-    DijkstraSearchMark mark;    //フィールドの探索情報を入れるマーカー
+    SearchMark mark;    //フィールドの探索情報を入れるマーカー
 };
 
 /*****************************************************************************
@@ -64,9 +64,12 @@ public:
     Block();   //コンストラクタ
     void calcRoute(int, int, IRobotDirecton, int);   //Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
     
-    /*いずれはprivateに突っ込む*/
-    void addCost(int, IRobotDirecton);     //ノード間の重み付けを行う
-    int meshNumToCurrentPosition(float, float);     //Createの現在座標からメッシュ番号に変換する
+    //get method
+    //最短経路の座標情報を返す
+    std::vector<int> getRouteCoordinate()
+    {
+        return (route);
+    }
     
 private:
     //変数
@@ -78,10 +81,12 @@ private:
     IRobotDirecton current_create_direction;    //現在のCreateの方向
     std::vector<int> route;     //Dijkstraクラスで計算したルートを格納するための配列
     std::vector< std::vector<int> > cost;    //メッシュ間の移動コスト
-    std::vector< std::vector<DijkstraMesh> > block;  //メッシュ情報
+    std::vector< std::vector<Mesh> > block;  //メッシュ情報
     
     //メソッド
-    DijkstraMesh addFirstBlock(int, int, int, DijkstraMesh);    //メッシュの初期値をセットする
+    Mesh addFirstBlock(int, int, int, Mesh);    //メッシュの初期値をセットする
+    void addCost(int, IRobotDirecton);     //ノード間の重み付けを行う
+    int meshNumToCurrentPosition(float, float);     //Createの現在座標からメッシュ番号に変換する
     
 };
 
