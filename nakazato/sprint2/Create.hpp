@@ -73,9 +73,10 @@ public:
 	// 超音波センサを使って直進
 	void goStraightWithSoner();
 
-	// とにかく走らせる
+	// 走らせる（超音波センサ使用）
 	void run();
 
+	// 止まる
 	void stopRun()
 	{
 		drive(0,0);
@@ -113,13 +114,13 @@ public:
 		this->current_direction = d;
 	}
 
-	// Createの角度を加える
+	// Createの角度を更新
 	void addAngle(int angle)
 	{
 		this->total_angle += angle;
 		this->total_angle = this->total_angle % 360;
 	}
-
+	// createの走行距離を更新
 	void addDistance(int distance)
 	{
 		this->distance +=distance;

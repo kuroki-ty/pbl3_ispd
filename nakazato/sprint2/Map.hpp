@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include "Coordinate.hpp"
-#include "Block.hpp"
 
 #define MAX_COORD_SIZE 29.4 //[m] block lenghが0.35[m]なので合計84ブロックになる
 
