@@ -127,7 +127,7 @@ void Block::addCost(int num, IRobotDirecton direction)
 }
 
 //ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
-void Block::calcRoute(int x, int y, IRobotDirecton direction, int goal)
+void Block::calcRoute(float x, float y, IRobotDirecton direction, int goal)
 {
     int start;
     
@@ -140,10 +140,33 @@ void Block::calcRoute(int x, int y, IRobotDirecton direction, int goal)
     route = dijkstra.getRoute();
 }
 
-//後から実装する．とりあえず0を返す．
-int Block::meshNumToCurrentPosition(float x, float y){
+//現在位置座標をメッシュ番号に変換するメソッド
+int Block::meshNumToCurrentPosition(float x, float y)
+{
+    int node_num_x = 0;     //x軸のノード番号
+    int node_num_y = 0;     //y軸のノード番号
     
-    return 0;
+    //x軸のノード番号を求める
+    for(int i=0; i<total_block_x; i++)
+    {
+        if((x >= (float)(i*block_x)) && (x < (float)((i+1)*block_x)))
+        {
+            node_num_x = i;
+            break;
+        }
+    }
+    
+    //y軸のノード番号を求める
+    for(int i=0; i<total_block_y; i++)
+    {
+        if((y >= (float)(i*block_y)) && (y < (float)((i+1)*block_y)))
+        {
+            node_num_y = i;
+            break;
+        }
+    }
+    
+    return ((node_num_y*total_block_x)+node_num_x);
 }
 
 /*****************************************************************************
