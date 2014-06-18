@@ -58,7 +58,7 @@ Block::Block()
 Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
 {
     tmp.num = count;
-    tmp.mark = UNKNOWN;
+    tmp.mark = PASSABLE;
     tmp.center_x = x*block_x+block_x/2.0;
     tmp.center_y = y*block_y+block_y/2.0;
     
@@ -70,6 +70,18 @@ void Block::addCost(int num, IRobotDirecton direction)
 {
     current_mesh_num = num;                 //Createの現在位置のメッシュ番号
     current_create_direction = direction;   //Createの現在方向
+    
+    //コスト配列を初期化する
+    std::vector<int> list_c;
+    for(int i=0; i<total_block_x*total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x*total_block_y; j++)
+        {
+            list_c.push_back(COST_MAX);
+        }
+        cost.push_back(list_c);
+        list_c.clear();
+    }
     
     //隣り合うノード間はCOST_BIG，斜めに位置するノード間はCOST_MAX
     for(int i=0; i<total_block_x*total_block_y; i++)
@@ -123,7 +135,82 @@ void Block::addCost(int num, IRobotDirecton direction)
         
         default:
             break;
-    }    
+    }
+    
+    //障害物があるノードの上下左右のコストをCOST_MAXにする
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x; j++)
+        {
+            if(block[i][j].mark == IMPASSABLE)
+            {
+                //メッシュ最下列時の処理
+                if(block[i][j].num < total_block_x)
+                {
+                    //メッシュ番号が0の時の処理
+                    if(block[i][j].num == 0)
+                    {
+                        //通行不可ノード→周辺ノードのコストを更新
+                        cost[block[i][j].num][block[i][j].num+total_block_x] = COST_MAX;    //上
+                        cost[block[i][j].num][block[i][j].num+1] = COST_MAX;    //右
+                        //周辺ノード→通行不可ノードのコストを更新
+                        cost[block[i][j].num+total_block_x][block[i][j].num] = COST_MAX;    //上
+                        cost[block[i][j].num+1][block[i][j].num] = COST_MAX;    //右
+                    }
+                    else
+                    {
+                        //通行不可ノード→周辺ノードのコストを更新
+                        cost[block[i][j].num][block[i][j].num+total_block_x] = COST_MAX;    //上
+                        cost[block[i][j].num][block[i][j].num+1] = COST_MAX;    //右
+                        cost[block[i][j].num][block[i][j].num-1] = COST_MAX;    //左
+                        //周辺ノード→通行不可ノードのコストを更新
+                        cost[block[i][j].num+total_block_x][block[i][j].num] = COST_MAX;    //上
+                        cost[block[i][j].num+1][block[i][j].num] = COST_MAX;    //右
+                        cost[block[i][j].num-1][block[i][j].num] = COST_MAX;    //左
+                    }
+                }
+                //メッシュ最上列時の処理
+                else if(block[i][j].num >= total_block_x*total_block_y-total_block_x)
+                {
+                    //メッシュ番号が最大の時の処理
+                    if(block[i][j].num == total_block_x*total_block_y-1)
+                    {
+                        //通行不可ノード→周辺ノードのコストを更新
+                        cost[block[i][j].num][block[i][j].num-total_block_x] = COST_MAX;    //下
+                        cost[block[i][j].num][block[i][j].num-1] = COST_MAX;    //左
+                        //周辺ノード→通行不可ノードのコストを更新
+                        cost[block[i][j].num-total_block_x][block[i][j].num] = COST_MAX;    //下
+                        cost[block[i][j].num-1][block[i][j].num] = COST_MAX;    //左
+                    }
+                    else
+                    {
+                        //通行不可ノード→周辺ノードのコストを更新
+                        cost[block[i][j].num][block[i][j].num-total_block_x] = COST_MAX;    //下
+                        cost[block[i][j].num][block[i][j].num+1] = COST_MAX;    //右
+                        cost[block[i][j].num][block[i][j].num-1] = COST_MAX;    //左
+                        //周辺ノード→通行不可ノードのコストを更新
+                        cost[block[i][j].num-total_block_x][block[i][j].num] = COST_MAX;    //下
+                        cost[block[i][j].num+1][block[i][j].num] = COST_MAX;    //右
+                        cost[block[i][j].num-1][block[i][j].num] = COST_MAX;    //左
+                    }
+                }
+                //その他メッシュ列時の処理
+                else
+                {
+                    //通行不可ノード→周辺ノードのコストを更新
+                    cost[block[i][j].num][block[i][j].num+total_block_x] = COST_MAX;    //上
+                    cost[block[i][j].num][block[i][j].num-total_block_x] = COST_MAX;    //下
+                    cost[block[i][j].num][block[i][j].num+1] = COST_MAX;    //右
+                    cost[block[i][j].num][block[i][j].num-1] = COST_MAX;    //左
+                    //周辺ノード→通行不可ノードのコストを更新
+                    cost[block[i][j].num+total_block_x][block[i][j].num] = COST_MAX;    //上
+                    cost[block[i][j].num-total_block_x][block[i][j].num] = COST_MAX;    //下
+                    cost[block[i][j].num+1][block[i][j].num] = COST_MAX;    //右
+                    cost[block[i][j].num-1][block[i][j].num] = COST_MAX;    //左
+                }
+            }
+        }
+    }
 }
 
 //ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
