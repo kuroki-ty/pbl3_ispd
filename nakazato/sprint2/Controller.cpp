@@ -7,6 +7,8 @@ void Controller::checkState()
 	Coordinate create;
 	Coordinate obstacle;
 
+	// if(wall探索) wall探索フラグをfalseにする処理を入れる
+
 	// 状態=RUN 	且つ バンパセンサ反応無し → 現在座標、超音波センサの観測座標を記録
 	if(this->create.state == RUN && getBumpsAndWheelDrops() == 0)
 	{
@@ -33,7 +35,12 @@ void Controller::checkState()
 		// 各座表の情報を渡す
 		this->tracks.push_back_CreatePointList( create );	
 		this->tracks.push_back_ObstaclePointList( obstacle );
+		// blockに登録
+
 	}
+
+	//else 障害物探索
+
 }
 
 
