@@ -22,8 +22,8 @@
 #define     COST_LITTLE 1       //移動コスト小
 #define     COST_BIG    2       //移動コスト大
 #define		COST_MAX	999     //仮無限値
-#define     FIERD_X     2000.0  //フィールドの横の長さ[mm](x座標)
-#define     FIELD_Y     2000.0  //フィールドの縦の長さ[mm](y座標)
+#define     FIERD_X     1320.0  //フィールドの横の長さ[mm](x座標)
+#define     FIELD_Y     990.0  //フィールドの縦の長さ[mm](y座標)
 #define     IROBOT_D    330     //iRobotCreateの直径[mm] 330
 
 /*****************************************************************************
@@ -32,9 +32,8 @@
 //フィールドのマーク情報
 enum SearchMark
 {
-    UNKNOWN,   //未探索
-    BLANK,     //空白(探索済)
-    OBSTACLE   //障害物(探索済)
+    PASSABLE,   //通れる
+    IMPASSABLE  //通れない
 };
 
 enum IRobotDirecton
@@ -62,13 +61,23 @@ class Block{
 public:
     //メソッド
     Block();   //コンストラクタ
-    void calcRoute(int, int, IRobotDirecton, int);   //Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
+    void calcRoute(float, float, IRobotDirecton, int);   //Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
     
     //get method
     //最短経路の座標情報を返す
-    std::vector<int> getRouteCoordinate()
+    std::vector<int> getMovePointList()
     {
         return (route);
+    }
+    
+    //set method
+    //障害物があるメッシュにIMPASSABLE情報をセットする
+    void setMeshImpassable(float x, float y)
+    {
+        int num;
+        
+        num = meshNumToCurrentPosition(x, y);
+        block[num/total_block_x][num%total_block_x].mark = IMPASSABLE;
     }
     
 private:
@@ -85,7 +94,7 @@ private:
     
     //メソッド
     Mesh addFirstBlock(int, int, int, Mesh);    //メッシュの初期値をセットする
-    void addCost(int, IRobotDirecton);     //ノード間の重み付けを行う
+    void addCost(int, IRobotDirecton);          //ノード間の重み付けを行う
     int meshNumToCurrentPosition(float, float);     //Createの現在座標からメッシュ番号に変換する
     
 };

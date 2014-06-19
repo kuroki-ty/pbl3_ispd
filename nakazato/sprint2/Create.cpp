@@ -66,8 +66,6 @@ void Create::changeDirection()
 		turn_angle = 90;
 		this->push_bumper == NONE;
 	}
-
-
 // turnangleの誤差考慮
 //std::cout << "turn_angle : " << turn_angle << std::endl;
 	this->total_angle += this->getAngleFromCreate();
@@ -123,16 +121,7 @@ Coordinate Create::calcCurrentCoordinate()
 			radius = RADIUS_LEFT;
 			this->Left_Run = false;
 		}
-/*
-		angle_r = ( distance / radius ); //[rad]
-		tmp_x1 = radius * sin( angle_r + crt_angle_r);
-		tmp_x2 = radius * sin( crt_angle_r );
-		tmp_x = tmp_x1 - tmp_x2;
 
-		tmp_y1 = 2 * radius * sin( ( angle_r + crt_angle_r ) / 2 ) * sin( ( angle_r + crt_angle_r ) / 2 );
-		tmp_y2 = 2 * radius * sin( crt_angle_r / 2 ) * sin( crt_angle_r / 2 );
-		tmp_y = tmp_y1 - tmp_y2;
-*/
 		angle_r = (float)( distance / radius ); //[rad]
 		tmp_x = 2 * radius * sin(angle_r/2) * cos(angle_r/2) * cos(crt_angle_r);
 		tmp_y = 2 * radius * sin(angle_r/2) * sin(angle_r/2) * sin(crt_angle_r);
@@ -140,8 +129,8 @@ Coordinate Create::calcCurrentCoordinate()
 
 	}
 
-	pri_x= this->current_coord.getX();	//map_point_list内の最新の座標を得る（前回記録した位置）
-	pri_y= this->current_coord.getY();
+	pri_x= this->current_coord.x;	//map_point_list内の最新の座標を得る（前回記録した位置）
+	pri_y= this->current_coord.y;
 
 	std::cout << "(" << pri_x << ", " << pri_y << ")" << crt_angle_r * (180/M_PI) << ":"<< angle_r << std::endl;
 
@@ -197,8 +186,8 @@ Coordinate Create::calcCurrentCoordinate(int distance, int angle)
 		tmp_y = tmp_y1 - tmp_y2;
 	}
 
-	pri_x= this->current_coord.getX();	//map_point_list内の最新の座標を得る（前回記録した位置）
-	pri_y= this->current_coord.getY();
+	pri_x= this->current_coord.x;	//map_point_list内の最新の座標を得る（前回記録した位置）
+	pri_y= this->current_coord.y;
 
 	this->updateCurrentCoordinateXY( pri_x + tmp_x, pri_y + tmp_y );	// Createの現在座標を更新
 
@@ -218,16 +207,16 @@ Coordinate Create::calcSonerHitPointCoordinate(float soner_distance)
 	Coordinate obstacle_coord;
 	Coordinate create_coord;
 	create_coord = this->getCurrentCoordinate();
-	float create_x = create_coord.getX();
-	float create_y = create_coord.getY();
+	float create_x = create_coord.x;
+	float create_y = create_coord.y;
 
 	int create_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
 
 	float obstacle_x = create_x + SONEROFFSET_X * cos(create_angle_r) + soner_distance * cos(create_angle_r + SONEROFFSET_ANGLE);
 	float obstacle_y = create_y + SONEROFFSET_X * sin(create_angle_r) + soner_distance * sin(create_angle_r + SONEROFFSET_ANGLE); 
 
-	obstacle_coord.setX(obstacle_x);
-	obstacle_coord.setY(obstacle_y);
+	obstacle_coord.x = obstacle_x;
+	obstacle_coord.y = obstacle_y;
 
 	return obstacle_coord;
 
@@ -239,8 +228,8 @@ Coordinate Create::calcBumperHitPointCoordinate()
 	Coordinate create_coord;
 	create_coord = this->getCurrentCoordinate();
 	float create_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
-	float create_x = create_coord.getX();
-	float create_y = create_coord.getY();
+	float create_x = create_coord.x;
+	float create_y = create_coord.y;
 	float obstacle_x, obstacle_y;
 
 	// 右バンパが押された場合
@@ -264,8 +253,8 @@ Coordinate Create::calcBumperHitPointCoordinate()
 		obstacle_y = create_y + BUMPER_PLACE_OFFSET * cos(create_angle_r);
 		this->push_bumper = CENTER;	
 	}
-	obstacle_coord.setX(obstacle_x);
-	obstacle_coord.setY(obstacle_y);
+	obstacle_coord.x = obstacle_x;
+	obstacle_coord.y = obstacle_y;
 
 	return obstacle_coord;
 
@@ -304,3 +293,29 @@ void Create::doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner
 		this->run();
 
 }
+/*
+*	runAlongPointList( ムーブポイントのリスト )
+*
+*
+*
+*/
+void Create::runAlongPointList(std::vector<Coordinate> move_point_list)
+{
+	for(int i=0;i<move_point_list.size();i++)
+	{
+		// 進む方向を計算（現在座標、現在の角度、次の座標、）→出力 回転角
+		// 進む距離を計算（現在座標、次の座標）→出力 距離
+		float dist_x = move_point_list[i].x - this->current_coord.x;
+		float dist_y = move_point_list[i].y - this->current_coord.y;
+		float distance = sqrt( dist_x*dist_x + dist_y*dist_y );
+		float angle = acos(dist_x / distance);
+		float direction_angle = this->total_angle * ( M_PI/180.0 ) + angle;
+
+		// 回転
+		turn(VELOCITY,1,direction_angle,0);
+		// 直進→障害物に当たった時の処理を加える
+		this->runSearchObstacle(distance);
+	}
+
+}
+

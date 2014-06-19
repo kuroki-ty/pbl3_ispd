@@ -1,10 +1,10 @@
 #include <iostream>
 #include <vector>
-#include "Coordinate.hpp"
+#include "Coordinate.h"
 
 #define MAX_COORD_SIZE 29.4 //[m] block lenghが0.35[m]なので合計84ブロックになる
 
-class Tracks
+class Map
 {
 public:
 	// コンストラクタ 座標とブロック数を初期化
@@ -30,7 +30,7 @@ public:
 		std::vector<Coordinate>::iterator iterator;
 		iterator = this->create_point_list.end();
 		coord = *iterator;
-		return coord.getX();
+		return coord.x;
 	}
 	float getCurrentCreatePoint_Y()
 	{
@@ -38,7 +38,7 @@ public:
 		std::vector<Coordinate>::iterator iterator;
 		iterator = this->create_point_list.end();
 		coord = *iterator;
-		return coord.getY();
+		return coord.y;
 	}
 
 	// create listの配列数を取得

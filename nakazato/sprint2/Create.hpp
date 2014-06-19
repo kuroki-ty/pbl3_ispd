@@ -107,6 +107,9 @@ public:
 	float getDistanceBySoner();
 
 
+	void runAlongPointList(std::vector<Coordinate> map_point_list);
+
+
 
 // set method
 	void setDirection(enum Direction d)
@@ -129,8 +132,8 @@ public:
 	// 現在座標の値を更新
 	void updateCurrentCoordinateXY(float X, float Y)
 	{
-		this->current_coord.setX(X);
-		this->current_coord.setY(Y);
+		this->current_coord.x = X;
+		this->current_coord.y = Y;
 	}
 
 

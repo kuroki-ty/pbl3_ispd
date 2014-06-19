@@ -30,8 +30,8 @@ int main()
 	}
 
 std::cout << "count:" << counter << std::endl;
-std::cout << "map_list_size" << controller.tracks.getCreateListSize() << std::endl;
-std::cout << "obstacle_list_size" << controller.tracks.getObstacleListSize() << std::endl;
+std::cout << "map_list_size" << controller.map.getCreateListSize() << std::endl;
+std::cout << "obstacle_list_size" << controller.map.getObstacleListSize() << std::endl;
 std::cout << "distance" << controller.create.distance << std::endl;
 
 	// Create発進
