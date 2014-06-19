@@ -21,7 +21,7 @@ int main(){
     
     obs_position.x = 4500.0;
     obs_position.y = 4500.0;
-    block.setMeshMark(obs_position, false);
+    block.setMeshMark(obs_position, true);
     
     block.setMeshMark(current_position, false);
     
