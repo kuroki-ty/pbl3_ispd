@@ -23,9 +23,9 @@
 #define     COST_LITTLE 1       //移動コスト小
 #define     COST_BIG    2       //移動コスト大
 #define		COST_MAX	999     //仮無限値
-#define     FIERD_X     1320.0  //フィールドの横の長さ[mm](x座標)
-#define     FIELD_Y     990.0  //フィールドの縦の長さ[mm](y座標)
-#define     IROBOT_D    330     //iRobotCreateの直径[mm] 330
+#define     FIERD_X     300.0  //フィールドの横の長さ[mm](x座標)
+#define     FIELD_Y     300.0  //フィールドの縦の長さ[mm](y座標)
+#define     IROBOT_D    100     //iRobotCreateの直径[mm] 330
 
 /*****************************************************************************
  ** enum
@@ -62,15 +62,12 @@ class Block{
 public:
     //メソッド
     Block();   //コンストラクタ
-    void calcRoute(Coordinate, IRobotDirecton, int);   //Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
     void showMesh();    //メッシュの探索情報を表示させる
     
     //get method
-    //最短経路の座標情報を返す
-    std::vector<int> getMovePointList()
-    {
-        return (route);
-    }
+    /*Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
+    　探索ルートの座標値をリストにして返す(長いので処理はBlock.cpp内に書く)*/
+    std::vector<Coordinate> getMovePointList(Coordinate, IRobotDirecton, int);
     
     //set method
     //障害物があるメッシュにPASSABLE or IMPASSABLE情報をセットする
@@ -93,11 +90,14 @@ private:
     std::vector<int> route;     //Dijkstraクラスで計算したルートを格納するための配列
     std::vector< std::vector<int> > cost;    //メッシュ間の移動コスト
     std::vector< std::vector<Mesh> > block;  //メッシュ情報
+    std::vector<Coordinate> movePointList;  //探索ルートの座標情報を格納するための配列
     
     //メソッド
     Mesh addFirstBlock(int, int, int, Mesh);    //メッシュの初期値をセットする
     void addCost(int, IRobotDirecton);          //ノード間の重み付けを行う
     int meshNumToCurrentPosition(Coordinate);     //Createの現在座標からメッシュ番号に変換する
+    std::vector<Coordinate> routeCoordinateToRouteMeshNum(std::vector<int>);  //ルートのメッシュ番号を座標値に変換する
+
     
 };
 

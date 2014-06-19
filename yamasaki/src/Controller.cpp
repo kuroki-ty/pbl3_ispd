@@ -11,7 +11,7 @@
 
 int main(){
     
-    std::vector<int> route;
+    std::vector<Coordinate> moveList;
     
     Block block;
     Coordinate current_position, obs_position;
@@ -19,29 +19,31 @@ int main(){
     current_position.x = 0.0;
     current_position.y = 0.0;
     
-    block.calcRoute(current_position, UP, 1);
-    route = block.getMovePointList();
+    moveList = block.getMovePointList(current_position, UP, 1);
     
-    std::cout << "点" << std::endl;
-	for(int i=0; i<route.size(); i++)
+    std::cout << "探索ルート" << std::endl;
+	for(int i=0; i<moveList.size(); i++)
     {
-        std::cout << route[i] << std::endl;
+        std::cout << "(" << moveList[i].x << "," << moveList[i].y << ")" << std::endl;
     }
     
-    obs_position.x = 660.0;
-    obs_position.y = 0.0;
-    current_position.x = 330.0;
-    current_position.y = 0.0;
+    block.showMesh();
+    
+    obs_position.x = 250.0;
+    obs_position.y = 50.0;
+    current_position.x = 150.0;
+    current_position.y = 50.0;
     
     block.setMeshMark(obs_position, IMPASSABLE);
-    block.calcRoute(current_position, UP, 3);
-    route = block.getMovePointList();
+    moveList = block.getMovePointList(current_position, UP, 8);
     
-    std::cout << "点" << std::endl;
-	for(int i=0; i<route.size(); i++)
+    std::cout << "探索ルート" << std::endl;
+	for(int i=0; i<moveList.size(); i++)
     {
-        std::cout << route[i] << std::endl;
+        std::cout << "(" << moveList[i].x << "," << moveList[i].y << ")" << std::endl;
     }
+    
+    block.showMesh();
     
     return 0;
 }

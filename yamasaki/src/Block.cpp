@@ -213,20 +213,6 @@ void Block::addCost(int num, IRobotDirecton direction)
     }
 }
 
-//ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
-void Block::calcRoute(Coordinate coord, IRobotDirecton direction, int goal)
-{
-    int start;
-    
-    start = meshNumToCurrentPosition(coord);
-    addCost(start, direction);
-    
-    Dijkstra dijkstra(start, goal, total_block_x*total_block_y);
-    dijkstra.setCost(cost);
-    dijkstra.useDijkstra();
-    route = dijkstra.getRoute();
-}
-
 //現在位置座標をメッシュ番号に変換するメソッド
 int Block::meshNumToCurrentPosition(Coordinate coord)
 {
@@ -256,11 +242,14 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     return ((node_num_y*total_block_x)+node_num_x);
 }
 
+//現在のメッシュ探索状況を表示するメソッド
 void Block::showMesh()
 {
+    std::cout << "/********現在のメッシュ探索状況********/" << std::endl;
+    
     for(int i=total_block_y-1; i>=0; i--)
     {
-        for(int j=total_block_x-1; j>=0; j--)
+        for(int j=0; j<total_block_x; j++)
         {
             if(block[i][j].mark == UNKNOWN)
             {
@@ -277,6 +266,40 @@ void Block::showMesh()
         }
         std::cout << std::endl;
     }
+    
+    std::cout << "/*********************************/" << std::endl;
+    
+}
+
+//ルートのメッシュ番号を座標値に変換するメソッド
+std::vector<Coordinate> Block::routeCoordinateToRouteMeshNum(std::vector<int> route_mesh_num){
+    
+    std::vector<Coordinate> route_coord;
+    
+    for(int i=0; i<route_mesh_num.size(); i++)
+    {
+        route_coord.push_back(block[route_mesh_num[i]/total_block_x][route_mesh_num[i]%total_block_x].center);
+    }
+    
+    return (route_coord);
+}
+
+//ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
+std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirecton direction, int goal)
+{
+    int start;
+    
+    start = meshNumToCurrentPosition(coord);
+    addCost(start, direction);
+    
+    Dijkstra dijkstra(start, goal, total_block_x*total_block_y);
+    dijkstra.setCost(cost);
+    dijkstra.useDijkstra();
+    route = dijkstra.getRoute();
+    
+    movePointList = routeCoordinateToRouteMeshNum(route);
+    
+    return (movePointList);
 }
 
 /*****************************************************************************
