@@ -302,6 +302,24 @@ std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirecton
     return (movePointList);
 }
 
+//壁探索時にCreateがスタートノードまで戻ってきたかどうか判定するメソッド
+bool Block::isStartMesh(Coordinate start, Coordinate current_pos)
+{
+    int start_num;          //スタートノード番号
+    int current_pos_num;    //現在位置のノード番号
+    
+     //座標値をノード番号に変換
+    start_num = meshNumToCurrentPosition(start);
+    current_pos_num = meshNumToCurrentPosition(current_pos);
+    
+    if(start_num != current_pos_num)
+    {
+        return (false);     //スタートノードに戻ってない場合はfalse
+    }
+    else
+        return (true);      //スタートノードに戻ってきた場合はtrue
+}
+
 /*****************************************************************************
  ** TestMain
 

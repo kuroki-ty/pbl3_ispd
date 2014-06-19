@@ -62,6 +62,7 @@ class Block{
 public:
     //メソッド
     Block();   //コンストラクタ
+    bool isStartMesh(Coordinate, Coordinate);   //壁探索時にスタート位置まで戻ってきたかどうかを判定
     void showMesh();    //メッシュの探索情報を表示させる
     
     //get method
