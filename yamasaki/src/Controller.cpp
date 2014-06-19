@@ -19,6 +19,34 @@ int main(){
     current_position.x = 0.0;
     current_position.y = 0.0;
     
+    obs_position.x = 4500.0;
+    obs_position.y = 4500.0;
+    block.setMeshMark(obs_position, IMPASSABLE);
+    
+    block.setMeshMark(current_position, PASSABLE);
+    
+    while(block.checkAllSearchEnd())
+    {
+        moveList = block.getMovePointList(current_position, UP, block.getNextMeshNum());
+        
+        for(int i=0; i<moveList.size(); i++)
+        {
+            current_position.x = moveList[i].x;
+            current_position.y = moveList[i].y;
+            
+            block.setMeshMark(current_position, PASSABLE);
+        }
+        
+        block.showMesh();
+    }
+    
+    
+    
+    
+/*
+    current_position.x = 0.0;
+    current_position.y = 0.0;
+    
     moveList = block.getMovePointList(current_position, UP, 1);
     
     std::cout << "探索ルート" << std::endl;
@@ -44,6 +72,7 @@ int main(){
     }
     
     block.showMesh();
+ */
     
     return 0;
 }

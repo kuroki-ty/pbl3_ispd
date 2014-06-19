@@ -23,9 +23,9 @@
 #define     COST_LITTLE 1       //移動コスト小
 #define     COST_BIG    2       //移動コスト大
 #define		COST_MAX	999     //仮無限値
-#define     FIERD_X     300.0  //フィールドの横の長さ[mm](x座標)
-#define     FIELD_Y     300.0  //フィールドの縦の長さ[mm](y座標)
-#define     IROBOT_D    100     //iRobotCreateの直径[mm] 330
+#define     FIERD_X     5000.0  //フィールドの横の長さ[mm](x座標)
+#define     FIELD_Y     5000.0  //フィールドの縦の長さ[mm](y座標)
+#define     IROBOT_D    330     //iRobotCreateの直径[mm] 330
 
 /*****************************************************************************
  ** enum
@@ -62,13 +62,44 @@ class Block{
 public:
     //メソッド
     Block();   //コンストラクタ
-    bool isStartMesh(Coordinate, Coordinate);   //壁探索時にスタート位置まで戻ってきたかどうかを判定
+    bool isStartMesh(Coordinate, Coordinate);   //壁探索時にスタート位置まで戻ってきたかどうかを判定する
+    bool checkAllSearchEnd();   //全メッシュを探索し終えたかどうか判定する
     void showMesh();    //メッシュの探索情報を表示させる
     
     //get method
     /*Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
     　探索ルートの座標値をリストにして返す(長いので処理はBlock.cpp内に書く)*/
     std::vector<Coordinate> getMovePointList(Coordinate, IRobotDirecton, int);
+    //次に向かうノード番号を取得する
+    int getNextMeshNum()
+    {
+        for(int i=0; i<total_block_y; i++)
+        {
+            if(i%2 == 0)
+            {
+                for(int j=0; j<total_block_x; j++)
+                {
+                    if(block[i][j].mark == UNKNOWN)
+                    {
+                        return (block[i][j].num);
+                    }
+                }
+            }
+            else
+            {
+                for(int j=total_block_x-1; j>=0; j--)
+                {
+                    if(block[i][j].mark == UNKNOWN)
+                    {
+                        return (block[i][j].num);
+                    }
+                }
+            }
+        }
+        
+        return (-1);       //例外処理，-1を返す
+    }
+    
     
     //set method
     //障害物があるメッシュにPASSABLE or IMPASSABLE情報をセットする

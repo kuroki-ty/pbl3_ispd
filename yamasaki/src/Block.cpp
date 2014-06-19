@@ -320,6 +320,23 @@ bool Block::isStartMesh(Coordinate start, Coordinate current_pos)
         return (true);      //スタートノードに戻ってきた場合はtrue
 }
 
+//全メッシュを探索し終えたかどうか判定する
+bool Block::checkAllSearchEnd()
+{
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x; j++)
+        {
+            if(block[i][j].mark == UNKNOWN)
+            {
+                return (true);
+            }
+        }
+    }
+    
+    return (false);
+}
+
 /*****************************************************************************
  ** TestMain
 
