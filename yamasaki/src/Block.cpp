@@ -53,6 +53,92 @@ Block::Block()
     }
 }
 
+/*****************************************************************************
+ ** Method
+ *****************************************************************************/
+
+//壁探索時にCreateがスタートノードまで戻ってきたかどうか判定するメソッド
+bool Block::isStartMesh(Coordinate start, Coordinate current_pos)
+{
+    int start_num;          //スタートノード番号
+    int current_pos_num;    //現在位置のノード番号
+    
+    //座標値をノード番号に変換
+    start_num = meshNumToCurrentPosition(start);
+    current_pos_num = meshNumToCurrentPosition(current_pos);
+    
+    if(start_num != current_pos_num)
+    {
+        return (false);     //スタートノードに戻ってない場合はfalse
+    }
+    else
+        return (true);      //スタートノードに戻ってきた場合はtrue
+}
+
+//全メッシュを探索し終えたかどうか判定する
+bool Block::checkAllSearchEnd()
+{
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x; j++)
+        {
+            if(block[i][j].mark == UNKNOWN)
+            {
+                return (true);
+            }
+        }
+    }
+    
+    return (false);
+}
+
+//現在のメッシュ探索状況を表示するメソッド
+void Block::showMesh()
+{
+    std::cout << "/********現在のメッシュ探索状況********/" << std::endl;
+    
+    for(int i=total_block_y-1; i>=0; i--)
+    {
+        for(int j=0; j<total_block_x; j++)
+        {
+            if(block[i][j].mark == UNKNOWN)
+            {
+                std::cout << "△ ";
+            }
+            else if(block[i][j].mark == PASSABLE)
+            {
+                std::cout << "○ ";
+            }
+            else
+            {
+                std::cout << "× ";
+            }
+        }
+        std::cout << std::endl;
+    }
+    
+    std::cout << "/*********************************/" << std::endl;
+    
+}
+
+//ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
+std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirecton direction, int goal)
+{
+    int start;
+    
+    start = meshNumToCurrentPosition(coord);
+    addCost(start, direction);
+    
+    Dijkstra dijkstra(start, goal, total_block_x*total_block_y);
+    dijkstra.setCost(cost);
+    dijkstra.useDijkstra();
+    route = dijkstra.getRoute();
+    
+    movePointList = routeCoordinateToRouteMeshNum(route);
+    
+    return (movePointList);
+}
+
 /*vectorで動的配列を作成するためのメソッド
  構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
 Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
@@ -242,35 +328,6 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     return ((node_num_y*total_block_x)+node_num_x);
 }
 
-//現在のメッシュ探索状況を表示するメソッド
-void Block::showMesh()
-{
-    std::cout << "/********現在のメッシュ探索状況********/" << std::endl;
-    
-    for(int i=total_block_y-1; i>=0; i--)
-    {
-        for(int j=0; j<total_block_x; j++)
-        {
-            if(block[i][j].mark == UNKNOWN)
-            {
-                std::cout << "△ ";
-            }
-            else if(block[i][j].mark == PASSABLE)
-            {
-                std::cout << "○ ";
-            }
-            else
-            {
-                std::cout << "× ";
-            }
-        }
-        std::cout << std::endl;
-    }
-    
-    std::cout << "/*********************************/" << std::endl;
-    
-}
-
 //ルートのメッシュ番号を座標値に変換するメソッド
 std::vector<Coordinate> Block::routeCoordinateToRouteMeshNum(std::vector<int> route_mesh_num){
     
@@ -282,59 +339,6 @@ std::vector<Coordinate> Block::routeCoordinateToRouteMeshNum(std::vector<int> ro
     }
     
     return (route_coord);
-}
-
-//ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
-std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirecton direction, int goal)
-{
-    int start;
-    
-    start = meshNumToCurrentPosition(coord);
-    addCost(start, direction);
-    
-    Dijkstra dijkstra(start, goal, total_block_x*total_block_y);
-    dijkstra.setCost(cost);
-    dijkstra.useDijkstra();
-    route = dijkstra.getRoute();
-    
-    movePointList = routeCoordinateToRouteMeshNum(route);
-    
-    return (movePointList);
-}
-
-//壁探索時にCreateがスタートノードまで戻ってきたかどうか判定するメソッド
-bool Block::isStartMesh(Coordinate start, Coordinate current_pos)
-{
-    int start_num;          //スタートノード番号
-    int current_pos_num;    //現在位置のノード番号
-    
-     //座標値をノード番号に変換
-    start_num = meshNumToCurrentPosition(start);
-    current_pos_num = meshNumToCurrentPosition(current_pos);
-    
-    if(start_num != current_pos_num)
-    {
-        return (false);     //スタートノードに戻ってない場合はfalse
-    }
-    else
-        return (true);      //スタートノードに戻ってきた場合はtrue
-}
-
-//全メッシュを探索し終えたかどうか判定する
-bool Block::checkAllSearchEnd()
-{
-    for(int i=0; i<total_block_y; i++)
-    {
-        for(int j=0; j<total_block_x; j++)
-        {
-            if(block[i][j].mark == UNKNOWN)
-            {
-                return (true);
-            }
-        }
-    }
-    
-    return (false);
 }
 
 /*****************************************************************************

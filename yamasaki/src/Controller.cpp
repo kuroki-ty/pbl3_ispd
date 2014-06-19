@@ -21,9 +21,9 @@ int main(){
     
     obs_position.x = 4500.0;
     obs_position.y = 4500.0;
-    block.setMeshMark(obs_position, IMPASSABLE);
+    block.setMeshMark(obs_position, false);
     
-    block.setMeshMark(current_position, PASSABLE);
+    block.setMeshMark(current_position, false);
     
     while(block.checkAllSearchEnd())
     {
@@ -34,7 +34,7 @@ int main(){
             current_position.x = moveList[i].x;
             current_position.y = moveList[i].y;
             
-            block.setMeshMark(current_position, PASSABLE);
+            block.setMeshMark(current_position, false);
         }
         
         block.showMesh();

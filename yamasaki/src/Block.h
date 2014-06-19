@@ -38,6 +38,7 @@ enum SearchMark
     IMPASSABLE  //通れない
 };
 
+//Createの方向情報
 enum IRobotDirecton
 {
     UP,     //+x軸方向
@@ -64,7 +65,7 @@ public:
     Block();   //コンストラクタ
     bool isStartMesh(Coordinate, Coordinate);   //壁探索時にスタート位置まで戻ってきたかどうかを判定する
     bool checkAllSearchEnd();   //全メッシュを探索し終えたかどうか判定する
-    void showMesh();    //メッシュの探索情報を表示させる
+    void showMesh();    //メッシュの探索状況を表示させる
     
     //get method
     /*Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
@@ -103,9 +104,19 @@ public:
     
     //set method
     //障害物があるメッシュにPASSABLE or IMPASSABLE情報をセットする
-    void setMeshMark(Coordinate coord, SearchMark mark)
+    void setMeshMark(Coordinate coord, bool bump)
     {
         int num;
+        SearchMark mark;
+        
+        if(bump)
+        {
+            mark = IMPASSABLE;
+        }
+        else
+        {
+            mark = PASSABLE;
+        }
         
         num = meshNumToCurrentPosition(coord);
         block[num/total_block_x][num%total_block_x].mark = mark;
@@ -130,7 +141,6 @@ private:
     int meshNumToCurrentPosition(Coordinate);     //Createの現在座標からメッシュ番号に変換する
     std::vector<Coordinate> routeCoordinateToRouteMeshNum(std::vector<int>);  //ルートのメッシュ番号を座標値に変換する
 
-    
 };
 
 /*****************************************************************************

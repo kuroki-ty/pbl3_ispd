@@ -40,13 +40,9 @@ Dijkstra::Dijkstra(int s, int g, int m_N)
 /*****************************************************************************
  ** Method
  *****************************************************************************/
-int Dijkstra::init()
-{
-    return 0;
-}
 
 /*vectorで動的配列を作成するためのメソッド
-構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
+ 構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
 DijkstraMesh Dijkstra::addFirstMesh(int num, DijkstraMesh tmp)
 {
     tmp.num = num;
@@ -55,6 +51,12 @@ DijkstraMesh Dijkstra::addFirstMesh(int num, DijkstraMesh tmp)
     tmp.distance = COST_MAX;
     
     return tmp;
+}
+
+//初期化メソッド
+int Dijkstra::init()
+{
+    return 0;
 }
 
 //ダイクストラ法でルートを探索するメソッド
