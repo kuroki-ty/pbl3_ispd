@@ -109,6 +109,7 @@ void Dijkstra::writeRoute()
 
     
     std::reverse(route.begin(), route.end());   //route配列の順序入れ替え
+    route.erase(route.begin());     //route配列の0要素目には現在位置のノードが入っているため，削除する
     
 }
 

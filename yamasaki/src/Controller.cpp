@@ -19,8 +19,8 @@ int main(){
     current_position.x = 0.0;
     current_position.y = 0.0;
     
-    obs_position.x = 4500.0;
-    obs_position.y = 4500.0;
+    obs_position.x = 150.0;
+    obs_position.y = 150.0;
     block.setMeshMark(obs_position, true);
     
     block.setMeshMark(current_position, false);
