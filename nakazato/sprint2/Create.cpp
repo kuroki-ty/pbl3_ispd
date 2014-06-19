@@ -48,27 +48,23 @@ void Create::changeDirection()
 //std::cout << "angle : " << angle << std::endl;
 
 	driveDistance(-VELOCITY,0,-50,0);	//5cm後退
-
-	
-
+	this->calcCurrentCoordinate();
 	if(this->push_bumper == RIGHT )
 	{	
 		turn_angle = 90-BUMPER_PLACE_ANGLE_R;
-		this->push_bumper == NONE;
 	}
 	else if(this->push_bumper == LEFT )
 	{	
 		turn_angle = 180-BUMPER_PLACE_ANGLE_L;
-		this->push_bumper == NONE;
 	}
 	else if(this->push_bumper == CENTER )
 	{	
 		turn_angle = 90;
-		this->push_bumper == NONE;
 	}
+	this->push_bumper == NONE;
+
 // turnangleの誤差考慮
 //std::cout << "turn_angle : " << turn_angle << std::endl;
-	this->total_angle += this->getAngleFromCreate();
 	if(turn_angle >= 0)
 	{
 		turn(VELOCITY,1,turn_angle,0); // 半時計回り
@@ -233,14 +229,13 @@ Coordinate Create::calcBumperHitPointCoordinate()
 	float obstacle_x, obstacle_y;
 
 	// 右バンパが押された場合
-	if(getBumpsAndWheelDrops() == 1)
+	if(this->push_bumper == RIGHT)
 	{
 		obstacle_x = create_x + BUMPER_PLACE_OFFSET * cos(BUMPER_PLACE_ANGLE_R + create_angle_r);
 		obstacle_y = create_y + BUMPER_PLACE_OFFSET * sin(BUMPER_PLACE_ANGLE_R + create_angle_r);
-		this->push_bumper = RIGHT;
 	}
 	// 左バンパが押された場合
-	else if(getBumpsAndWheelDrops() == 2)
+	else if(this->push_bumper == LEFT)
 	{
 		obstacle_x = create_x + BUMPER_PLACE_OFFSET * cos(BUMPER_PLACE_ANGLE_L + create_angle_r);
 		obstacle_y = create_y + BUMPER_PLACE_OFFSET * sin(BUMPER_PLACE_ANGLE_L + create_angle_r);
@@ -251,7 +246,6 @@ Coordinate Create::calcBumperHitPointCoordinate()
 	{
 		obstacle_x = create_x + BUMPER_PLACE_OFFSET * sin(create_angle_r);
 		obstacle_y = create_y + BUMPER_PLACE_OFFSET * cos(create_angle_r);
-		this->push_bumper = CENTER;	
 	}
 	obstacle_coord.x = obstacle_x;
 	obstacle_coord.y = obstacle_y;
@@ -262,13 +256,26 @@ Coordinate Create::calcBumperHitPointCoordinate()
 
 
 // checState->バンパーに衝突
-void Create::doBumperHitMode(Coordinate &create, Coordinate &obstacle)
+void Create::doBumperHitMode(int bumper_hit, Coordinate &create, Coordinate &obstacle)
 {
 	int distance = this->getDistanceFromCreate();
 	int angle 	 = this->getAngleFromCreate();
 
 	this->stopRun();//値だけ取得してストップ
 	this->addDistance(distance);// Distanceを更新、Angleは後のcalculateCreateCoordinate（）内で更新
+
+	if(bumper_hit == 1)
+	{
+		this->push_bumper = RIGHT;
+	}
+	else if(bumper_hit == 2)
+	{
+		this->push_bumper = LEFT;
+	}
+	else
+	{
+		this->push_bumper = CENTER;
+	}
 	
 	// 各座標の計算
 	create = this->calcCurrentCoordinate(distance, angle);
@@ -277,6 +284,33 @@ void Create::doBumperHitMode(Coordinate &create, Coordinate &obstacle)
 	this->changeDirection();	// 方向転換
 
 }
+
+void Create::doBumperHitModeAtObstacleSerch(int distance, int angle, int bumper_hit, Coordinate &create, Coordinate &obstacle)
+{
+	this->stopRun();//値だけ取得してストップ
+	this->addDistance(distance);// Distanceを更新、Angleは後のcalculateCreateCoordinate（）内で更新
+
+	if(bumper_hit == 1)
+	{
+		this->push_bumper = RIGHT;
+	}
+	else if(bumper_hit == 2)
+	{
+		this->push_bumper = LEFT;
+	}
+	else
+	{
+		this->push_bumper = CENTER;
+	}
+	
+	// 各座標の計算
+	create = this->calcCurrentCoordinate(distance, angle);
+	obstacle = this->calcBumperHitPointCoordinate();
+
+	this->changeDirection();	// 方向転換
+
+}
+
 
 // checState->通常時 
 void Create::doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner_distance)
@@ -293,29 +327,68 @@ void Create::doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner
 		this->run();
 
 }
+
+
+void Create::driveDistanceSearchingObstacle(int distance, Coordinate &create, Coordinate &obstacle, bool &Bumper_Hit)
+{
+
+	int count = 0;
+	int angle = 0;
+	int bumper_hit;
+
+	drive (VELOCITY, 0);
+
+	while (1)
+	{
+		usleep (20000);
+		count += getDistanceFromCreate();
+		angle += getAngleFromCreate();
+
+		bumper_hit = getBumpsAndWheelDrops();
+		if( bumper_hit!=0)// バンパーが反応したら
+		{
+			Bumper_Hit = true;
+			this->doBumperHitModeAtObstacleSerch(count, angle, bumper_hit, create, obstacle);
+			break;
+		}
+		
+		if ((distance >= 0 && count >= distance) || (distance < 0 && count <= distance))
+		{
+			create = this->calcCurrentCoordinate(count, angle);
+			break;
+		}
+	}
+
+
+}
+
+
+
+
 /*
 *	runAlongPointList( ムーブポイントのリスト )
 *
 *
 *
 */
-void Create::runAlongPointList(std::vector<Coordinate> move_point_list)
+void Create::runNextPoint(Coordinate move_point, bool &Bumper_Hit, Coordinate &create, Coordinate &obstacle)
 {
-	for(int i=0;i<move_point_list.size();i++)
-	{
-		// 進む方向を計算（現在座標、現在の角度、次の座標、）→出力 回転角
-		// 進む距離を計算（現在座標、次の座標）→出力 距離
-		float dist_x = move_point_list[i].x - this->current_coord.x;
-		float dist_y = move_point_list[i].y - this->current_coord.y;
-		float distance = sqrt( dist_x*dist_x + dist_y*dist_y );
-		float angle = acos(dist_x / distance);
-		float direction_angle = this->total_angle * ( M_PI/180.0 ) + angle;
 
-		// 回転
-		turn(VELOCITY,1,direction_angle,0);
-		// 直進→障害物に当たった時の処理を加える
-		this->runSearchObstacle(distance);
-	}
+	// 進む方向を計算（現在座標、現在の角度、次の座標、）→出力 回転角
+	// 進む距離を計算（現在座標、次の座標）→出力 距離
+	float dist_x = move_point.x - this->current_coord.x;
+	float dist_y = move_point.y - this->current_coord.y;
+	int distance = sqrt( dist_x*dist_x + dist_y*dist_y );
+	float angle = acos(dist_x / distance);
+	float direction_angle = this->total_angle * ( M_PI/180.0 ) + angle;
+	
+	// direction_angleを誤差を踏まえた値に変換
+	// 回転
+	turn(VELOCITY, 1, direction_angle, 0);
+	// 角度の更新
+	this->addAngle(this->getAngleFromCreate());
+	// 直進→障害物に当たった時,止まって5cm下がり、90度半時計回転後、障害物の座標値を得る
+	this->driveDistanceSearchingObstacle(distance, create, obstacle, Bumper_Hit);
 
 }
 

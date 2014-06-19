@@ -98,7 +98,9 @@ public:
 
 // checkState時に使用する関数
 	// バンパー衝突時
-	void doBumperHitMode(Coordinate &create, Coordinate &obstacle);
+	void doBumperHitMode(int bumper_hit, Coordinate &create, Coordinate &obstacle);
+	void doBumperHitModeAtObstacleSerch(int distance, int angle, int bumper_hit, Coordinate &create, Coordinate &obstacle);
+
 	// 通常時
 	void doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner_distance);
 
@@ -106,8 +108,8 @@ public:
 	// 超音波センサから距離値を得る[mm]	
 	float getDistanceBySoner();
 
-
-	void runAlongPointList(std::vector<Coordinate> map_point_list);
+	void driveDistanceSearchingObstacle(int distance, Coordinate &create, Coordinate &obstacle, bool &Bumper_Hit);
+	void runNextPoint(Coordinate move_point, bool &Bumper_Hit, Coordinate &create, Coordinate &obstacle);
 
 
 

@@ -3,7 +3,6 @@
  *
  * @Coordinate.
  **/
-
 struct Coordinate
 {
 	float x;
