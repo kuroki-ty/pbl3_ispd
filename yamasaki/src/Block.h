@@ -63,7 +63,7 @@ class Block{
 public:
     //メソッド
     Block();   //コンストラクタ
-    bool isStartMesh(Coordinate, Coordinate);   //壁探索時にスタート位置まで戻ってきたかどうかを判定する
+    bool isStartMesh(Coordinate, Coordinate, int);   //壁探索時にスタート位置まで戻ってきたかどうかを判定する
     bool checkAllSearchEnd();   //全メッシュを探索し終えたかどうか判定する
     void showMesh();    //メッシュの探索状況を表示させる
     

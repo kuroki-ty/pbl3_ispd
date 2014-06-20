@@ -58,7 +58,7 @@ Block::Block()
  *****************************************************************************/
 
 //壁探索時にCreateがスタートノードまで戻ってきたかどうか判定するメソッド
-bool Block::isStartMesh(Coordinate start, Coordinate current_pos)
+bool Block::isStartMesh(Coordinate start, Coordinate current_pos, int distance)
 {
     int start_num;          //スタートノード番号
     int current_pos_num;    //現在位置のノード番号
@@ -67,12 +67,12 @@ bool Block::isStartMesh(Coordinate start, Coordinate current_pos)
     start_num = meshNumToCurrentPosition(start);
     current_pos_num = meshNumToCurrentPosition(current_pos);
     
-    if(start_num != current_pos_num)
+    if(start_num == current_pos_num && distance > 2*block_x)
     {
-        return (false);     //スタートノードに戻ってない場合はfalse
+        return (true);     //スタートノードに戻ってきた場合はtrue
     }
     else
-        return (true);      //スタートノードに戻ってきた場合はtrue
+        return (false);    //スタートノードに戻ってない場合はfalse
 }
 
 //全メッシュを探索し終えたかどうか判定する
