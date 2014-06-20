@@ -4,11 +4,10 @@
 
 void Controller::checkState()
 {
-	Coordinate create;
-	Coordinate obstacle;
-	bool Wall_Search, Obstacle_Search;
+	Coordinate create_coord;
+	Coordinate obstacle_coord;
 
-	if(Wall_Search)// wall探索フラグをfalseにする処理を入れる
+	if(this->search_flag == WALL)// wall探索フラグをfalseにする処理を入れる
 	{
 		int bumper_hit = getBumpsAndWheelDrops();
 
@@ -16,16 +15,16 @@ void Controller::checkState()
 		if(this->create.state == RUN && bumper_hit == 0)
 		{
 			float soner_distance;
-			Coordinate pre_obstacle;
+			Coordinate pre_obstacle_coord;
 
-			this->create.doNormalMode(create, obstacle, soner_distance);
-			this->map.push_back_CreatePointList( create );	//createの現在座標を計算してプッシュバック
+			this->create.doNormalMode(create_coord, obstacle_coord, soner_distance);
+			this->map.push_back_CreatePointList( create_coord );	//createの現在座標を計算してプッシュバック
 		
 			// RECORD_OBSTACLE_TH 以上離れた障害物は記録しない
 			if(soner_distance < RECORD_OBSTACLE_TH)
 			{
 				// 超音波センサの観測座標を計算してobstacle_listにプッシュバック
-				this->map.push_back_ObstaclePointList( obstacle );
+				this->map.push_back_ObstaclePointList( obstacle_coord );
 			}
 			this->create.run();
 		}	
@@ -33,31 +32,36 @@ void Controller::checkState()
 		else if( bumper_hit != 0)
 		{	
 			// バンパーヒットモードに切り替え→現在座標とバンパーヒット位置を計算の後、方向転換
-			this->create.doBumperHitMode(bumper_hit, create, obstacle);
+			this->create.doBumperHitMode(bumper_hit, create_coord, obstacle_coord);
 			// 各座表の情報を渡す
-			this->map.push_back_CreatePointList( create );	
-			this->map.push_back_ObstaclePointList( obstacle );
+			this->map.push_back_CreatePointList( create_coord );	
+			this->map.push_back_ObstaclePointList( obstacle_coord );
 			// blockに登録
 
 		}
+		this->setMeshMark( create_cootd );
+	// if( 	this->block.isStartMesh(create_coord) )
+		{
+			this->search_flag = OBSTACLE;
+		}
 	}
-	else if(Obstacle_Search) // 障害物探索
+	else if(this->search_flag == OBSTACLE) // 障害物探索
 	{
 		std::vector<Coordinate> move_point_list;  // Createが辿る座標を格納したリスト
 		bool Bumper_Hit = false;
 		create = this->create.getCurrentCoordinate();
-//		this->block.getMovePointList(move_point_list, create);// → Createの現在座標を元に、ゴールまでに辿る座標のリストを得る
+//		this->block.getMovePointList(move_point_list, create_coord);// → Createの現在座標を元に、ゴールまでに辿る座標のリストを得る
 
 		for(int i=0;i<move_point_list.size();i++)
 		{
-			this->create.runNextPoint(move_point_list[i], Bumper_Hit, create, obstacle); //
+			this->create.runNextPoint(move_point_list[i], Bumper_Hit, create_coord, obstacle_coord); //
 			
-	//		this->block.updatateBlockList(create, Bumper_Hit);// 
+	//		this->block.setMeshMark(create_coord, Bumper_Hit);// 
 			// 各座表の情報を渡して、map,obstacleリストを更新
-			this->map.push_back_CreatePointList( create );
+			this->map.push_back_CreatePointList( create_coord );
 			if(Bumper_Hit)
 			{	
-				this->map.push_back_ObstaclePointList( obstacle );
+				this->map.push_back_ObstaclePointList( obstacle_coord );
 			}
 		}
 	}

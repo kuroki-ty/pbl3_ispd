@@ -3,6 +3,14 @@
 #include <fstream>
 
 
+enum SearchFlag
+{
+	WALL;
+	OBSTACLE;
+	DOCK;
+
+};
+
 class Controller
 {
 public:
@@ -68,13 +76,9 @@ void output_ObstacleList()
 // 宣言
 	Map map;	// Createの蓄えた軌跡情報（ブロックと座標系）
 	Create create;
-
+	enum SearchFlag search_flag;
 private:
 
-	enum State state;
-	enum State last_state; 
-
-	bool wall_search_flag;
 };
 
 #include "Controller.cpp"
