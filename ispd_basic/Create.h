@@ -5,13 +5,13 @@
 /*****************************************************************************
  ** Define
  *****************************************************************************/
-#define VELOCITY 200			//直進速度[mm/s]
+#define VELOCITY 150			//直進速度[mm/s]
 #define RADIUS_LEFT  230.0		//左回り回転半径[mm]
 #define RADIUS_RIGHT 320.0		//右回り回転半径[mm]
 #define WALL_DISTANCE_LOW  150.0	//壁とCreateの距離_低[cm]
 #define WALL_DISTANCE_HIGH 200.0	//壁とCreateの距離_高[cm]
 
-#define CREATE_SIZE 340 // 縦 [mm]
+#define CREATE_SIZE 330 // 縦 [mm]
 // 横330[mm]
 
 // soner
@@ -60,6 +60,8 @@ public:
 		this->velocity=0; 
 		this->total_angle=0;
 		this->push_bumper = NONE;
+//		this->current_coord.x = 0.0;
+//		this->current_coord.y = 0.0;
 	}
 
 // public method
@@ -158,7 +160,8 @@ public:
 	int getAngleFromCreate()
 	{
 		int x;
-		x = (int)(getAngle()*1.244) % 360;
+	//	x = (int)(getAngle()*1.244) % 360;
+		x = getAngle() % 360;
 		return x;
 	}
 
@@ -166,7 +169,8 @@ public:
 	{
 		float x,y;
 		x = getDistance();
-		y = 7*(10e-08)*x*x*x - 2*(10e-04)*x*x + 0.1305*x+x;
+	//	y = 7*(10e-08)*x*x*x - 2*(10e-04)*x*x + 0.1305*x+x;
+		y=x;
 		return (int)y;
 	}	
 

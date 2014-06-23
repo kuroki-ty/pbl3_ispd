@@ -14,6 +14,8 @@ std::cout << "distance:" << this->create.getTotalDistance() << std::endl;
 std::cout << "angle:" << this->create.getTotalAngle() << std::endl;
 std::cout << "(" << this->create.getCurrentCoordinate().x << ", " << this->create.getCurrentCoordinate().y << ")" << std::endl;
 
+	this->block.showMesh();
+
 // 1.壁探索
 	if(this->search_flag == WALL)// wall探索フラグをfalseにする処理を入れる
 	{
@@ -46,15 +48,15 @@ std::cout << "(" << this->create.getCurrentCoordinate().x << ", " << this->creat
 			this->map.push_back_ObstaclePointList( obstacle_coord );
 		}
 //1-2.メッシュの更新
-		//this->block.setMeshMark( create_coord, Bumper_Hit );
+		this->block.setMeshMark( create_coord, Bumper_Hit );
 
 //1-3.壁探索終了の判定
 		Coordinate start_coord;
 		int total_distance = this->create.getTotalDistance();
-//	    if(this->block.isStartMesh( start_coord, create_coord,  total_distance))
-//		{
-//			this->search_flag = OBSTACLE;
-//		}
+	    if(this->block.isStartMesh( start_coord, create_coord,  total_distance))
+		{
+			this->search_flag = OBSTACLE;
+		}
 	}
 
 //2.障害物探索

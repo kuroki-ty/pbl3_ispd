@@ -187,7 +187,7 @@ Coordinate Create::calcCurrentCoordinate(int distance, int angle)
 	pri_x= this->current_coord.x;	//map_point_list内の最新の座標を得る（前回記録した位置）
 	pri_y= this->current_coord.y;
 
-	this->updateCurrentCoordinateXY( pri_x + tmp_x , pri_y + tmp_y );	// Createの現在座標を更新
+	this->updateCurrentCoordinateXY( pri_x + tmp_x, pri_y + tmp_y );	// Createの現在座標を更新
 
 	return this->getCurrentCoordinate();
 }

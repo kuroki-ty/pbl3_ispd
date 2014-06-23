@@ -11,6 +11,12 @@ struct Coordinate
 {
 	float x;
 	float y;
+
+	Coordinate()
+	{
+		x=0.0;
+		y=0.0;
+	}
 };
 
 //Createの方向情報
