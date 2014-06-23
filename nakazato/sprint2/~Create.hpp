@@ -1,5 +1,5 @@
 #include <createoi.h>
-
+#include "Coordinate.h"
 
 /*****************************************************************************
  ** Define
@@ -28,13 +28,6 @@
 /*****************************************************************************
  ** enum
  *****************************************************************************/
-enum Direction
-{
-	PLUS_X,
-	MINUS_X,
-	PLUS_Y,
-	MINUS_Y
-};
 
 enum State
 {
@@ -114,10 +107,6 @@ public:
 
 
 // set method
-	void setDirection(enum Direction d)
-	{
-		this->current_direction = d;
-	}
 
 	// Createの角度を更新
 	void addAngle(int angle)
@@ -168,14 +157,13 @@ public:
 	bool Left_Run;
 	enum State state;
 	enum Bumper push_bumper;
+	enum IRobotDirection current_direction;
 
 	int distance;
 
 private:
 	int velocity;
 	int total_angle;
-
-	enum Direction current_direction;
 
 	Coordinate current_coord;
 

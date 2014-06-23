@@ -29,12 +29,14 @@ void Create::goStraightWithSoner()
 		this->Right_Run = true;
 		drive(VELOCITY, -RADIUS_RIGHT);	//壁と遠い場合、右向きに直進
 	}
+//std::cout << soner_distance << std::endl;
 }
 
 
 void Create::run()
 {
 	this->goStraightWithSoner();
+	this->state = RUN;
 }
 
 // 障害物に当たったら、方向転換する関数
@@ -44,16 +46,16 @@ void Create::changeDirection()
 	int turn_angle;
 
 //std::cout << "angle : " << angle << std::endl;
-	int tmp_distance;
-	tmp_distance = driveDistance(-VELOCITY,0,-50,0);	//5cm後退
-	this->calcCurrentCoordinate(tmp_distance, this->getAngleFromCreate());
+
+	driveDistance(-VELOCITY,0,-50,0);	//5cm後退
+	this->calcCurrentCoordinate();
 	if(this->push_bumper == RIGHT )
 	{	
-		turn_angle = (90-BUMPER_PLACE_ANGLE_R);
+		turn_angle = 90-BUMPER_PLACE_ANGLE_R;
 	}
 	else if(this->push_bumper == LEFT )
 	{	
-		turn_angle = (180-BUMPER_PLACE_ANGLE_L);
+		turn_angle = 180-BUMPER_PLACE_ANGLE_L;
 	}
 	else if(this->push_bumper == CENTER )
 	{	
@@ -61,22 +63,18 @@ void Create::changeDirection()
 	}
 	this->push_bumper == NONE;
 
-	turn_angle /=1.244;
-
-	int tmp_angle;
+// turnangleの誤差考慮
+//std::cout << "turn_angle : " << turn_angle << std::endl;
 	if(turn_angle >= 0)
 	{
-		tmp_angle = turn(VELOCITY,1,turn_angle,0); // 半時計回り
-		this->addAngle(tmp_angle);
+		turn(VELOCITY,1,turn_angle,0); // 半時計回り
+		this->total_angle += turn_angle;
 	}
 	else
 	{
-		turn_angle = 90;
-		tmp_angle = turn(VELOCITY,1,turn_angle,0); // 半時計回り
-		this->addAngle(tmp_angle);
+		turn(VELOCITY,1,90,0); // 半時計回り
+		this->total_angle += 90;
 	}
-	// turnangleの誤差考慮
-	std::cout << "turn_angle : " << tmp_angle << std::endl;
 }
 
 
@@ -85,22 +83,23 @@ Coordinate Create::calcCurrentCoordinate()
 {
 	int distance = this->getDistanceFromCreate();
 	this->addDistance(distance);
-	//int last_angle = this->getTotalAngle();
+	int last_angle = this->getTotalAngle();
 	float current_angle_r;// [rad]
 
 	float tmp_x, tmp_y; //計算用相対座標
+	float tmp_x1, tmp_x2, tmp_y1, tmp_y2;	// 計算用
 	
 	float pri_x, pri_y;
 	
-	//float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
+	float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
 
 	this->addAngle( this->getAngleFromCreate() );	// Create角度更新
 
 	float angle_r; //[rad]
-	current_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
 
 	if(this->Straight_Run)
 	{
+		current_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
 		tmp_x = (float) distance * cos(current_angle_r);
 		tmp_y = (float) distance * sin(current_angle_r);
 		this->Straight_Run = false;
@@ -120,14 +119,16 @@ Coordinate Create::calcCurrentCoordinate()
 		}
 
 		angle_r = (float)( distance / radius ); //[rad]
-		tmp_x = 2 * radius * sin(angle_r/2) * cos(angle_r/2 + current_angle_r);
-		tmp_y = 2 * radius * sin(angle_r/2) * sin(angle_r/2 + current_angle_r);
-//std::cout << "tmp:(" << tmp_x << ", " << tmp_y << ")" << (float)current_angle_r *(180/M_PI) << std::endl;
+		tmp_x = 2 * radius * sin(angle_r/2) * cos(angle_r/2) * cos(crt_angle_r);
+		tmp_y = 2 * radius * sin(angle_r/2) * sin(angle_r/2) * sin(crt_angle_r);
+//std::cout << "(" << tmp_x << ", " << tmp_y << ")" << distance << ":" << radius << ":" << distance/radius << std::endl;
 
 	}
 
 	pri_x= this->current_coord.x;	//map_point_list内の最新の座標を得る（前回記録した位置）
 	pri_y= this->current_coord.y;
+
+	std::cout << "(" << pri_x << ", " << pri_y << ")" << crt_angle_r * (180/M_PI) << ":"<< angle_r << std::endl;
 
 	this->updateCurrentCoordinateXY( pri_x + tmp_x, pri_y + tmp_y );	// Createの現在座標を更新
 
@@ -137,20 +138,22 @@ Coordinate Create::calcCurrentCoordinate()
 // 距離と角度を引数にした、Createの現在座標の計算関数
 Coordinate Create::calcCurrentCoordinate(int distance, int angle)
 {
-	//int last_angle = this->getTotalAngle();
+	int last_angle = this->getTotalAngle();
 	float current_angle_r;//[rad]
 
 	float tmp_x, tmp_y; //計算用相対座標
+	float tmp_x1, tmp_x2, tmp_y1, tmp_y2;	// 計算用
 	float pri_x, pri_y; //1つ前に記録した座標
 	
-	//float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
+	float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
 
 	this->addAngle( angle );	// Create角度更新
-	current_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
+
 	float angle_r; //[rad]
 
 	if(this->Straight_Run)
 	{
+		current_angle_r = this->getTotalAngle();
 		tmp_x = (float) distance * cos(current_angle_r);
 		tmp_y = (float) distance * sin(current_angle_r);
 		this->Straight_Run = false;
@@ -169,16 +172,20 @@ Coordinate Create::calcCurrentCoordinate(int distance, int angle)
 			this->Left_Run = false;
 		}
 
-		angle_r = (float)( distance / radius ); //[rad]
-		tmp_x = 2 * radius * sin(angle_r/2) * cos(angle_r/2 + current_angle_r);
-		tmp_y = 2 * radius * sin(angle_r/2) * sin(angle_r/2 + current_angle_r);
-	}
+		angle_r = ( distance / radius );
+		tmp_x1 = radius * sin( angle_r + crt_angle_r);
+		tmp_x2 = radius * sin( crt_angle_r );
+		tmp_x = tmp_x1 - tmp_x2;
 
+		tmp_y1 = 2 * radius * sin( ( angle_r + crt_angle_r ) / 2 ) * sin( ( angle_r + crt_angle_r ) / 2 );
+		tmp_y2 = 2 * radius * sin( crt_angle_r / 2 ) * sin( crt_angle_r / 2 );
+		tmp_y = tmp_y1 - tmp_y2;
+	}
 
 	pri_x= this->current_coord.x;	//map_point_list内の最新の座標を得る（前回記録した位置）
 	pri_y= this->current_coord.y;
 
-	this->updateCurrentCoordinateXY( pri_x + tmp_x , pri_y + tmp_y );	// Createの現在座標を更新
+	this->updateCurrentCoordinateXY( pri_x + tmp_x, pri_y + tmp_y );	// Createの現在座標を更新
 
 	return this->getCurrentCoordinate();
 }
@@ -374,13 +381,12 @@ void Create::runNextPoint(Coordinate move_point, bool &Bumper_Hit, Coordinate &c
 	int distance = sqrt( dist_x*dist_x + dist_y*dist_y );
 	float angle = acos(dist_x / distance);
 	float direction_angle = this->total_angle * ( M_PI/180.0 ) + angle;
-	int tmp_angle;
 	
 	// direction_angleを誤差を踏まえた値に変換
 	// 回転
-	tmp_angle = turn(VELOCITY, 1, direction_angle, 0);
+	turn(VELOCITY, 1, direction_angle, 0);
 	// 角度の更新
-	this->addAngle(tmp_angle);
+	this->addAngle(this->getAngleFromCreate());
 	// 直進→障害物に当たった時,止まって5cm下がり、90度半時計回転後、障害物の座標値を得る
 	this->driveDistanceSearchingObstacle(distance, create, obstacle, Bumper_Hit);
 

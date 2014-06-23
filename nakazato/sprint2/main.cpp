@@ -13,10 +13,11 @@ int main()
 	
 	// Controler 宣言
 	Controller controller;
+	controller.create.run();
 	// 超音波ON
 //壁探索ループ
 	int counter = 0;
-	while(1)	
+	while(!controller.finished)	
 	{
 		controller.checkState();	// バンパーに当たったら回避モードに移行
 //		std::cout << controller.create.getTotalAngle()  << std::endl;
@@ -26,7 +27,7 @@ int main()
 std::cout << "count:" << counter << std::endl;
 std::cout << "map_list_size" << controller.map.getCreateListSize() << std::endl;
 std::cout << "obstacle_list_size" << controller.map.getObstacleListSize() << std::endl;
-std::cout << "distance" << controller.create.distance << std::endl;
+std::cout << "distance" << controller.create.getTotalDistance() << std::endl;
 	
 	// create終了
 	stopOI();
