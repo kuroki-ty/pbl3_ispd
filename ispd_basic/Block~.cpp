@@ -67,7 +67,7 @@ bool Block::isStartMesh(Coordinate start, Coordinate current_pos, int distance)
     start_num = meshNumToCurrentPosition(start);
     current_pos_num = meshNumToCurrentPosition(current_pos);
     
-    if(current_pos_num - total_block_x -1 <= 0 && distance > total_block_x*block_x)
+    if(start_num == current_pos_num && distance > 2*block_x)
     {
         return (true);     //スタートノードに戻ってきた場合はtrue
     }
@@ -324,7 +324,7 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
             break;
         }
     }
-    std::cout << "mesh:------------" << ((node_num_y*total_block_x)+node_num_x) << std::endl; 
+    
     return ((node_num_y*total_block_x)+node_num_x);
 }
 
