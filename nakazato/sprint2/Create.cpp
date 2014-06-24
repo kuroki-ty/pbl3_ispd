@@ -13,7 +13,17 @@ float Create::getDistanceBySoner()
 
 void Create::goStraightWithSoner()
 {
-	float soner_distance = this->getDistanceBySoner();
+	float total_soner=0.0;
+//	float soner_distance = this->getDistanceBySoner();
+	float soner_distance;
+
+	for(int i = 0;i<3;i++)
+	{
+		total_soner += this->getDistanceBySoner();
+	}
+	soner_distance = total_soner/3;
+
+
 	if((soner_distance >= WALL_DISTANCE_LOW) && (soner_distance <= WALL_DISTANCE_HIGH))
 	{
 		this->Straight_Run = true;
@@ -35,6 +45,8 @@ void Create::goStraightWithSoner()
 void Create::run()
 {
 	this->goStraightWithSoner();
+	//drive(VELOCITY, 0);
+	//this->Straight_Run = true;
 }
 
 // 障害物に当たったら、方向転換する関数
@@ -45,8 +57,11 @@ void Create::changeDirection()
 
 //std::cout << "angle : " << angle << std::endl;
 	int tmp_distance;
-	tmp_distance = driveDistance(-VELOCITY,0,-50,0);	//5cm後退
+	tmp_distance = driveDistance(-VELOCITY2,0,-50,0);	//5cm後退
 	this->calcCurrentCoordinate(tmp_distance, this->getAngleFromCreate());
+
+	int current_angle = this->getTotalAngle() % 90;
+/*
 	if(this->push_bumper == RIGHT )
 	{	
 		turn_angle = (90-BUMPER_PLACE_ANGLE_R);
@@ -59,9 +74,30 @@ void Create::changeDirection()
 	{	
 		turn_angle = 90;
 	}
-	this->push_bumper == NONE;
+*/
 
-	turn_angle /=1.244;
+	if(current_angle < 45 || (current_angle >=315 && current_angle < 360))
+	{
+		turn_angle = 90-current_angle;
+	}
+	else if(current_angle >= 45 && current_angle < 135 )
+	{
+		turn_angle = 180-current_angle;
+	}
+	else if(current_angle >= 135 && current_angle < 225)
+	{
+		turn_angle = 270-current_angle;
+	}
+	else if(current_angle >=225 && current_angle < 315)
+	{
+		turn_angle = 90-current_angle;
+	}
+
+
+	this->push_bumper == NONE;
+	
+	turn_angle -= current_angle; 
+	//turn_angle /=1.244;
 
 	int tmp_angle;
 	if(turn_angle >= 0)
@@ -75,6 +111,27 @@ void Create::changeDirection()
 		tmp_angle = turn(VELOCITY,1,turn_angle,0); // 半時計回り
 		this->addAngle(tmp_angle);
 	}
+	//this->total_angle = 0;
+/*
+	if(this->direction == PLUS_X)
+	{
+		this->total_angle = 90;
+	}
+	else if(this->direction == MINUS_X)
+	{
+		this->total_angle = 270;
+	}
+	else if(this->direction == PLUS_Y)
+	{
+		this->total_angle = 180;
+	}
+	else if(this->direction == MINUS_Y)
+	{
+		this->total_angle = 0;
+	}
+*/
+
+
 	// turnangleの誤差考慮
 	std::cout << "turn_angle : " << tmp_angle << std::endl;
 }
@@ -317,7 +374,7 @@ void Create::doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner
 			// 超音波センサの観測座標を計算してobstacle_listにプッシュバック
 			obstacle = this->calcSonerHitPointCoordinate(soner_distance);
 		}
-		this->run();
+//		this->run();
 
 }
 

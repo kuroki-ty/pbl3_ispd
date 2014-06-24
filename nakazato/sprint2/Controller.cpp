@@ -7,9 +7,11 @@ void Controller::checkState()
 	Coordinate create_coord;
 	Coordinate obstacle_coord;
 
-std::cout << "distance:" << this->create.getTotalDistance() << std::endl;
+//std::cout << "distance:" << this->create.getTotalDistance() << std::endl;
 std::cout << "angle:" << this->create.getTotalAngle() << std::endl;
 std::cout << "(" << this->create.getCurrentCoordinate().x << ", " << this->create.getCurrentCoordinate().y << ")" << std::endl;
+std::cout << "direction:"<< this->create.direction << std::endl;
+
 this->angle.push_back(this->create.getTotalAngle());
 
 	if(this->search_flag == WALL)// wall探索フラグをfalseにする処理を入れる
@@ -23,7 +25,7 @@ this->angle.push_back(this->create.getTotalAngle());
 			Coordinate pre_obstacle_coord;
 			this->create.doNormalMode(create_coord, obstacle_coord, soner_distance);
 			this->map.push_back_CreatePointList( create_coord );	//createの現在座標を計算してプッシュバック
-		
+std::cout << "soner:"<< soner_distance << std::endl;		
 			// RECORD_OBSTACLE_TH 以上離れた障害物は記録しない
 			if(soner_distance < RECORD_OBSTACLE_TH)
 			{
@@ -44,10 +46,11 @@ this->angle.push_back(this->create.getTotalAngle());
 
 		}
 //		if(this->block.isStartMesh(create_coord) )
-		if(this->map.getCreateListSize() > 230 )
+		if(this->map.getCreateListSize() > 180 )
 		{
 			this->finished = true;
 		}
+std::cout << std::endl;
 	}
 	else if(this->search_flag == OBSTACLE) // 障害物探索
 	{

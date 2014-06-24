@@ -6,10 +6,11 @@
  ** Define
  *****************************************************************************/
 #define VELOCITY 200			//直進速度[mm/s]
+#define VELOCITY2 100			//直進速度[mm/s]
 #define RADIUS_LEFT  230.0		//左回り回転半径[mm]
 #define RADIUS_RIGHT 320.0		//右回り回転半径[mm]
 #define WALL_DISTANCE_LOW  150.0	//壁とCreateの距離_低[cm]
-#define WALL_DISTANCE_HIGH 220.0	//壁とCreateの距離_高[cm]
+#define WALL_DISTANCE_HIGH 200.0	//壁とCreateの距離_高[cm]
 
 #define CREATE_SIZE 330 // 縦 [mm]
 // 横330[mm]
@@ -106,20 +107,20 @@ public:
 	void addAngle(int angle)
 	{
 		this->total_angle += angle;
-		this->total_angle = this->total_angle % 720;
-		if(this->total_angle < 45 && this->total_angle >= 0 || this->total_angle < 0 && this->total_angle >= -45 || this->total_angle < 360 && this->total_angle >= 315 || this->total_angle < -315 && this->total_angle > -360)
+		this->total_angle = this->total_angle % 360;
+		if((this->total_angle < 45 && this->total_angle >= 0) || (this->total_angle < 0 && this->total_angle >= -45) || (this->total_angle < 360 && this->total_angle >= 315) || (this->total_angle < -315 && this->total_angle > -360))
 		{
 			this->direction = PLUS_X; 
 		}
-		else if(this->total_angle < 135 && this->total_angle >= 45 || this->total_angle < -225 && this->total_angle >= -315)
+		else if( (this->total_angle < 135 && this->total_angle >= 45) || (this->total_angle < -225 && this->total_angle >= -315) )
 		{
 			this->direction = PLUS_Y;
 		}
-		else if(this->total_angle < 225 && this->total_angle >= 135 || this->total_angle < -135 && this->total_angle >= -225)
+		else if( (this->total_angle < 225 && this->total_angle >= 135) || (this->total_angle < -135 && this->total_angle >= -225) )
 		{
 			this->direction = MINUS_X;
 		}
-		else if(this->total_angle < 315 && this->total_angle >= 225 || this->total_angle < -45 && this->total_angle >= -135)
+		else if( (this->total_angle < 315 && this->total_angle >= 225) || (this->total_angle < -45 && this->total_angle >= -135) )
 		{
 			this->direction = MINUS_Y;
 		}
@@ -152,14 +153,15 @@ public:
 	int getAngleFromCreate()
 	{
 		int x;
-	//	x = (int)(getAngle()*1.244) % 360;
-		x = getAngle() % 720;
+		//x = (int)(getAngle()*1.244) % 360;
+		x = getAngle() % 360;
 		return x;
 	}
 
 	int getDistanceFromCreate()
 	{
-		float x,y;
+		float x= 0.0;
+		float y= 0.0;
 		x = getDistance();
 		//y = 7*(10e-08)*x*x*x - 2*(10e-04)*x*x + 0.1305*x;
 		
