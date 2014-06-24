@@ -67,7 +67,7 @@ bool Block::isStartMesh(Coordinate start, Coordinate current_pos, int distance)
     start_num = meshNumToCurrentPosition(start);
     current_pos_num = meshNumToCurrentPosition(current_pos);
     
-    if(start_num == current_pos_num && distance > 2*block_x)
+    if(current_pos_num-total_block_x-1 <= 0 && distance > total_block_x*block_x)
     {
         return (true);     //スタートノードに戻ってきた場合はtrue
     }
@@ -122,7 +122,7 @@ void Block::showMesh()
 }
 
 //ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
-std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirecton direction, int goal)
+std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirection direction, int goal)
 {
     int start;
     
@@ -152,7 +152,7 @@ Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
 }
 
 //ノード間コストを決定するためのメソッド
-void Block::addCost(int num, IRobotDirecton direction)
+void Block::addCost(int num, IRobotDirection direction)
 {
     current_mesh_num = num;                 //Createの現在位置のメッシュ番号
     current_create_direction = direction;   //Createの現在方向
@@ -191,28 +191,28 @@ void Block::addCost(int num, IRobotDirecton direction)
     
     //Createの向いている方向は回転なしで移動できるため，移動コストを最小にする
     switch(current_create_direction){
-        case UP:
+        case PLUS_X:
             for(int i=current_mesh_num; (i%total_block_x)!=total_block_x-1; i++)
             {
                 cost[i][i+1] = COST_LITTLE;
             }
             break;
         
-        case DOWN:
+        case MINUS_X:
             for(int i=current_mesh_num; (i%total_block_x)!=0; i--)
             {
                 cost[i][i-1] = COST_LITTLE;
             }
             break;
             
-        case RIGHT:
+        case MINUS_Y:
             for(int i=current_mesh_num; i>total_block_y-1; i-=total_block_y)
             {
                 cost[i][i-total_block_x] = COST_LITTLE;
             }
             break;
             
-        case LEFT:
+        case PLUS_Y:
             for(int i=current_mesh_num; i<total_block_x*total_block_y-total_block_x; i+=total_block_y)
             {
                 cost[i][i+total_block_x] = COST_LITTLE;
