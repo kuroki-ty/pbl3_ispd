@@ -9,8 +9,8 @@
 #define VELOCITY2 100			//直進速度[mm/s]
 #define RADIUS_LEFT  230.0		//左回り回転半径[mm]
 #define RADIUS_RIGHT 320.0		//右回り回転半径[mm]
-#define WALL_DISTANCE_LOW  150.0	//壁とCreateの距離_低[cm]
-#define WALL_DISTANCE_HIGH 200.0	//壁とCreateの距離_高[cm]
+#define WALL_DISTANCE_LOW  140.0	//壁とCreateの距離_低[cm]
+#define WALL_DISTANCE_HIGH 180.0	//壁とCreateの距離_高[cm]
 
 #define CREATE_SIZE 330 // 縦 [mm]
 // 横330[mm]
