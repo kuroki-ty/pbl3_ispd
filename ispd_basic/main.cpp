@@ -10,7 +10,6 @@ int main()
 {
 	// Createのスタート準備
 	startOI("/dev/ttyUSB0");
-	
 	// Controler 宣言
 	Controller controller;
 	controller.create.run();

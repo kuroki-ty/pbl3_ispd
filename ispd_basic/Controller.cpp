@@ -56,41 +56,36 @@ std::cout << "direction:"<< this->create.direction << std::endl;
 	    if(this->block.isStartMesh( start_coord, create_coord,  total_distance))
 		{
 			this->search_flag = OBSTACLE;
+			this->create.stopRun();// 壁探索が終わったら、即Createを止める
 		}
 	}
 
 //2.障害物探索
 	else if(this->search_flag == OBSTACLE) // 障害物探索
 	{
-std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！１" << std::endl;
+
+//std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！１" << std::endl;
 		int goal;
 		std::vector<Coordinate> move_point_list;  // Createが辿る座標を格納したリスト
 // 2-1.createの現在座標を取得
 		create_coord = this->create.getCurrentCoordinate();
 // 2-2.createの現在座標から向かうメッシュを計算し、辿る座標リストを得る
 		goal = this->block.getNextMeshNum();
-std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！2" << std::endl;
 		move_point_list = this->block.getMovePointList(create_coord, this->create.direction, goal);// → Createの現在座標を元に、ゴールまでに辿る座標のリストを得る
 // 2-3.座標リスト通りに進んでいく
-std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！3" << std::endl;
 		for(int i=0;i<move_point_list.size();i++)
 		{
-std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！4" << move_point_list.size() << std::endl;
 			// 2-3-1.次の座標値を渡して、移動と、各座表値の計算を行う
 			this->create.runNextPoint(move_point_list[i], Bumper_Hit, create_coord, obstacle_coord); //
-std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！5" << std::endl;
 			// 2-3-2 移動後の座標値を渡して、メッシュを更新
 			this->block.setMeshMark(create_coord, Bumper_Hit);// 
-std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！6" << std::endl;
 			// 2-3-3各座表の情報を渡して、map,obstacleリストを更新
 			this->map.push_back_CreatePointList( create_coord );
-std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！7" << std::endl;
 			if(Bumper_Hit)
 			{	
 				this->map.push_back_ObstaclePointList( obstacle_coord );
 			}
 		}
-std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！8" << std::endl;
 // 2-4.全部のメッシュをチェックし終えたかを判定
 		if( this->block.checkAllSearchEnd() )
 		{
