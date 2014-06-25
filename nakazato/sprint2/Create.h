@@ -53,8 +53,8 @@ public:
 		this->velocity=0; 
 		this->total_angle=0;
 		this->push_bumper = NONE;
-//		this->current_coord.x = 0.0;
-//		this->current_coord.y = 0.0;
+		this->current_coord.x = 165.0;
+		this->current_coord.y = 165.0;
 	}
 
 // public method

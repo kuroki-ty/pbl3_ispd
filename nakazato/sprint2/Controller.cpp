@@ -46,7 +46,7 @@ std::cout << "soner:"<< soner_distance << std::endl;
 
 		}
 //		if(this->block.isStartMesh(create_coord) )
-		if(this->map.getCreateListSize() > 180 )
+		if(this->map.getCreateListSize() > 120 )
 		{
 			this->finished = true;
 		}

@@ -16,13 +16,11 @@ void Create::goStraightWithSoner()
 	float total_soner=0.0;
 //	float soner_distance = this->getDistanceBySoner();
 	float soner_distance;
-
 	for(int i = 0;i<3;i++)
 	{
 		total_soner += this->getDistanceBySoner();
 	}
 	soner_distance = total_soner/3;
-
 
 	if((soner_distance >= WALL_DISTANCE_LOW) && (soner_distance <= WALL_DISTANCE_HIGH))
 	{
@@ -39,6 +37,7 @@ void Create::goStraightWithSoner()
 		this->Right_Run = true;
 		drive(VELOCITY, -RADIUS_RIGHT);	//壁と遠い場合、右向きに直進
 	}
+	std::cout << "Create Start!" << std::endl;
 }
 
 
@@ -337,7 +336,7 @@ void Create::doBumperHitMode(int bumper_hit, Coordinate &create, Coordinate &obs
 
 void Create::doBumperHitModeAtObstacleSerch(int distance, int angle, int bumper_hit, Coordinate &create, Coordinate &obstacle)
 {
-	this->stopRun();//値だけ取得してストップ
+	this->stopRun();
 	this->addDistance(distance);// Distanceを更新、Angleは後のcalculateCreateCoordinate（）内で更新
 
 	if(bumper_hit == 1)
@@ -385,7 +384,7 @@ void Create::driveDistanceSearchingObstacle(int distance, Coordinate &create, Co
 	int count = 0;
 	int angle = 0;
 	int bumper_hit;
-
+std::cout << "distance:" << distance << std::endl;
 	drive (VELOCITY, 0);
 
 	while (1)
@@ -393,7 +392,7 @@ void Create::driveDistanceSearchingObstacle(int distance, Coordinate &create, Co
 		usleep (20000);
 		count += getDistanceFromCreate();
 		angle += getAngleFromCreate();
-
+std::cout << "count:" << count << std::endl;
 		bumper_hit = getBumpsAndWheelDrops();
 		if( bumper_hit!=0)// バンパーが反応したら
 		{
@@ -432,10 +431,19 @@ void Create::runNextPoint(Coordinate move_point, bool &Bumper_Hit, Coordinate &c
 	float angle = acos(dist_x / distance);
 	float direction_angle = this->total_angle * ( M_PI/180.0 ) + angle;
 	int tmp_angle;
+
+	std::cout << "direction_anle" << direction_angle * ( M_PI/180.0 ) << std::endl;
 	
 	// direction_angleを誤差を踏まえた値に変換
 	// 回転
-	tmp_angle = turn(VELOCITY, 1, direction_angle, 0);
+	if(direction_angle>=0)
+	{
+		tmp_angle = turn(VELOCITY, 1, direction_angle, 0);
+	}
+	else
+	{
+		tmp_angle = turn(-VELOCITY, 1, direction_angle, 0);
+	}
 	// 角度の更新
 	this->addAngle(tmp_angle);
 	// 直進→障害物に当たった時,止まって5cm下がり、90度半時計回転後、障害物の座標値を得る
