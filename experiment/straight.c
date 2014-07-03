@@ -1,52 +1,43 @@
-/** square.c
- *
- *  A simple program to move the Create in a square 1m per side.
- *
- *  Author: Jesse DeGuire
- *
- * 
- *  This file is part of COIL.
- *
- *  COIL is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  COIL is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- * 
- *  You should have received a copy of the GNU General Public License
- *  along with COIL.  If not, see <http://www.gnu.org/licenses/>.
- * 
- *
- *  Versions:
- *	1.0 	12 Jan 2008	Initial public release
- */
+/*直進誤差実験用コード
+
+実験内容
+
+速度変化 ±100--±300　50刻み
+距離変化　300--900　300刻み
+
+計測観点
+縦・横誤差（設定値と実測値）
+
+*/
 
 #include <createoi.h>
 #include <stdio.h>
 #include <math.h>
+
+#define VELOCITY 		200
+#define DISTANCE_MAX 	300
+
 int main()
 {
 	startOI_MT ("/dev/ttyUSB0");
+
 	float distance=0,angle=0;
-	float tmp_x,tmp_y,current_angle;
-	//distance= getDistance();
-	//angle= getAngle();
-	drive(200,0);
+	float x,y,current_angle;
+
+	drive(VELOCITY, 0);
 	while(1)
 	{
 		distance += getDistance();
 		angle += getAngle();
 		
-		if(distance >= 1000)
+		if(distance >= DISTANCE_MAX)
 		{
 			current_angle = angle * (M_PI / 180);
-			tmp_x = distance * cos(current_angle);
-			tmp_y = distance * sin(current_angle);
-			printf("x座標: %f ,y座標: %f,",tmp_x,tmp_y);
+			x = distance * cos(current_angle);
+			y = distance * sin(current_angle);
+
+			fprintf(stdout, "x座標: %f , y座標: %f\n", x, y);
+
 			break;
 		}
 	}
