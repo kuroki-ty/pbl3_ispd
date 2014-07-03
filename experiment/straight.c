@@ -27,34 +27,29 @@
 
 #include <createoi.h>
 #include <stdio.h>
-
+#include <math.h>
 int main()
 {
-	int d=0,a=0,v=0,t=0;
-	startOI_MT("/dev/ttyUSB0");
-
-	d = getDistance();
-	a = getAngle();
-	//v = getVelocity();
-	t = getTurningRadius();
-	
-	d = 0;
-	a = 0;
-	t = 0;
-	
-	drive (200, 1);
-	while(1){
-		d += getDistance();
-		a += getAngle();
-		//v = getVelocity();
-		t = getTurningRadius();
-		if(a >= 1500) break;
+	startOI_MT ("/dev/ttyUSB0");
+	float distance=0,angle=0;
+	float tmp_x,tmp_y,current_angle;
+	//distance= getDistance();
+	//angle= getAngle();
+	drive(200,0);
+	while(1)
+	{
+		distance += getDistance();
+		angle += getAngle();
+		
+		if(distance >= 1000)
+		{
+			current_angle = angle * (M_PI / 180);
+			tmp_x = distance * cos(current_angle);
+			tmp_y = distance * sin(current_angle);
+			printf("x座標: %f ,y座標: %f,",tmp_x,tmp_y);
+			break;
+		}
 	}
 
-	fprintf(stdout, "距離:%d, 回転角度:%d, カーブ半径:%d\n", d,a,t);
-drive (200, 0);	
-
 	stopOI_MT();
-
-	return 0;
 }
