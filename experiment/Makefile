@@ -12,13 +12,13 @@ default: all
 
 all: straight turn curve
 
-straight: straight.cpp
-	$(CC) straight.cpp $(LIBS) -o straight
+straight: straight.c
+	$(CC) straight.c $(LIBS) -o straight
 
-turn: turn.cpp
-	$(CC) turn.cpp $(LIBS) -o turn
+turn: turn.c
+	$(CC) turn.c $(LIBS) -o turn
 
-curve: curve.cpp
-	$(CC) curve.cpp $(LIBS) -o curve
+curve: curve.c
+	$(CC) curve.c $(LIBS) -o curve
 clean:
 	rm -f *.o
