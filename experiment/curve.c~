@@ -27,7 +27,7 @@
 
 #define VELOCITY 		200
 #define RADIUS 			200
-#define DISTANCE_MAX 		52 
+#define DISTANCE_MAX 	52 
 
 int main()
 {
