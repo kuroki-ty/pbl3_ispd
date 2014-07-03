@@ -34,7 +34,7 @@ int main()
 	startOI_MT ("/dev/ttyUSB0");
 
 	int distance=0,angle=0;
-	float x, y;
+	float x, y, angle_r;
 	drive(VELOCITY, RADIUS);
 	while(1)
 	{
