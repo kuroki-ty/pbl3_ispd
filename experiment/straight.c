@@ -14,14 +14,14 @@
 #include <stdio.h>
 #include <math.h>
 
-#define VELOCITY 		200
+#define VELOCITY 	100.0
 #define DISTANCE_MAX 	300
 
 int main()
 {
 	startOI_MT ("/dev/ttyUSB0");
 
-	float distance=0,angle=0;
+	int distance=0,angle=0;
 	float x,y,current_angle;
 
 	drive(VELOCITY, 0);
@@ -29,12 +29,12 @@ int main()
 	{
 		distance += getDistance();
 		angle += getAngle();
-		
+
 		if(distance >= DISTANCE_MAX)
 		{
-			current_angle = angle * (M_PI / 180);
-			x = distance * cos(current_angle);
-			y = distance * sin(current_angle);
+			current_angle = (float)(angle * (M_PI / 180));
+			x = (float)distance * cos(current_angle);
+			y = (float)distance * sin(current_angle);
 
 			fprintf(stdout, "x座標: %f , y座標: %f\n", x, y);
 

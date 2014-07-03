@@ -25,8 +25,8 @@
 #include <stdio.h>
 #include <math.h>
 
-#define VELOCITY 		200
-#define RADIUS 			200
+#define VELOCITY 		100.0
+#define RADIUS 			200.0
 #define DISTANCE_MAX 		52 
 
 int main()
@@ -45,8 +45,8 @@ int main()
 		{
 			angle_r = (float)(distance / RADIUS); //[rad]
 			
-			x = 2 * RADIUS * sin(angle_r/2) * cos(angle_r/2);
-			y = 2 * RADIUS * sin(angle_r/2) * sin(angle_r/2);
+			x = 2.0 * RADIUS * sin(angle_r/2.0) * cos(angle_r/2.0);
+			y = 2.0 * RADIUS * sin(angle_r/2.0) * sin(angle_r/2.0);
 			
 			fprintf(stdout, "x座標: %f , y座標: %f , 回転角度: %d\n", x, y, angle);
 			break;

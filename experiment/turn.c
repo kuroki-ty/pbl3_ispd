@@ -18,8 +18,8 @@
 #include <createoi.h>
 #include <stdio.h>
 
-#define VELOCITY 50
-#define RADIUS -1		//-1:右回転 1:左回転
+#define VELOCITY 50.0
+#define RADIUS 1		//-1:右回転 1:左回転
 #define RAD_MAX 90
 
 int main()
@@ -30,7 +30,9 @@ int main()
 	drive (VELOCITY, RADIUS);
 	while(1){
 
-		angle += getAngle();	
+		angle += getAngle();
+		
+		printf("%d\n", angle);	
 
 		if(angle >= RAD_MAX)
 		{
