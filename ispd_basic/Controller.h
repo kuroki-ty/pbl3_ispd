@@ -44,7 +44,7 @@ public:
 		std::vector<Coordinate> create_list;
 		create_list = this->map.getCreatePointList();
 
-		std::ofstream ofs("./output/create_list");
+		std::ofstream ofs("/home/qito-asmd-2/output/create_list");
 		for(int i=0;i<this->map.getCreateListSize();i++)
 		{
 			ofs << i << "\t" << create_list[i].x << "\t" << create_list[i].y << std::endl;
@@ -57,7 +57,7 @@ public:
 		std::vector<Coordinate> obstacle_list;
 		obstacle_list = this->map.getObstaclePointList();
 
-		std::ofstream ofs("./output/obstacle_list");
+		std::ofstream ofs("/home/qito-asmd-2/output/obstacle_list");
 		for(int i=0;i<this->map.getObstacleListSize();i++)
 		{
 			ofs << i << "\t" << obstacle_list[i].x << "\t" << obstacle_list[i].y << std::endl;
