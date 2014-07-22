@@ -5,12 +5,12 @@
 /*****************************************************************************
  ** Define
  *****************************************************************************/
-#define VELOCITY 200			//直進速度[mm/s]
-#define VELOCITY2 100			//直進速度[mm/s]
+#define VELOCITY_H 200			//速度[mm/s]
+#define VELOCITY_L 100			//速度[mm/s]
 #define RADIUS_LEFT  230.0		//左回り回転半径[mm]
 #define RADIUS_RIGHT 320.0		//右回り回転半径[mm]
-#define WALL_DISTANCE_LOW  140.0	//壁とCreateの距離_低[cm]
-#define WALL_DISTANCE_HIGH 180.0	//壁とCreateの距離_高[cm]
+#define WALL_DISTANCE_LOW  180.0	//壁とCreateの距離_低[cm]
+#define WALL_DISTANCE_HIGH 230.0	//壁とCreateの距離_高[cm]
 
 #define CREATE_SIZE 330 // 縦 [mm]
 // 横330[mm]
@@ -55,6 +55,20 @@ public:
 		this->push_bumper = NONE;
 		this->current_coord.x = 165.0;
 		this->current_coord.y = 165.0;
+		this->Straight_Run = true;
+		this->Right_Run = false;
+		this->Left_Run  = false;
+		this->Stop = true;
+		this->StopRun = true;
+		this->StopTurn = false;
+
+	}
+
+	void init()
+	{
+		std::cout << "distance & angle init" << std::endl;
+		std::cout << getDistance() << std::endl;
+		std::cout << getAngle() << std::endl;
 	}
 
 // public method
@@ -62,19 +76,32 @@ public:
 	// 超音波センサを使って直進
 	void goStraightWithSoner();
 
+	// 超音波センサを使って壁との距離を計測
+	void checkDistToWall(float &ave_dist);
+
+	// 直進と回転の繰り返しで進む
+	void goStraightWithoutSoner();
+
+	// 	普通に走る
+	void goStraight();
+
 	// 走らせる（超音波センサ使用）
 	void run();
 
 	// 止まる
 	void stopRun()
 	{
+		this->Stop = true;
 		drive(0,0);
 	}
+
+	int driveCreate(int velocity, int distance_max);
+	float turnCreate(int velocity, int angle_max);
 
 
 	// Createの現在座標（world）を計算
 	Coordinate calcCurrentCoordinate();
-	Coordinate calcCurrentCoordinate(int distance, int angle);
+	Coordinate calcCurrentCoordinate(int distance );
 
 	// 超音波センサが当たる部分の座標（world）の計算
 	Coordinate calcSonerHitPointCoordinate(float soner_distance);
@@ -104,27 +131,8 @@ public:
 
 // set method
 	// Createの角度を更新
-	void addAngle(int angle)
-	{
-		this->total_angle += angle;
-		this->total_angle = this->total_angle % 360;
-		if((this->total_angle < 45 && this->total_angle >= 0) || (this->total_angle < 0 && this->total_angle >= -45) || (this->total_angle < 360 && this->total_angle >= 315) || (this->total_angle < -315 && this->total_angle > -360))
-		{
-			this->direction = PLUS_X; 
-		}
-		else if( (this->total_angle < 135 && this->total_angle >= 45) || (this->total_angle < -225 && this->total_angle >= -315) )
-		{
-			this->direction = PLUS_Y;
-		}
-		else if( (this->total_angle < 225 && this->total_angle >= 135) || (this->total_angle < -135 && this->total_angle >= -225) )
-		{
-			this->direction = MINUS_X;
-		}
-		else if( (this->total_angle < 315 && this->total_angle >= 225) || (this->total_angle < -45 && this->total_angle >= -135) )
-		{
-			this->direction = MINUS_Y;
-		}
-	}
+	void addAngle(float angle);
+
 	// createの走行距離を更新
 	void addDistance(int distance)
 	{
@@ -140,7 +148,7 @@ public:
 
 
 // get method
-	int getTotalAngle()	
+	float getTotalAngle()	
 	{
 		return this->total_angle;
 	}
@@ -150,13 +158,7 @@ public:
 	}
 
 
-	int getAngleFromCreate()
-	{
-		int x;
-		//x = (int)(getAngle()*1.244) % 360;
-		x = getAngle() % 360;
-		return x;
-	}
+	float getAngleFromCreate( int velocity );
 
 	int getDistanceFromCreate()
 	{
@@ -179,12 +181,17 @@ public:
 	bool Straight_Run;
 	bool Right_Run;
 	bool Left_Run;
+	bool Stop;
+	bool StopRun;
+	bool StopTurn;
 	enum Bumper push_bumper;
 	enum IRobotDirection direction;
 
+	std::vector<float> soner_dist;
+
 private:
 	int velocity;
-	int total_angle;
+	float total_angle;
 	int total_distance;
 
 	Coordinate current_coord;

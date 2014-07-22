@@ -12,7 +12,8 @@ int main()
 	startOI("/dev/ttyUSB0");
 	// Controler 宣言
 	Controller controller;
-	controller.create.run();
+	controller.create.init();
+//	controller.create.run();
 	int counter = 0;
 	while(!controller.finished)	
 	{

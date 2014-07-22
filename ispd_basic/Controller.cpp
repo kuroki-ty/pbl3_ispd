@@ -10,14 +10,14 @@ void Controller::checkState()
 	Coordinate obstacle_coord;
 
 	bool Bumper_Hit = false;
-std::cout << "distance:" << this->create.getTotalDistance() << std::endl;
+std::cout << "total_distance:" << this->create.getTotalDistance() << std::endl;
 std::cout << "angle:" << this->create.getTotalAngle() << std::endl;
 std::cout << "(" << this->create.getCurrentCoordinate().x << ", " << this->create.getCurrentCoordinate().y << ")" << std::endl;
 std::cout << "direction:"<< this->create.direction << std::endl;
 	this->block.showMesh();
 
 // 1.壁探索
-	if(this->search_flag == WALL)// wall探索フラグをfalseにする処理を入れる
+	if(this->search_flag == WALL)
 	{
 		int bumper_hit = getBumpsAndWheelDrops();
 
@@ -55,7 +55,7 @@ std::cout << "direction:"<< this->create.direction << std::endl;
 		int total_distance = this->create.getTotalDistance();
 	    if(this->block.isStartMesh( start_coord, create_coord,  total_distance))
 		{
-			this->search_flag = OBSTACLE;
+			this->search_flag = DOCK;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める
 		}
 	}

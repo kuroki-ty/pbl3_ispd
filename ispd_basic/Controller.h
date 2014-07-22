@@ -19,12 +19,8 @@ public:
 		this->finished = false;
 		this->map.push_back_CreatePointList(this->create.getCurrentCoordinate());
 
-		this->create.Straight_Run = false;
-		this->create.Right_Run    = false;
-		this->create.Left_Run     = false;
 		this->search_flag = WALL;
 	}
-
 
 	void checkState();
 
