@@ -23,17 +23,20 @@ float Create::turnCreate(int velocity, int angle_max)
 		angle += getAngle();
 		if(fabs(angle) >= angle_max)
 		{
+			this->stopRun();
 			break;
 		}
 	}
 
 	if(angle >=0 )
 	{
+		std::cout <<"turn------------------------:" << 0.0593*angle + 14.843 + angle << std::endl;
 		return 0.0593*angle + 14.843 + angle;
 	}
 	else
 	{
-		return 0.04914*angle + -15.122 + angle;
+		std::cout <<"turn------------------------:" << 0.0593*angle - 15.122 + angle << std::endl;
+		return 0.04914*angle - 15.122 + angle;
 	}
 }
 
@@ -48,18 +51,22 @@ float Create::getAngleFromCreate( int velocity )
 		if(velocity == 200)
 		{
 			angle = 0.01329*x + 31.642 + x;
+std::cout << "------------------------1------------------------" << std::endl;
 		}
 		else if(velocity == -200)
 		{
 			angle = 0.01329*x - 31.642 + x;
+std::cout << "------------------------2------------------------" << std::endl;
 		}
 		else if(velocity == 100)
 		{
 			angle = 0.0593*x + 14.843 + x;
+std::cout << "------------------------3------------------------" << std::endl;
 		}
 		else if(velocity = -100)
 		{
 			angle = 0.04914*x + -15.122 + x;
+std::cout << "------------------------4------------------------" << std::endl;
 		}
 	}
 	else	// Run → Run
@@ -170,15 +177,22 @@ std::cout << "soner_dist:" << this->getDistanceBySoner()  << std::endl;
 void Create::checkDistToWall(float &ave_dist)
 {
 	float total = 0.0;
-	this->soner_dist.push_back( this->getDistanceBySoner() );
+	float soner_dist = this->getDistanceBySoner();
+	ave_dist = 200;
+	std::cout << "soner--------------------------:" << soner_dist << std::endl;
+	if(soner_dist < WALL_SEARCH_TH)
+	{
+		this->soner_dist.push_back( soner_dist );
+	}
 	
-	if(this->soner_dist.size()>5)
+	if(this->soner_dist.size()>3)
 	{	
 		for(int i=0;i<this->soner_dist.size();i++)
 		{
 			total += this->soner_dist[i];
 		}
 		ave_dist = total/this->soner_dist.size();
+	std::cout << "ave_dist-------------------------:" << ave_dist << std::endl;
 		this->soner_dist.clear();
 	}
 
@@ -201,9 +215,9 @@ void Create::goStraightWithoutSoner()
 		int tmp_distance;
 		tmp_distance = this->getDistanceFromCreate();
 		this->stopRun();
+		this->addDistance(tmp_distance);
 		this->calcCurrentCoordinate(tmp_distance);
-		this->StopRun = true;
-		this->addAngle( this->turnCreate(VELOCITY_L, -15) );
+		this->addAngle( this->turnCreate(-VELOCITY_L, RETURN_ANGLE) );
 
 	}
 	if(distance_to_wall < 150)
@@ -211,9 +225,9 @@ void Create::goStraightWithoutSoner()
 		int tmp_distance;
 		tmp_distance = this->getDistanceFromCreate();
 		this->stopRun();
+		this->addDistance(tmp_distance);
 		this->calcCurrentCoordinate(tmp_distance);
-		this->StopRun = true;
-		this->addAngle( this->turnCreate(VELOCITY_L, 15) );
+		this->addAngle( this->turnCreate(VELOCITY_L, RETURN_ANGLE) );
 		
 	}
 	drive(VELOCITY_H,0);
@@ -241,8 +255,10 @@ void Create::changeDirection()
 //std::cout << "angle : " << angle << std::endl;
 	int tmp_distance;
 	tmp_distance = driveCreate(-VELOCITY_H,50);	//5cm後退
+	this->addDistance(tmp_distance);
 	this->StopRun = true;
 	this->calcCurrentCoordinate(tmp_distance);
+	this->stopRun();
 
 	int current_angle = this->getTotalAngle(); // 現在の角度
 	current_angle = current_angle % 90; // 現在の角度
@@ -267,7 +283,24 @@ void Create::changeDirection()
 		turn_angle = 90-current_angle;
 	}
 */
-		turn_angle = 15;
+
+	if(this->push_bumper == LEFT)
+	{
+		turn_angle = 120;
+	}
+	else if(this->push_bumper == RIGHT )
+	{
+		turn_angle = 30;
+	}
+	else if(this->push_bumper == CENTER )
+	{
+		turn_angle = 70;
+	}
+	else
+	{
+		turn_angle = 90;
+	}
+		turn_angle = 72;
 
 	this->push_bumper == NONE;
 	std::cout << "turn angle" << turn_angle << std::endl;
@@ -283,7 +316,7 @@ void Create::changeDirection()
 		tmp_angle = turnCreate(VELOCITY_L,turn_angle); // 半時計回り
 		this->addAngle(tmp_angle);
 	}
-	this->init();
+	this->stopRun();
 
 }
 
@@ -361,10 +394,11 @@ Coordinate Create::calcCurrentCoordinate(int distance )
 
 		if(this->StopRun)
 		{
-			if(distance > 0)	// 前進の場合
+			if(distance >= 0)	// 前進の場合
 			{
 				distance_x = -0.01196*distance+66.97+distance;
 				distance_y = -0.0242 * distance;	// 横ずれ
+std::cout << "------------------------1------------------------" << std::endl;
 			}
 			else				// 後退の場合
 			{
@@ -372,6 +406,7 @@ Coordinate Create::calcCurrentCoordinate(int distance )
 				distance_y = -0.0242 * distance;	// 横ずれ
 			}
 			this->StopRun = false;
+
 		}
 		else
 		{	
@@ -381,6 +416,8 @@ Coordinate Create::calcCurrentCoordinate(int distance )
 
 		tmp_x = (float) distance_x * cos(current_angle_r) - distance_y * sin(current_angle_r);
 		tmp_y = (float) distance_x * sin(current_angle_r) + distance_y * cos(current_angle_r);
+
+std::cout << "補正後(x,y)-----------------------------(" << tmp_x << " : " << tmp_y << std::endl;
 
 		this->Straight_Run = false;
 	}
@@ -489,12 +526,12 @@ void Create::doBumperHitMode(int bumper_hit, Coordinate &create, Coordinate &obs
 {
 	int distance = this->getDistanceFromCreate();
 	//int angle 	 = this->getAngleFromCreate( VELOCITY_H );	
-	int angle 	 = getAngle();	
+	//int angle 	 = getAngle();	
 	this->stopRun();//値だけ取得してストップ
 
 	this->soner_dist.clear(); // 壁にぶつかったので、今まで計測していたsoner_distをクリア
 
-	this->addAngle(angle);	// Create角度更新
+	//this->addAngle(angle);	// Create角度更新
 	this->addDistance(distance);// Distanceを更新、Angleは後のcalculateCreateCoordinate（）内で更新
 
 	if(bumper_hit == 1)
@@ -552,7 +589,7 @@ void Create::doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner
 		int distance = this->getDistanceFromCreate( );
 		this->addDistance(distance);
 		// angle取得
-		this->addAngle( getAngle());	// Create角度更新
+		//this->addAngle( getAngle());	// Create角度更新
 
 		create = this->calcCurrentCoordinate( distance );
 
@@ -563,7 +600,6 @@ void Create::doNormalMode(Coordinate &create, Coordinate &obstacle, float &soner
 			// 超音波センサの観測座標を計算してobstacle_listにプッシュバック
 			obstacle = this->calcSonerHitPointCoordinate(soner_distance);
 		}
-//		this->run();
 
 }
 

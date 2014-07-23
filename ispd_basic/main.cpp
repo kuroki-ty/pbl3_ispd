@@ -15,6 +15,7 @@ int main()
 	controller.create.init();
 //	controller.create.run();
 	int counter = 0;
+	waitTime(2.0);
 	while(!controller.finished)	
 	{
 		controller.checkState();	// バンパーに当たったら回避モードに移行

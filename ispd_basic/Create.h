@@ -27,6 +27,12 @@
 // 超音波センサで障害物の座標を記録する際の閾値　この距離より遠い座標は記録しない
 #define RECORD_OBSTACLE_TH 300
 
+// 壁探索時の飛び値対策
+#define WALL_SEARCH_TH 500
+
+// 壁探索の直進回転走行の復帰回転角度
+#define RETURN_ANGLE 10
+
 /*****************************************************************************
  ** enum
  *****************************************************************************/
@@ -59,7 +65,7 @@ public:
 		this->Right_Run = false;
 		this->Left_Run  = false;
 		this->Stop = true;
-		this->StopRun = true;
+		this->StopRun = false;
 		this->StopTurn = false;
 
 	}
@@ -93,6 +99,7 @@ public:
 	{
 		this->Stop = true;
 		drive(0,0);
+		this->init();
 	}
 
 	int driveCreate(int velocity, int distance_max);
@@ -162,12 +169,7 @@ public:
 
 	int getDistanceFromCreate()
 	{
-		float x= 0.0;
-		float y= 0.0;
-		x = getDistance();
-		//y = 7*(10e-08)*x*x*x - 2*(10e-04)*x*x + 0.1305*x;
-		
-		return (int)(x-y);
+		return getDistance();
 	}	
 
 	Coordinate getCurrentCoordinate()
