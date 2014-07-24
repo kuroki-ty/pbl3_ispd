@@ -16,8 +16,8 @@ Block::Block()
 {
     block_x = IROBOT_D;     //メッシュ一個分の横の長さ
     block_y = IROBOT_D;     //メッシュ一個分の縦の長さ
-    total_block_x = ceil(FIERD_X/block_x);  //横のメッシュ総数
-    total_block_y = ceil(FIELD_Y/block_y);  //縦のメッシュ総数
+    total_block_x = 2*ceil(FIERD_X/block_x);  //横のメッシュ総数(余白を含む)
+    total_block_y = 2*ceil(FIELD_Y/block_y);  //縦のメッシュ総数(余白を含む)
     
     //ノード間移動コスト配列の初期設定
     std::vector<int> list_c;
@@ -121,6 +121,48 @@ void Block::showMesh()
     
 }
 
+//壁探索終了後に壁の外のメッシュを全て探索済みにする
+void Block::fillMesh()
+{
+    std::vector<Wall> wall;     //壁の始まりと終わりを行ごとに記録するための配列
+    Wall tmp;
+    for(int i=0; i<total_block_y; i++)
+    {
+        tmp.start = -1;
+        tmp.end = -1;
+        wall.push_back(tmp);    //初期値は0
+    }
+    
+    /*横方向に壁の外のメッシュを埋める*/
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x; j++)
+        {
+            if(block[i][j].mark == IMPASSABLE)
+            {
+                if(wall[i].start == -1){    //壁の始まりは初期値だった時のみ記録
+                    wall[i].start = j;
+                }
+                wall[i].end = j;            //壁の終わりは毎回記録
+            }
+        }
+    }
+    
+    //壁の外にあるメッシュをIMPASSABLEにする
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x; j++)
+        {
+            if((j<wall[i].start) || (j>wall[i].end))
+            {
+                block[i][j].mark = IMPASSABLE;
+            }
+        }
+    }
+    /*****************************/
+}
+
+
 //ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
 std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirection direction, int goal)
 {
@@ -145,8 +187,8 @@ Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
 {
     tmp.num = count;
     tmp.mark = UNKNOWN;
-    tmp.center.x = x*block_x+block_x/2.0;
-    tmp.center.y = y*block_y+block_y/2.0;
+    tmp.center.x = x*block_x+block_x/2.0 - 2.0*block_x;     //余白を2*block_x取る
+    tmp.center.y = y*block_y+block_y/2.0 - 2.0*block_y;     //余白を2*block_y取る
     
     return tmp;
 }
@@ -308,7 +350,7 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     //x軸のノード番号を求める
     for(int i=0; i<total_block_x; i++)
     {
-        if((coord.x >= (float)(i*block_x)) && (coord.x < (float)((i+1)*block_x)))
+        if((coord.x >= (float)(i*block_x-2.0*block_x)) && (coord.x < (float)((i+1)*block_x-2.0*block_x)))
         {
             node_num_x = i;
             break;
@@ -318,13 +360,12 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     //y軸のノード番号を求める
     for(int i=0; i<total_block_y; i++)
     {
-        if((coord.y >= (float)(i*block_y)) && (coord.y < (float)((i+1)*block_y)))
+        if((coord.y >= (float)(i*block_y-2.0*block_y)) && (coord.y < (float)((i+1)*block_y-2.0*block_y)))
         {
             node_num_y = i;
             break;
         }
     }
-    std::cout << "mesh:------------" << ((node_num_y*total_block_x)+node_num_x) << std::endl; 
     return ((node_num_y*total_block_x)+node_num_x);
 }
 
@@ -346,10 +387,11 @@ std::vector<Coordinate> Block::routeCoordinateToRouteMeshNum(std::vector<int> ro
 
 int main(){
     Block block;
-    block.calcRoute(0, 0, UP, 0, 8);
+    
+    block.showMesh();
     
     return 0;
 }
  
-******************************************************************************/
+*****************************************************************************/
 
