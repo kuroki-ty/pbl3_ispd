@@ -49,6 +49,8 @@ std::cout << "direction:"<< this->create.direction << std::endl;
 		}
 //1-2.メッシュの更新
 		this->block.setMeshMark( create_coord, Bumper_Hit );
+	        this->block.setMeshMark( obstacle_coord, true);
+		std::cout << "壁座標 x:" << obstacle_coord.x << " y:" << obstacle_coord.y << std::endl;
 
 //1-3.壁探索終了の判定
 		Coordinate start_coord;
@@ -56,11 +58,7 @@ std::cout << "direction:"<< this->create.direction << std::endl;
 
 	    if(this->block.isStartMesh( start_coord, create_coord,  total_distance))
 		{
-			this->search_flag = DOCK;
-			this->create.stopRun();// 壁探索が終わったら、即Createを止める
-		}
-		else if(this->create.getTotalDistance() > 3230)
-		{
+		        this->block.fillMesh();
 			this->search_flag = DOCK;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める
 		}
