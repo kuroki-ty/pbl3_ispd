@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 yamasaki. All rights reserved.
 //
 
-#include "Dijkstra.h"  //gitにpushするときは外す
+//#include "Dijkstra.h" 
 
 /*****************************************************************************
  ** Construtor
