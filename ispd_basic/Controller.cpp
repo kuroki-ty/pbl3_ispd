@@ -58,8 +58,9 @@ std::cout << "direction:"<< this->create.direction << std::endl;
 		{
 			this->search_flag = DOCK;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める
+			this->block.fillMesh();
 		}
-		else if(this->create.getTotalDistance() > 3230)
+		else if(this->create.getTotalDistance() > 5800)
 		{
 			this->search_flag = DOCK;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める

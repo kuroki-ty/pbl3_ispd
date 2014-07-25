@@ -31,7 +31,8 @@ float Create::turnCreate(int velocity, int angle_max)
 	if(angle >=0 )
 	{
 		std::cout <<"turn------------------------:" << 0.0593*angle + 14.843 + angle << std::endl;
-		return 0.0593*angle + 14.843 + angle;
+//		return 0.0593*angle + 14.843 + angle;
+		return 0.0593*angle + 16.343 + angle;
 	}
 	else
 	{
@@ -300,7 +301,7 @@ void Create::changeDirection()
 	{
 		turn_angle = 90;
 	}
-		turn_angle = 72;
+		turn_angle = 70;
 
 	this->push_bumper == NONE;
 	std::cout << "turn angle" << turn_angle << std::endl;

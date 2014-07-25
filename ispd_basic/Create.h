@@ -25,7 +25,7 @@
 #define BUMPER_PLACE_ANGLE_L  ((180-BUMPER_PLACE_ANGLE_R) * (M_PI / 180))
 
 // 超音波センサで障害物の座標を記録する際の閾値　この距離より遠い座標は記録しない
-#define RECORD_OBSTACLE_TH 300
+#define RECORD_OBSTACLE_TH 400
 
 // 壁探索時の飛び値対策
 #define WALL_SEARCH_TH 500
