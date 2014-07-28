@@ -45,19 +45,19 @@ int main()
 		obstacle_coord.push_back(tmp_obstacle_coord);
 	}
 	// create_coordの表示
-	for (unsigned i = 0; i < create_coord.size(); i++)
-	{
-		std::cout << i << "  " << create_coord[i].x <<", "<< create_coord[i].y << std::endl;
-	}
+	//for (unsigned i = 0; i < create_coord.size(); i++)
+	//{
+	//	std::cout << i << "  " << create_coord[i].x <<", "<< create_coord[i].y << std::endl;
+	//}
 
 
-	// create_coordの表示
+	// create_coordの登録（setMesh）
 	for (unsigned i = 0; i < create_coord.size(); i++)
 	{
 		block.setMeshMark( create_coord[i], false );
 		block.showMesh();
 	}
-	// obstacle_coordの表示
+	// create_coordの登録（setMesh）
 	for (unsigned i = 0; i < obstacle_coord.size(); i++)
 	{
 		block.setMeshMark( obstacle_coord[i], true );
