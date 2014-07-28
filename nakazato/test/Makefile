@@ -10,7 +10,7 @@ CVFLAGS = $(shell pkg-config --libs opencv)  $(shell pkg-config --cflags opencv)
 default: all
 
 
-all: drive sonerSensor getCoordinate
+all: drive sonerSensor getCoordinate setMesh
 
 drive: drive.cpp
 	$(CC) drive.cpp $(LIBS) -o drive
@@ -20,6 +20,9 @@ sonerSensor: sonerSensor.cpp
 
 getCoordinate: getCoordinate.cpp
 	$(CC) getCoordinate.cpp $(LIBS) -o getCoordinate
+
+setMesh: setMesh.cpp
+	$(CC) setMesh.cpp $(LIBS) -o setMesh
 
 
 clean:
