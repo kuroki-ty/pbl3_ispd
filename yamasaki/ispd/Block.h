@@ -126,8 +126,10 @@ public:
     }
 
     //IR値をメッシュにセットする
-    void setIRMark(Coordinate coord, value)
+    void setIRMark(Coordinate coord, int value)
     {
+	int num;
+
         num = meshNumToCurrentPosition(coord);
         block[num/total_block_x][num%total_block_x].ir_value = value;
     }
