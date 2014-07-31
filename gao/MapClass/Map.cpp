@@ -1,4 +1,5 @@
 #include "Map.h"
+#include <typeinfo>
 
  
 //	tmp1 = coord2.getY()-coord1.getY(); //y'-y
@@ -10,41 +11,18 @@
 //				↓
 //	coord1.x = samplePointA.x; //x
 
-
-void Map::showMap()
+Map::Map()
 {
-    std::vector<float> RANSAC_A(4);
-    std::vector<float> RANSAC_B(4);
-    std::vector<float> RANSAC_C(4);
-    std::vector<Coordinate> wall,outliers, inliers;
-    bool xflag;
-    //float X1,X2,Y1,Y2;
-    IplImage *img = 0;//図を定義する
-    CvPoint obstacle_point1,obstacle_point2;
-    CvScalar rcolor;//色を定義する
-    
-    IplImage *test;//図を定義する
-    test = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
-    cvZero (test);
-    for(int x=0;x<test->height;x++){
-        for(int y=0;y<test->width;y++) {
-            test->imageData[test->widthStep * y + x * 3]     = 255; //B
-            test->imageData[test->widthStep * y + x * 3 + 1] = 255; //G
-            test->imageData[test->widthStep * y + x * 3 + 2] = 255; //R
-        }
+    for(int i=0; i<LINE_NUM; i++)
+    {
+        RANSAC_A.push_back(0);
+        RANSAC_B.push_back(0);
+        RANSAC_C.push_back(0);
     }
-    
-    // 画像領域を確保し初期化する
-    img = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
-    cvZero (img);
-    //画像の背景を白にする
-    for(int x=0;x<img->height;x++){
-        for(int y=0;y<img->width;y++) {
-            img->imageData[img->widthStep * y + x * 3]     = 255; //B
-            img->imageData[img->widthStep * y + x * 3 + 1] = 255; //G
-            img->imageData[img->widthStep * y + x * 3 + 2] = 255; //R
-        }
-    }
+}
+
+void Map::calcLine()
+{
     
     /*デバッグ用，txtファイルから読み込み*/
     //txtファイルから読み込む
@@ -72,96 +50,124 @@ void Map::showMap()
             Coordinate tmp_wall;
             inFile_Location2 >> obstacle_list[i].number  >> obstacle_list[i].X >> obstacle_list[i].Y;
             std::cout << obstacle_list[i].number <<"  "<< obstacle_list[i].X << "  " << obstacle_list[i].Y << std::endl;
-             
+            
             tmp_wall.x = (obstacle_list[i].X+500)/10;
             tmp_wall.y = (obstacle_list[i].Y+500)/10;
-             
+            
             wall.push_back(tmp_wall);
         }
     }
     /*********************************/
     
     /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み
-   
-	for(int i=0;i<obstacle_point_list.size();i++)
-	{
-            Coordinate tmp_wall;
-            tmp_wall.x = (obstacle_point_list[i].x+500)/10;
-            tmp_wall.y = (obstacle_point_list[i].y+500)/10;
-            wall.push_back(tmp_wall);
-	}
      
-    */
+     for(int i=0;i<obstacle_point_list.size();i++)
+     {
+     Coordinate tmp_wall;
+     tmp_wall.x = (obstacle_point_list[i].x+500)/10;
+     tmp_wall.y = (obstacle_point_list[i].y+500)/10;
+     wall.push_back(tmp_wall);
+     }
+     
+     */
     
-    std::vector<float> a(4);
-    std::vector<float> b(4);
-
-	for(int i = 0; i < 4; i++)
+    std::vector<float> a(LINE_NUM);
+    std::vector<float> b(LINE_NUM);
+    
+	for(int i = 0; i < LINE_NUM; i++)
 	{
 		RANSAC_y_Ax_B(wall, RANSAC_A[i], RANSAC_B[i], RANSAC_C[i], outliers, inliers, xflag);
-        //線の描画------ここから
+
         if (!xflag) {
             if (RANSAC_A[i]>0 && RANSAC_B[i]<0) {
-                obstacle_point1.x=400;
-                obstacle_point1.y=400*RANSAC_A[i]+RANSAC_B[i];
-                obstacle_point2.x=(-RANSAC_B[i])/RANSAC_A[i];
-                obstacle_point2.y=0;
                 a[i]=RANSAC_A[i];
                 b[i]=RANSAC_B[i];
             }
             else if (RANSAC_A[i]>0 && RANSAC_B[i]>0){
-                obstacle_point1.x=0;
-                obstacle_point1.y=RANSAC_B[i];
-                obstacle_point2.x=(400-RANSAC_B[i])/RANSAC_A[i];
-                obstacle_point2.y=400;
                 a[i]=RANSAC_A[i];
                 b[i]=RANSAC_B[i];
             }
             else if (RANSAC_A[i]<0 && RANSAC_B[i]>400){
-                obstacle_point1.x=400;
-                obstacle_point1.y=400*RANSAC_A[i]+RANSAC_B[i];
-                obstacle_point2.x=(400-RANSAC_B[i])/RANSAC_A[i];
-                obstacle_point2.y=400;
                 a[i]=RANSAC_A[i];
                 b[i]=RANSAC_B[i];
             }
             else if (RANSAC_A[i]<0 && RANSAC_B[i]<400){
-                obstacle_point1.x=0;
-                obstacle_point1.y=RANSAC_B[i];
-                obstacle_point2.x=(-RANSAC_B[i])/RANSAC_A[i];
-                obstacle_point2.y=0;
                 a[i]=RANSAC_A[i];
                 b[i]=RANSAC_B[i];
             }
-        
+            
         }
-        else
+        
+        wall.clear();
+		wall = outliers;
+		outliers.clear();
+	}
+    
+    double x,y;
+    for(int i=0;i<LINE_NUM;i++)
+    {
+        for(int j=i+1;j<LINE_NUM;j++)
         {
-            obstacle_point1.x=0;
-            obstacle_point1.y=RANSAC_C[i];
-            obstacle_point2.x=400;
-            obstacle_point2.y=RANSAC_C[i];
+            x=(b[j]-b[i])/(a[i]-a[j]);
+            y=a[i]*(b[j]-b[i])/(a[i]-a[j])+b[i];
+            line(x, y);
         }
-        
-        //rcolor = CV_RGB (0,0,255);
-        //cvLine (img, obstacle_point1, obstacle_point2, rcolor, 5, CV_AA, 0);
-        
-        //線の描画-----ここまで
-        
+    }
+    //p1から順番にp配列にpush_backする
+    p.push_back(p1);
+    p.push_back(p2);
+    p.push_back(p3);
+    p.push_back(p4);
+    
+}
+
+//マップを描画する
+void Map::showMap()
+{
+
+    IplImage *img = 0;//図を定義する
+    CvScalar rcolor;//色を定義する
+    
+    IplImage *test;//図を定義する
+    test = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
+    cvZero (test);
+    for(int x=0;x<test->height;x++){
+        for(int y=0;y<test->width;y++) {
+            test->imageData[test->widthStep * y + x * 3]     = 255; //B
+            test->imageData[test->widthStep * y + x * 3 + 1] = 255; //G
+            test->imageData[test->widthStep * y + x * 3 + 2] = 255; //R
+        }
+    }
+    
+    // 画像領域を確保し初期化する
+    img = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
+    cvZero (img);
+    //画像の背景を白にする
+    for(int x=0;x<img->height;x++){
+        for(int y=0;y<img->width;y++) {
+            img->imageData[img->widthStep * y + x * 3]     = 255; //B
+            img->imageData[img->widthStep * y + x * 3 + 1] = 255; //G
+            img->imageData[img->widthStep * y + x * 3 + 2] = 255; //R
+        }
+    }
+
+
+	for(int i = 0; i < LINE_NUM; i++)
+	{        
+        wall.clear();
+		wall = outliers;
+		outliers.clear();
         // 点の描画 ----- ここから
         CvPoint testpoint;
         rcolor = CV_RGB (255,200,0);
-        for(int j=0;j<inliers.size();j++)
+        for(int j=0;j<inliers_s[i].size();j++)
         {
-            int x = (int)(inliers[j].x);
-            int y = (int)(inliers[j].y);
+            int x = (int)(inliers_s[i][j].x);
+            int y = (int)(inliers_s[i][j].y);
             testpoint = cvPoint(x, y);
             
             cvCircle(img, testpoint, 2, rcolor, -5);
-            
         }
-        printf("--------------------------------------------------------|||%lf,%lf\n",a[i],b[i]);
-        
         // 点の描画 ----- ここまで
         
         
@@ -169,58 +175,22 @@ void Map::showMap()
 		wall = outliers;
 		outliers.clear();
 	}
-    double x,y;
-    for(int i=0;i<4;i++)
+    
+    // 線の描画 ----- ここから
+    rcolor = CV_RGB (200,0,200);
+    for(int i=0; i<LINE_NUM; i++)
     {
-        for(int j=i+1;j<4;j++)
+        if(i != LINE_NUM-1)
         {
-            x=(b[j]-b[i])/(a[i]-a[j]);
-            y=a[i]*(b[j]-b[i])/(a[i]-a[j])+b[i];
-            line(x, y);
+            cvLine (img, p[i], p[i+1], rcolor, 2, CV_AA, 0);
+        }
+        else
+        {
+            cvLine (img, p[i], p[0], rcolor, 2, CV_AA, 0);
+
         }
     }
-    
-   
-    rcolor = CV_RGB (200,0,200);
-    cvLine (img, p1, p2, rcolor, 2, CV_AA, 0);
-    cvLine (img, p2, p3, rcolor, 2, CV_AA, 0);
-    cvLine (img, p3, p4, rcolor, 2, CV_AA, 0);
-    cvLine (img, p4, p1, rcolor, 2, CV_AA, 0);
-    
-    // ランダムな円を描画する
-    // **行のデーターを読み込むまで、構造体のx,yを点の座標に入れる
-    /*
-    for (i =0; i<num_Location1; i++) {
-        create_point.x = create_list[i].X;
-        create_point.y = create_list[i].Y;
-        rcolor = CV_RGB (255,0,0);//点（丸）の色を設定
-        cvCircle (img, create_point, 10, rcolor,-5, CV_AA, 3);//点を描く
-    }
-    */
-    /*
-    for (i =0; i<num_Location2; i++) {
-        obstacle_point.x = obstacle_list[i].X;
-        obstacle_point.y = obstacle_list[i].Y;
-        rcolor = CV_RGB (255,200,0);
-        cvCircle (img, obstacle_point, 10, rcolor,-5, CV_AA, 3);
-        
-    }
-     */
-/////////////////////////////
-    
-
-
-
-    
-    
-    //cvNamedWindow ("testDrawing", CV_WINDOW_AUTOSIZE);
-    //cvShowImage ("testDrawing", test);
-    
-    
-    
-    
-////////////////////////////
-    
+    // 線の描画 ----- ここまで
     
     cvFlip(img, NULL,0);//図を上下回転する
     cvNamedWindow ("Drawing", CV_WINDOW_AUTOSIZE);
@@ -244,7 +214,7 @@ void Map::showMap()
  *　入力：2点の座標coord1(x,y),coord2(x',y')
  *　出力：y=Ax+BのAとB
  *********************************************/
-void Map::gauss(Coordinate coord1,Coordinate coord2, float &A, float &B, float &C, bool &xflag)
+void Map::gauss(Coordinate coord1, Coordinate coord2, float &A, float &B, float &C, bool &xflag)
 {
 	float coef=0.0;
     float tmp1=0.0;
@@ -275,13 +245,46 @@ void Map::gauss(Coordinate coord1,Coordinate coord2, float &A, float &B, float &
     
 }
 
+////各直線の交点の位置関係を求める
+void Map::line(double a,double b)
+{
+    if(0<a<400 && 0<b<400)
+    {
+        if(a<100)
+        {
+            if(b<100)
+            {
+                p1.x=a;
+                p1.y=b;
+                
+            }
+            else
+            {
+                p2.x=a;
+                p2.y=b;
+            }
+        }
+        else
+        {
+            if(b>100)
+            {
+                p3.x=a;
+                p3.y=b;
+                
+            }
+            else if(b>0)
+            {
+                p4.x=a;
+                p4.y=b;
+            }
+        }
+    }
+}
 
 
-/*
+/*  座標のリストを基に直線の係数を算出する
  *	入力：座標のリスト
  *	出力：直線の係数
- *
- *
  */
 void Map::RANSAC_y_Ax_B(std::vector<Coordinate> wall, float &RANSAC_A, float &RANSAC_B, float &RANSAC_C, std::vector<Coordinate> &outliers, std::vector<Coordinate> &inliers, bool &xflag)
 {
@@ -362,7 +365,7 @@ void Map::RANSAC_y_Ax_B(std::vector<Coordinate> wall, float &RANSAC_A, float &RA
 			prob_xflag = xflag;
 		}
 	}
-    printf("score・・・・・・・・・・・・・・%d\n",score);
+    std::cout << "score・・・・・・・・・・・・・・" << score << std::endl;
     
 	//正解の点のリスト用
 	//std::vector<Coordinate> inliers; //距離d内に入っている点の座標の配列
@@ -407,12 +410,26 @@ void Map::RANSAC_y_Ax_B(std::vector<Coordinate> wall, float &RANSAC_A, float &RA
         }
         
 	}
-    printf("outlier_SIZE・・・・・・・・・・・・・・・・・・・・・・・・・・・・・%d\n",outliers.size());
-    printf("inlier_SIZE・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・%d\n",inliers.size());
+    std::cout << "outlier_SIZE・・・・・・・・・・・・・・・・・・・・・・・・・・・・・" << outliers.size() << std::endl;
+    std::cout << "inlier_SIZE・・・・・・・・・・・・・・・・・・・・・・・・・・・・・" << inliers.size() << std::endl;
     
-    for(int j=0;j<inliers.size();j++){
-        //   printf("inliers・・・・・・・・・・・・・・%d:[%lf,%lf]\n",j,inliers[j].getX(),inliers[j].getY());
+    //1ライン分のoutliersを2次元配列に格納
+    std::vector<Coordinate> list;
+    for(int i=0; i<outliers.size(); i++)
+    {
+        list.push_back(outliers[i]);
     }
+    outliers_s.push_back(list);
+    list.clear();
+    
+    //1ライン分のinliersを2次元配列に格納
+    for(int i=0; i<inliers.size(); i++)
+    {
+        list.push_back(inliers[i]);
+    }
+    inliers_s.push_back(list);
+    list.clear();
+
 	if(prob_xflag)
 	{
 		RANSAC_A=0.0;
@@ -429,41 +446,4 @@ void Map::RANSAC_y_Ax_B(std::vector<Coordinate> wall, float &RANSAC_A, float &RA
 	}
     
 }
-
-void Map::line(double a,double b)
-{
-    if(0<a<400 && 0<b<400)
-    {
-        if(a<100)
-        {
-            if(b<100)
-            {
-                p1.x=a;
-                p1.y=b;
-                
-            }
-            else
-            {
-                p2.x=a;
-                p2.y=b;
-            }
-        }
-        else
-        {
-            if(b>100)
-            {
-                p3.x=a;
-                p3.y=b;
-                
-            }
-            else if(b>0)
-            {
-                p4.x=a;
-                p4.y=b;
-            }
-        }
-    }
-}
-///////////////////////////////////////////////////////////////////////////////////////////////
-
 

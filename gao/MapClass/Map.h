@@ -20,6 +20,7 @@
  ** Define
  *****************************************************************************/
 #define MAX_COORD_SIZE 29.4 //[m] block lenghが0.35[m]なので合計84ブロックになる
+#define LINE_NUM 4  //ライン数
 //ransac用 -------------------------------
 #define SEARCH 500 	// 直線サーチ回数
 #define THRESHOLD 5  // 最小二乗の閾値
@@ -29,6 +30,7 @@
 /*****************************************************************************
  ** Structure
  *****************************************************************************/
+/*デバッグ用，競技プログラムでは使わない*/
 //txtファイルから読み込むの為の構造体
 struct Location
 {
@@ -36,6 +38,7 @@ struct Location
     double X;
     double Y;
 };
+/**********/
 
 /*****************************************************************************
  ** Classes
@@ -43,10 +46,13 @@ struct Location
 class Map
 {
 public:
-	// コンストラクタ 座標とブロック数を初期化
+	// コンストラクタ
+    Map();
 	
     //メソッド
     void showMap();     //マップを描画する
+    void calcLine();
+
 
     // set method
 	// createの座標リストをプッシュバック
@@ -90,15 +96,47 @@ public:
 		return this->obstacle_point_list.size();
 	}
 
-std::vector<Coordinate> getCreatePointList()
-{
-	return this->create_point_list;
-}
+    std::vector<Coordinate> getCreatePointList()
+    {
+        return this->create_point_list;
+    }
 
-std::vector<Coordinate> getObstaclePointList()
-{
-	return this->obstacle_point_list;
-}
+    std::vector<Coordinate> getObstaclePointList()
+    {
+        return this->obstacle_point_list;
+    }
+    
+    //線の交点座標を取得する
+    std::vector<Coordinate> getIntersectionLine()
+    {
+        Coordinate tmp;
+        std::vector<Coordinate> tmp_p;
+        for(int i=0; i<p.size(); i++)
+        {
+            tmp.x = p[i].x;
+            tmp.y = p[i].y;
+            tmp_p.push_back(tmp);
+        }
+        
+        return tmp_p;
+    }
+    
+    //直線の式の係数を取得する
+    std::vector< std::vector<float> > getCoefficientLine()
+    {
+        std::vector<float> list;
+        std::vector< std::vector<float> > tmp;
+        for(int i=0; i<RANSAC_A.size(); i++)
+        {
+            list.push_back(RANSAC_A[i]);
+            list.push_back(RANSAC_B[i]);
+            list.push_back(RANSAC_C[i]);
+            tmp.push_back(list);
+            list.clear();
+        }
+        
+        return tmp;
+    }
 
 
 private:
@@ -107,11 +145,19 @@ private:
 	std::vector<Coordinate> create_point_list;			// create座標リスト
 	std::vector<Coordinate> obstacle_point_list;	// （マップ生成用）障害物座標リスト
     CvPoint p1,p2,p3,p4;        //各直線の交点
+    std::vector<CvPoint> p;     //各直線の交点
+    std::vector<float> RANSAC_A;
+    std::vector<float> RANSAC_B;
+    std::vector<float> RANSAC_C;
+    std::vector<Coordinate> wall, outliers, inliers;
+    std::vector< std::vector<Coordinate> > outliers_s, inliers_s;
+    bool xflag;
+    
     
     //メソッド
-    void gauss(Coordinate coord1,Coordinate coord2, float &A, float &B, float &C, bool &xflag);     //２点の座標(x,y),(x',y')から直線の式を算出する
-    void RANSAC_y_Ax_B(std::vector<Coordinate> wall, float &RANSAC_A, float &RANSAC_B, float &RANSAC_C, std::vector<Coordinate> &outliers, std::vector<Coordinate> &inliers, bool &xflag);     //座標のリストを基に直線の係数を算出する
-    void line(double a,double b);       //各直線の交点の位置関係を求める
+    void gauss(Coordinate, Coordinate, float&, float&, float&, bool&);  //2点の座標(x,y),(x',y')から直線の式を算出する
+    void line(double, double);       //各直線の交点の位置関係を求める
+    void RANSAC_y_Ax_B(std::vector<Coordinate>, float&, float&, float&, std::vector<Coordinate>&, std::vector<Coordinate>&, bool&);     //座標のリストを基に直線の係数を算出する
 };
 
 #endif
