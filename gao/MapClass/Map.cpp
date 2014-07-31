@@ -1,6 +1,4 @@
 #include "Map.h"
-#include <typeinfo>
-
  
 //	tmp1 = coord2.getY()-coord1.getY(); //y'-y
 //				↓
