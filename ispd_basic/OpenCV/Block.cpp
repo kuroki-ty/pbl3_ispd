@@ -6,8 +6,8 @@
 //  Copyright (c) 2014年 yamasaki. All rights reserved.
 //
 
-//#include "Block.h"
-//#include "Dijkstra.h"
+#include "Block.h"
+#include "Dijkstra.h"
 
 /*****************************************************************************
  ** Construtor
