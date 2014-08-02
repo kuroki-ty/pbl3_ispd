@@ -113,8 +113,9 @@ public:
         std::vector<Coordinate> tmp_p;
         for(int i=0; i<p.size(); i++)
         {
-            tmp.x = p[i].x;
-            tmp.y = p[i].y;
+            //縮尺を元に戻してpush_back
+            tmp.x = p[i].x*10-500;
+            tmp.y = p[i].y*10-500;
             tmp_p.push_back(tmp);
         }
         
@@ -122,15 +123,30 @@ public:
     }
     
     //直線の式の係数を取得する
-    std::vector< std::vector<float> > getCoefficientLine()
+    std::vector< std::vector<float> > getCoefficientLine(std::vector<bool> &xflag)
     {
+        bool f = false;
+        float a, b, c;
+        std::vector<Coordinate> p;
         std::vector<float> list;
         std::vector< std::vector<float> > tmp;
-        for(int i=0; i<RANSAC_A.size(); i++)
+        
+        p = getIntersectionLine();      //直線の各交点をCoordinate型のpに格納
+        
+        for(int i=0; i<p.size(); i++)
         {
-            list.push_back(RANSAC_A[i]);
-            list.push_back(RANSAC_B[i]);
-            list.push_back(RANSAC_C[i]);
+            if(i == p.size()-1)
+            {
+                gauss(p[i], p[0], a, b, c, f);
+            }
+            else
+            {
+                gauss(p[i], p[i+1], a, b, c, f);
+            }
+            xflag.push_back(f);
+            list.push_back(a);
+            list.push_back(b);
+            list.push_back(c);
             tmp.push_back(list);
             list.clear();
         }

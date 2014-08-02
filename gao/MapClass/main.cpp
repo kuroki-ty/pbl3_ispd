@@ -11,12 +11,13 @@
 int main(){
     Map map;
     std::vector<Coordinate> p;
+    std::vector<bool> xflag;
     std::vector< std::vector<float> > ransac;
     
     map.calcLine();
     
     p = map.getIntersectionLine();
-    ransac = map.getCoefficientLine();
+    ransac = map.getCoefficientLine(xflag);
     
     std::cout << "線の交点" << std::endl;
     for(int i=0; i<p.size(); i++)
@@ -32,6 +33,7 @@ int main(){
             std::cout << ransac[i][j] << ", ";
         }
         std::cout << std::endl;
+        std::cout << xflag[i] << std::endl;
     }
     
     map.showMap();
