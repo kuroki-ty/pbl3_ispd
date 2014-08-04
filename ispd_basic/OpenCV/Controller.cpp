@@ -91,24 +91,40 @@ std::cout << "direction:"<< this->create.direction << std::endl;
 //std::cout << "！！！！！！！！！！！！！！！！！！！！！！！！！！！！１" << std::endl;
 		int goal;
 		std::vector<Coordinate> move_point_list;  // Createが辿る座標を格納したリスト
+
+		std::vector<Coordinate> tmp_create_list;
+		std::vector<Coordinate> tmp_obstacle_list;
+
 // 2-1.createの現在座標を取得
 		create_coord = this->create.getCurrentCoordinate();
 // 2-2.createの現在座標から向かうメッシュを計算し、辿る座標リストを得る
 		goal = this->block.getNextMeshNum();
 		move_point_list = this->block.getMovePointList(create_coord, this->create.direction, goal);// → Createの現在座標を元に、ゴールまでに辿る座標のリストを得る
-// 2-3.座標リスト通りに進んでいく
+// 2-3.座標リスト通りに進む
 		for(int i=0;i<move_point_list.size();i++)
 		{
 			// 2-3-1.次の座標値を渡して、移動と、各座表値の計算を行う
-			this->create.runNextPoint(move_point_list[i], Bumper_Hit, create_coord, obstacle_coord); //
+			this->create.runNextPoint(move_point_list[i], Bumper_Hit, tmp_create_list, tmp_obstacle_list); //
 			// 2-3-2 移動後の座標値を渡して、メッシュを更新
-			this->block.setMeshMark(create_coord, Bumper_Hit);// 
+			for(int j=0;j<tmp_create_list.size();j++)
+			{
+				this->block.setMeshMark(tmp_create_list[j], false);// 
 			// 2-3-3各座表の情報を渡して、map,obstacleリストを更新
-			this->map.push_back_CreatePointList( create_coord );
-			if(Bumper_Hit)
-			{	
-				this->map.push_back_ObstaclePointList( obstacle_coord );
+				this->map.push_back_CreatePointList( tmp_create_list[j] );
 			}
+			for(int j=0;j<tmp_obstacle_list.size();j++)
+			{
+//				this->block.setMeshMark(tmp_obstacle_list[j], true);// 
+				this->map.push_back_ObstaclePointList( tmp_obstacle_list[j] );
+			}
+			if(Bumper_Hit)
+			{
+				Bumper_Hit = false;
+				this->block.setMeshMark(tmp_obstacle_list[tmp_obstacle_list.size()-1], true);//
+				this->create.searchObstacle();
+				break;
+			}
+
 		}
 // 2-4.全部のメッシュをチェックし終えたかを判定
 		if( this->block.checkAllSearchEnd() )

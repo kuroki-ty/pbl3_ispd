@@ -33,6 +33,14 @@
 // 壁探索の直進回転走行の復帰回転角度
 #define RETURN_ANGLE 10
 
+// 回転誤差
+#define P_TURN_A100 0.094
+#define P_TURN_B100 15.543
+
+#define N_TURN_A100 0.111
+#define N_TURN_B100 (-14.543)
+
+
 /*****************************************************************************
  ** enum
  *****************************************************************************/
@@ -131,8 +139,11 @@ public:
 	// 超音波センサから距離値を得る[mm]	
 	float getDistanceBySoner();
 
-	void driveDistanceSearchingObstacle(int distance, Coordinate &create, Coordinate &obstacle, bool &Bumper_Hit);
-	void runNextPoint(Coordinate move_point, bool &Bumper_Hit, Coordinate &create, Coordinate &obstacle);
+	void driveDistanceSearchingObstacle(int distance, std::vector<Coordinate> &create, std::vector<Coordinate>&obstacle, bool &Bumper_Hit);
+	void runNextPoint(Coordinate move_point, bool &Bumper_Hit, std::vector<Coordinate> &create, std::vector<Coordinate> &obstacle);
+
+	// 障害物を探索するメソッド
+	void searchObstacle();
 
 
 
