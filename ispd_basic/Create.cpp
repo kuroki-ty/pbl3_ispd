@@ -27,16 +27,16 @@ float Create::turnCreate(int velocity, int angle_max)
 			break;
 		}
 	}
-
+	waitTime(0.5);
 	if(angle >=0 )
 	{
-		std::cout <<"turn------------------------:" << 0.0593*angle + 14.843 + angle << std::endl;
+		std::cout <<"turn------------------------:" << 0.094*angle + 15.543 + angle << std::endl;
 //		return 0.0593*angle + 14.843 + angle;
 		return 0.0593*angle + 16.343 + angle;
 	}
 	else
 	{
-		std::cout <<"turn------------------------:" << 0.0593*angle - 15.122 + angle << std::endl;
+		std::cout <<"turn------------------------:" << 0.111*angle - 14.543 + angle << std::endl;
 		return 0.04914*angle - 15.122 + angle;
 	}
 }
@@ -146,7 +146,7 @@ float Create::getDistanceBySoner()
 
 
 
-void Create::goStraightWithSoner()
+void Create::goStraightCurveWithSoner()
 {
 	//float total_soner=0.0;
 //	float soner_distance = this->getDistanceBySoner();
@@ -205,7 +205,7 @@ void Create::goStraight()
 		drive(VELOCITY_H,0);
 }
 
-void Create::goStraightWithoutSoner()
+void Create::goStraightTurnWithSoner()
 {
 	float distance_to_wall;
 	this->Straight_Run = true;
@@ -219,7 +219,6 @@ void Create::goStraightWithoutSoner()
 		this->addDistance(tmp_distance);
 		this->calcCurrentCoordinate(tmp_distance);
 		this->addAngle( this->turnCreate(-VELOCITY_L, RETURN_ANGLE) );
-
 	}
 	if(distance_to_wall < 150)
 	{
@@ -228,8 +227,7 @@ void Create::goStraightWithoutSoner()
 		this->stopRun();
 		this->addDistance(tmp_distance);
 		this->calcCurrentCoordinate(tmp_distance);
-		this->addAngle( this->turnCreate(VELOCITY_L, RETURN_ANGLE) );
-		
+		this->addAngle( this->turnCreate(VELOCITY_L, RETURN_ANGLE) );	
 	}
 	drive(VELOCITY_H,0);
 }
@@ -242,9 +240,9 @@ void Create::run()
 		this->StopRun = true;	// 発進フラグON
 		this->Stop = false;
 	}
-//	this->goStraightWithSoner();
-//	this->goStraightWithoutSoner();
-	this->goStraight();
+	//this->goStraightCurveWithSoner();
+	this->goStraightTurnWithSoner();
+	//this->goStraight();
 }
 
 // 障害物に当たったら、方向転換する関数
@@ -301,7 +299,7 @@ void Create::changeDirection()
 	{
 		turn_angle = 90;
 	}
-		turn_angle = 70;
+		turn_angle = 30;
 
 	this->push_bumper == NONE;
 	std::cout << "turn angle" << turn_angle << std::endl;

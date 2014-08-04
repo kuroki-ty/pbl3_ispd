@@ -25,10 +25,10 @@
 #define BUMPER_PLACE_ANGLE_L  ((180-BUMPER_PLACE_ANGLE_R) * (M_PI / 180))
 
 // 超音波センサで障害物の座標を記録する際の閾値　この距離より遠い座標は記録しない
-#define RECORD_OBSTACLE_TH 400
+#define RECORD_OBSTACLE_TH 500
 
 // 壁探索時の飛び値対策
-#define WALL_SEARCH_TH 500
+#define WALL_SEARCH_TH 600
 
 // 壁探索の直進回転走行の復帰回転角度
 #define RETURN_ANGLE 10
@@ -79,14 +79,14 @@ public:
 
 // public method
 
-	// 超音波センサを使って直進
-	void goStraightWithSoner();
+	// 超音波センサを使ってストレートとカーブで直進
+	void goStraightCurveWithSoner();
 
 	// 超音波センサを使って壁との距離を計測
 	void checkDistToWall(float &ave_dist);
 
-	// 直進と回転の繰り返しで進む
-	void goStraightWithoutSoner();
+	// 超音波センサを使って直進と回転の繰り返しで進む
+	void goStraightTurnWithSoner();
 
 	// 	普通に走る
 	void goStraight();
