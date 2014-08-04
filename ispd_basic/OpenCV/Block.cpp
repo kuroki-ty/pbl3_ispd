@@ -233,6 +233,54 @@ std::vector<Coordinate> Block::getMovePointListToDock(Coordinate coord, IRobotDi
     return (movePointList);
 }
 
+
+void Block::setMeshMarks(std::vector<Coordinate> &p, std::vector< std::vector<float> > &ransac, std::vector<bool> &flag)
+{
+    int resolution = 100;
+    float dx;
+    std::vector<float> x;
+    Coordinate coord;
+    
+    for(int i=0; i<p.size(); i++)
+    {
+        if(i == p.size())
+        {
+            dx = (p[i].x-p[0].x)/resolution;
+            for(int k=0; k < resolution; k++)
+            {
+                x.push_back(p[i].x+k*dx);
+            }
+        }
+        else
+        {
+            dx = (p[i+1].x-p[i].x)/resolution;
+            for(int k=0; k < resolution; k++)
+            {
+                x.push_back(p[i].x+k*dx);
+            }
+        }
+        
+        for(int j=0; j<x.size(); j++)
+        {
+            
+            coord.x = x[j];
+            
+            if(flag[i])
+            {
+                coord.y = ransac[i][2];     //y=c
+            }
+            else
+            {
+                coord.y = ransac[i][0] * coord.x + ransac[i][1];  //y=ax+b
+            }
+            
+            setMeshMark(coord, true);
+        }
+        
+        x.clear();
+    }
+}
+
 /*vectorで動的配列を作成するためのメソッド
  構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
 Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)

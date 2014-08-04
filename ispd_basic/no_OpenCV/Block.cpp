@@ -181,6 +181,58 @@ std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirectio
     return (movePointList);
 }
 
+//ダイクストラ法で現在位置からDockまでの最短経路を探索するメソッド
+std::vector<Coordinate> Block::getMovePointListToDock(Coordinate coord, IRobotDirection direction)
+{
+    int start, goal = 0;
+    int goalset_flag = 0;
+    
+    //startは現在座標
+    start = meshNumToCurrentPosition(coord);
+    addCost(start, direction);
+
+    //goalは赤外線の値が強いメッシュ
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_y; j++)
+        {
+            if((block[i][j].ir_value == 254) || (block[i][j].ir_value == 246) || (block[i][j].ir_value == 250) || (block[i][j].ir_value == 252))
+            {
+                goal = block[i][j].num;
+                goalset_flag = 1;
+                std::cout << "ドッキングステーションが見つかりました" << std::endl; 
+                std::cout << "ノード番号：" << goal << "へ向かいます" << std::endl; 
+                break;
+            }
+        }
+    }
+    if(goalset_flag == 0)
+    {
+        for(int i=0; i<total_block_y; i++)
+        {
+            for(int j=0; j<total_block_y; j++)
+            {
+                if((block[i][j].ir_value == 244) || (block[i][j].ir_value == 248))
+                {
+                    goal = block[i][j].num;
+                    std::cout << "ドッキングステーションが見つかりました" << std::endl; 
+                    std::cout << "ノード番号：" << goal << "へ向かいます" << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+    
+    Dijkstra dijkstra(start, goal, total_block_x*total_block_y);
+    dijkstra.setCost(cost);
+    dijkstra.useDijkstra();
+    route = dijkstra.getRoute();
+    
+    movePointList = routeCoordinateToRouteMeshNum(route);
+    
+    return (movePointList);
+}
+
 /*vectorで動的配列を作成するためのメソッド
  構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
 Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
@@ -189,7 +241,8 @@ Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
     tmp.mark = UNKNOWN;
     tmp.center.x = x*block_x+block_x/2.0 - 2.0*block_x;     //余白を2*block_x取る
     tmp.center.y = y*block_y+block_y/2.0 - 2.0*block_y;     //余白を2*block_y取る
-    
+    tmp.ir_value = 0;
+
     return tmp;
 }
 

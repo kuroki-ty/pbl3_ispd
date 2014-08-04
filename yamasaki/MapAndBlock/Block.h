@@ -124,6 +124,10 @@ public:
         num = meshNumToCurrentPosition(coord);
         block[num/total_block_x][num%total_block_x].mark = mark;
     }
+    
+    /*壁があるメッシュにIMPASSABLE情報をセットする(長いので処理はBlock.cpp内に書く)
+    引数:(壁直線の交点座標，壁直線式の係数，xflag(直線がy=ax+bかy=cからのbool))*/
+    void setMeshMarks(std::vector<Coordinate>& , std::vector< std::vector<float> >&, std::vector<bool>&);
 
     //IR値をメッシュにセットする
     void setIRMark(Coordinate coord, int value)
@@ -155,7 +159,7 @@ private:
 
 };
 
-#include "Block.cpp"
+//#include "Block.cpp"
 
 /*****************************************************************************
  ** Memo

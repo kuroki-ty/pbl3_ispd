@@ -36,7 +36,7 @@ enum SearchMark
     UNKNOWN,    //未探索
     PASSABLE,   //通れる
     IMPASSABLE  //通れない
-};
+};     
 
 /*****************************************************************************
  ** Structure
@@ -45,6 +45,7 @@ struct Mesh{
     int num;            //メッシュ番号
     Coordinate center;     //メッシュの中心座標(x,y)
     SearchMark mark;    //フィールドの探索情報を入れるマーカー
+    int ir_value;       //IR値
 };
 
 struct Wall{
@@ -68,6 +69,11 @@ public:
     /*Dijkstraクラスをインスタンス生成し，ダイクストラ法でルートを計算させる
     　探索ルートの座標値をリストにして返す(長いので処理はBlock.cpp内に書く)*/
     std::vector<Coordinate> getMovePointList(Coordinate, IRobotDirection direction, int);
+    
+    /*Dijkstraクラスをインスタンス生成し，ダイクストラ法でDockまでのルートを計算させる
+    　探索ルートの座標値をリストにして返す(長いので処理はBlock.cpp内に書く)*/
+    std::vector<Coordinate> getMovePointListToDock(Coordinate, IRobotDirection direction);
+
     //次に向かうノード番号を取得する
     int getNextMeshNum()
     {
@@ -119,6 +125,19 @@ public:
         block[num/total_block_x][num%total_block_x].mark = mark;
     }
     
+    /*壁があるメッシュにIMPASSABLE情報をセットする(長いので処理はBlock.cpp内に書く)
+    引数:(壁直線の交点座標，壁直線式の係数，xflag(直線がy=ax+bかy=cからのbool))*/
+    void setMeshMarks(std::vector<Coordinate>& , std::vector< std::vector<float> >&, std::vector<bool>&);
+
+    //IR値をメッシュにセットする
+    void setIRMark(Coordinate coord, int value)
+    {
+	int num;
+
+        num = meshNumToCurrentPosition(coord);
+        block[num/total_block_x][num%total_block_x].ir_value = value;
+    }
+    
 private:
     //変数
     float block_x;  //メッシュの横の長さ[mm](x座標)
@@ -166,7 +185,17 @@ private:
 例)
  cost[0][1]:ノード番号0から1に向かう道のコスト
  cost[1][0]:ノード番号1から0に向かう道のコスト
- 
+
+ ・ドッキングステーションについて
+ value      Name
+240         Reserved
+248         Red Buoy
+244         Green Buoy
+242         Force Field
+252         Red Buoy and Green Buoy
+250         Red Buoy and Force Field
+246         Green Buoy and Force Field
+254         Red Buoy, Green Buoy and Force Field
  *****************************************************************************/
 
 
