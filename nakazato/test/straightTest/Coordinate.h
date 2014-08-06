@@ -17,11 +17,6 @@ struct Coordinate
 		x=0.0;
 		y=0.0;
 	}
-	Coordinate(float a, float b)
-	{
-		x=a;
-		y=b;
-	}
 };
 
 //Createの方向情報

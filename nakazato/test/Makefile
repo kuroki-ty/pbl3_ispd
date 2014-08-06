@@ -5,12 +5,17 @@
 CC = g++ -g
 INCLUDE = /usr/local/include
 LIBS = -lm -lncurses -lcreateoi -lpthread
-CVFLAGS = $(shell pkg-config --libs opencv)  $(shell pkg-config --cflags opencv)
+#CVFLAGS = $(shell pkg-config --libs opencv)  $(shell pkg-config --cflags opencv)
+
+# OpenCV のライブラリを指定
+OPENCVINC = `pkg-config --cflags opencv`
+OPENCVLIB = `pkg-config --libs opencv`
+
 
 default: all
 
 
-all: drive sonerSensor getCoordinate setMesh cluster
+all: drive sonerSensor getCoordinate setMesh cluster testBumper turnturn kmeans serchObstacle runNextPoint
 
 drive: drive.cpp
 	$(CC) drive.cpp $(LIBS) -o drive
@@ -26,6 +31,21 @@ setMesh: setMesh.cpp
 
 cluster: cluster.cpp
 	$(CC) cluster.cpp $(LIBS) -o cluster
+
+testBumper: testBumper.cpp
+	$(CC) testBumper.cpp $(LIBS) -o testBumper
+
+turnturn: turnturn.cpp
+	$(CC) turnturn.cpp $(LIBS) -o turnturn
+
+kmeans: kmeans.cpp
+	$(CC) kmeans.cpp $(LIBS) $(OPENCVLIB) -o kmeans
+
+serchObstacle: serchObstacle.cpp
+	$(CC) serchObstacle.cpp $(LIBS) $(OPENCVLIB) -o serchObstacle
+
+runNextPoint: runNextPoint.cpp
+	$(CC) runNextPoint.cpp $(LIBS) -o runNextPoint
 
 
 clean:
