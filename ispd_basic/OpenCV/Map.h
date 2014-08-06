@@ -10,8 +10,8 @@
 #include <string>
 #include <fstream>
 #include <stdio.h>
-#include "cv.h"
-#include "highgui.h"
+#include "opencv/cv.h"
+#include "opencv/highgui.h"
 #include <time.h>
 #include "Coordinate.h"
 

@@ -17,4 +17,4 @@ main: main.cpp
 
 clean:
 	rm -f *.o
-	rm -f drive
+	rm -f main

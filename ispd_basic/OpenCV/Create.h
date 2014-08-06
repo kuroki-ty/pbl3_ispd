@@ -1,5 +1,4 @@
 #include <createoi.h>
-#include "Coordinate.h"
 
 
 /*****************************************************************************
@@ -11,6 +10,10 @@
 #define RADIUS_RIGHT 320.0		//右回り回転半径[mm]
 #define WALL_DISTANCE_LOW  180.0	//壁とCreateの距離_低[cm]
 #define WALL_DISTANCE_HIGH 230.0	//壁とCreateの距離_高[cm]
+
+#define WALL_DIST_L 200	//壁とCreateの距離_低[cm]
+#define WALL_DIST_H 400	//壁とCreateの距離_高[cm]
+
 
 #define CREATE_SIZE 330 // 縦 [mm]
 // 横330[mm]
@@ -31,14 +34,14 @@
 #define WALL_SEARCH_TH 600
 
 // 壁探索の直進回転走行の復帰回転角度
-#define RETURN_ANGLE 10
+#define RETURN_ANGLE 4
 
 // 回転誤差
-#define P_TURN_A100 0.094
-#define P_TURN_B100 15.543
+#define P_TURN_A100 1.1002386
+#define P_TURN_B100 2.247255
 
-#define N_TURN_A100 0.111
-#define N_TURN_B100 (-14.543)
+#define N_TURN_A100 1.1002386
+#define N_TURN_B100 (-2.247255)
 
 
 /*****************************************************************************
@@ -54,6 +57,7 @@ enum Bumper
 };
 
 
+
 /*****************************************************************************
  ** Classes
  *****************************************************************************/
@@ -67,8 +71,8 @@ public:
 		this->velocity=0; 
 		this->total_angle=0;
 		this->push_bumper = NONE;
-		this->current_coord.x = 165.0;
-		this->current_coord.y = 165.0;
+		this->current_coord.x = 0.0;
+		this->current_coord.y = 0.0;
 		this->Straight_Run = true;
 		this->Right_Run = false;
 		this->Left_Run  = false;
@@ -83,6 +87,12 @@ public:
 		std::cout << "distance & angle init" << std::endl;
 		std::cout << getDistance() << std::endl;
 		std::cout << getAngle() << std::endl;
+	}
+
+	void showInfo()
+	{
+		std::cout << "・・・現在座標・・・・・・・・・・・・・・・・（"<<this->current_coord.x << ", " << this->current_coord.y << ")" << std::endl;
+		std::cout << "・・・現在角度・・・・・・・・・・・・・・・・（"<<this->total_angle << ")" << std::endl;
 	}
 
 // public method
@@ -115,7 +125,6 @@ public:
 
 
 	// Createの現在座標（world）を計算
-	Coordinate calcCurrentCoordinate();
 	Coordinate calcCurrentCoordinate(int distance );
 
 	// 超音波センサが当たる部分の座標（world）の計算
@@ -148,6 +157,13 @@ public:
 
 
 // set method
+	// createの角度をセット（テスト用）
+	void setTotalAngle(int angle)
+	{
+		this->total_angle =angle;
+	}
+
+
 	// Createの角度を更新
 	void addAngle(float angle);
 

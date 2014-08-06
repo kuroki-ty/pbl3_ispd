@@ -12,10 +12,6 @@
 #define WALL_DISTANCE_LOW  180.0	//壁とCreateの距離_低[cm]
 #define WALL_DISTANCE_HIGH 230.0	//壁とCreateの距離_高[cm]
 
-#define WALL_DIST_L 200	//壁とCreateの距離_低[cm]
-#define WALL_DIST_H 500	//壁とCreateの距離_高[cm]
-
-
 #define CREATE_SIZE 330 // 縦 [mm]
 // 横330[mm]
 
@@ -29,21 +25,13 @@
 #define BUMPER_PLACE_ANGLE_L  ((180-BUMPER_PLACE_ANGLE_R) * (M_PI / 180))
 
 // 超音波センサで障害物の座標を記録する際の閾値　この距離より遠い座標は記録しない
-#define RECORD_OBSTACLE_TH 500
+#define RECORD_OBSTACLE_TH 400
 
 // 壁探索時の飛び値対策
-#define WALL_SEARCH_TH 600
+#define WALL_SEARCH_TH 500
 
 // 壁探索の直進回転走行の復帰回転角度
-#define RETURN_ANGLE 4
-
-// 回転誤差
-#define P_TURN_A100 0.094
-#define P_TURN_B100 15.543
-
-#define N_TURN_A100 0.111
-#define N_TURN_B100 (-14.543)
-
+#define RETURN_ANGLE 10
 
 /*****************************************************************************
  ** enum
@@ -91,14 +79,14 @@ public:
 
 // public method
 
-	// 超音波センサを使ってストレートとカーブで直進
-	void goStraightCurveWithSoner();
+	// 超音波センサを使って直進
+	void goStraightWithSoner();
 
 	// 超音波センサを使って壁との距離を計測
 	void checkDistToWall(float &ave_dist);
 
-	// 超音波センサを使って直進と回転の繰り返しで進む
-	void goStraightTurnWithSoner();
+	// 直進と回転の繰り返しで進む
+	void goStraightWithoutSoner();
 
 	// 	普通に走る
 	void goStraight();
@@ -143,11 +131,8 @@ public:
 	// 超音波センサから距離値を得る[mm]	
 	float getDistanceBySoner();
 
-	void driveDistanceSearchingObstacle(int distance, std::vector<Coordinate> &create, std::vector<Coordinate>&obstacle, bool &Bumper_Hit);
-	void runNextPoint(Coordinate move_point, bool &Bumper_Hit, std::vector<Coordinate> &create, std::vector<Coordinate> &obstacle);
-
-	// 障害物を探索するメソッド
-	void searchObstacle();
+	void driveDistanceSearchingObstacle(int distance, Coordinate &create, Coordinate &obstacle, bool &Bumper_Hit);
+	void runNextPoint(Coordinate move_point, bool &Bumper_Hit, Coordinate &create, Coordinate &obstacle);
 
 
 
