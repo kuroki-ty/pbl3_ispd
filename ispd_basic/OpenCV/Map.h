@@ -170,12 +170,13 @@ private:
     std::vector< std::vector<Coordinate> > outliers_s, inliers_s;
     bool xflag;
     
-    vector<struct Location >dictance;
-    vector<struct Location> final;
-    vector<struct Location> group1;
-    vector<struct Location> group2;
-    vector<struct Location> group3;
-    vector<struct Location> group_a;
+    vector<struct Coordinate >obstacle_point_list2;
+    vector<struct Coordinate >dictance;
+    vector<struct Coordinate> final;
+    vector<struct Coordinate> group1;
+    vector<struct Coordinate> group2;
+    vector<struct Coordinate> group3;
+    vector<struct Coordinate> group_a;
     //メソッド
     void gauss(Coordinate, Coordinate, float&, float&, float&, bool&);  //2点の座標(x,y),(x',y')から直線の式を算出する
     void line(double, double);       //各直線の交点の位置関係を求める
@@ -183,5 +184,4 @@ private:
 };
 
 #include "Map.cpp"
-#include "point.cpp"
 #endif
