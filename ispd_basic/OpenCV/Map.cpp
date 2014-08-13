@@ -230,30 +230,7 @@ void Map::point()
             group2.push_back(dis_over2);
         }
     }
-    
-    int g1_x=0,g1_y=0,g2_x=0,g2_y=0,g3_x=0,g3_y=0;
-    for (int i=0; i<group1.size(); i++) {
-        g1_x += group1[i].x;
-        g1_y += group1[i].y;
-    }
-    
-    for (int i=0; i<group2.size(); i++) {
-        g2_x += group2[i].x;
-        g2_y += group2[i].y;
-    }
-    
-    for (int i=0; i<group3.size(); i++) {
-        g3_x += group3[i].x;
-        g3_y += group3[i].y;
-    }
-    
-    
-    
-    
-    
-    
-   
-    
+
     
 }
 //マップを描画する
@@ -376,8 +353,24 @@ void Map::showMap()
     
     
     //障害物の色分け、重心、長さの計算とoutputーーーーーここから
+    int g1_x=0,g1_y=0,g2_x=0,g2_y=0,g3_x=0,g3_y=0;
+    for (int i=0; i<group1.size(); i++) {
+        g1_x += group1[i].x;
+        g1_y += group1[i].y;
+    }
     
+    for (int i=0; i<group2.size(); i++) {
+        g2_x += group2[i].x;
+        g2_y += group2[i].y;
+    }
+    
+    for (int i=0; i<group3.size(); i++) {
+        g3_x += group3[i].x;
+        g3_y += group3[i].y;
+    }
+
     //障害物を色分けで描画
+    CvPoint create_point;//障害物の点
     for (i =0; i<group1.size(); i++) {
         create_point.x = group1[i].x;
         create_point.y = group1[i].y;
@@ -425,7 +418,7 @@ void Map::showMap()
     
     
     
-    //障害物の縦、横の長さを求める
+    //障害物の縦、横の長さを求める（すべての点と重心の距離の和
     g1_x=0,g1_y=0,g2_x=0,g2_y=0,g3_x=0,g3_y=0;
     for (int i=0; i<group1.size(); i++) {
         g1_x += abs(group1[i].x-center_g1.x);
@@ -443,12 +436,12 @@ void Map::showMap()
         g3_y += abs(group3[i].y-center_g3.y);
     }
     
-    double b1_x=(g1_x/group1.size())*2;
-    double b1_y=(g1_y/group1.size())*2;
-    double b2_x=(g2_x/group2.size())*2;
-    double b2_y=(g2_y/group2.size())*2;
-    double b3_x=(g3_x/group3.size())*2;
-    double b3_y=(g3_y/group3.size())*2;
+    double b1_x=(g1_x/group1.size())*4;
+    double b1_y=(g1_y/group1.size())*4;
+    double b2_x=(g2_x/group2.size())*4;
+    double b2_y=(g2_y/group2.size())*4;
+    double b3_x=(g3_x/group3.size())*4;
+    double b3_y=(g3_y/group3.size())*4;
     //cout << b1_x<<" "<<b1_y<<"  "<<b2_x<<"  "<<b2_y<<"  "<<b3_x<<"  "<<b3_y<<endl;
     
     
