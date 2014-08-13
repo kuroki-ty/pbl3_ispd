@@ -187,7 +187,56 @@ void Map::showMap()
 
         }
     }
+    
     // 線の描画 ----- ここまで
+    
+    //壁の長さ,角度の計算とoutputーーーーここから
+    
+    double tate=0.0, yoko=0.0;
+    tate=sqrt(abs(p1.x-p2.x)*abs(p1.x-p2.x)+abs(p1.y-p2.y)*abs(p1.y-p2.y));
+    yoko=sqrt(abs(p1.x-p4.x)*abs(p1.x-p4.x)+abs(p1.y-p4.y)*abs(p1.y-p4.y));
+    
+    cout << "縦の長さは　："　<< tate << endl;
+    cout << "横の長さは　："　<< yoko << endl;
+    
+    double k1 = (p2.y-p1.y)/(p2.x-p1.x);
+    double k2 = (p3.y-p2.y)/(p3.x-p2.x);
+    double k3 = (p4.y-p3.y)/(p4.x-p3.x);
+    double k4 = (p1.y-p4.y)/(p1.x-p4.x);
+    
+    double tan_1 = (abs(k1-k2))/(1+k1*k2);
+    double ang_1 = atan(tan_1)*double(180)/pi;
+    
+    double tan_2 = (abs(k2-k3))/(1+k2*k3);
+    double ang_2 = atan(tan_2)*double(180)/pi;
+    
+    double tan_3 = (abs(k3-k4))/(1+k3*k4);
+    double ang_3 = atan(tan_3)*double(180)/pi;
+    
+    double tan_4 = (abs(k4-k1))/(1+k4*k1);
+    double ang_4 = atan(tan_4)*double(180)/pi;
+    
+    
+    printf("$$$$$$$$   %f  %f    %f   %f   $$$$$$",ang_1,ang_2,ang_3,ang_4);
+    
+    printf("$$$$$$$$   %f  %f    %f   %f   $$$$$$",ang_1,ang_2,ang_3,ang_4);
+    
+    
+    ofstream outfile("/Users/gaohonghong/Documents/pblについて/result.txt",ios::in);
+    if(!outfile)
+    {
+        cerr<<"open result.txt error!\n";
+        return 0;
+    }
+    outfile<<"角度は　" << ang_1 << " " << ang_2  << " " << ang_3 << " " << ang_4 <<endl;
+    outfile<<"縦の長さは　" << tate  <<endl;
+    outfile<<"横の長さは　" << yoko  <<endl;
+    outfile.close();
+    
+    
+    //壁の長さ、角度の計算とoutputーーーーここまで
+    
+    
     
     cvFlip(img, NULL,0);//図を上下回転する
     cvNamedWindow ("Drawing", CV_WINDOW_AUTOSIZE);
