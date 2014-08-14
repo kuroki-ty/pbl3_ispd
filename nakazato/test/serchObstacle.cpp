@@ -21,13 +21,15 @@ int main()
 
 	// create_coord読み込み
     std::ostringstream create_file_path;
-	create_file_path << "./test_create_obstacle_coord/create_list.txt";
+//	create_file_path << "./test_create_obstacle_coord/create_list.txt";
+	create_file_path << "./test/create_list.txt";
     std::ifstream create_file(create_file_path.str().c_str());
 	std::vector<float> create(std::istream_iterator<float>(create_file), (std::istream_iterator<float>()));
 
 	// obstacle_coord読み込み
     std::ostringstream obstacle_file_path;
-	obstacle_file_path << "./test_create_obstacle_coord/obstacle_list_.txt";
+//	obstacle_file_path << "./test_create_obstacle_coord/obstacle_list_.txt";
+	obstacle_file_path << "./test/obstacle_list.txt";
     std::ifstream obstacle_file(obstacle_file_path.str().c_str());
 	std::vector<float> obstacle(std::istream_iterator<float>(obstacle_file), (std::istream_iterator<float>()));
 
@@ -47,10 +49,10 @@ int main()
 		obstacle_coord.push_back(tmp_obstacle_coord);
 	}
 	// create_coordの表示
-	//for (unsigned i = 0; i < create_coord.size(); i++)
-	//{
-	//	std::cout << i << "  " << create_coord[i].x <<", "<< create_coord[i].y << std::endl;
-	//}
+	for (unsigned i = 0; i < obstacle_coord.size(); i++)
+	{
+		std::cout << i << "  " << obstacle_coord[i].x <<", "<< obstacle_coord[i].y << std::endl;
+	}
 
 
 	// create_coordの登録（setMesh）

@@ -8,10 +8,10 @@
 #define VELOCITY_L 100			//速度[mm/s]
 #define RADIUS_LEFT  230.0		//左回り回転半径[mm]
 #define RADIUS_RIGHT 320.0		//右回り回転半径[mm]
-#define WALL_DISTANCE_LOW  180.0	//壁とCreateの距離_低[cm]
+#define WALL_DISTANCE_LOW  180.0	//壁とCreateの距離_低[cm]  straight curve用
 #define WALL_DISTANCE_HIGH 230.0	//壁とCreateの距離_高[cm]
 
-#define WALL_DIST_L 200	//壁とCreateの距離_低[cm]
+#define WALL_DIST_L 200	//壁とCreateの距離_低[cm]	straight turn 用
 #define WALL_DIST_H 400	//壁とCreateの距離_高[cm]
 
 
@@ -41,20 +41,23 @@
 #define RETURN_ANGLE 4
 
 // 回転誤差補正値
-#define P_TURN_A100 1.1002386
-#define P_TURN_B100 2.247255
+#define P_TURN_A100 (-0.0003)
+#define P_TURN_B100 0.1227
+#define P_TURN_C100 2.6985
 
-#define N_TURN_A100 1.1002386
-#define N_TURN_B100 (-2.247255)
+#define N_TURN_A100 (-0.0003)
+#define N_TURN_B100 0.1227
+#define N_TURN_C100 (-2.6985)
 
 // 直進誤差補正値
-#define P_DRIVEX_A200 1.1002386
-#define P_DRIVEX_B200 2.247255
-#define P_DRIVEY_A200 1.1002386
+#define P_DRIVEX_A200 (-0.009189)
+#define P_DRIVEX_B200 9.82555
+#define P_DRIVEY_A200 (-0.030117)
+#define P_DRIVEY_B200 5.44736
 
-#define N_DRIVEX_A100 1.1002386
-#define N_DRIVEX_B100 (-2.247255)
-#define N_DRIVEY_A100 (-2.247255)
+#define N_DRIVEX_A100 1
+#define N_DRIVEX_B100 -10.9
+#define N_DRIVEY_A100 -4.8
 
 
 
