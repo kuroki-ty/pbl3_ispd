@@ -103,6 +103,12 @@ public:
         
         return (-1);       //例外処理，-1を返す
     }
+
+    //Createの現在位置を引数に，現在のメッシュ番号を渡す
+    int getCurrentMeshNum(Coordinate coord)
+    {
+        return meshNumToCurrentPosition(coord);
+    }
     
     
     //set method
