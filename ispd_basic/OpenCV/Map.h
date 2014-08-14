@@ -53,7 +53,7 @@ public:
     //メソッド
     void showMap();     //マップを描画する
     void calcLine();
-    void point();
+    void divide_point();
 
     // set method
 	// createの座標リストをプッシュバック

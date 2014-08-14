@@ -121,7 +121,7 @@ void Map::calcLine()
 
 
 
-void Map::point()
+void Map::divide_point()
 {
     
     struct Coordinate ob;
