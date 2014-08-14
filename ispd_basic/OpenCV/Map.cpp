@@ -171,7 +171,7 @@ void Map::divide_point()
         dis_over.y=y;
         if (dis>25) {
             //dis_over.number=create_list[i].number;
-            dictance.push_back(dis_over);
+            distance.push_back(dis_over);
             
         }
         else

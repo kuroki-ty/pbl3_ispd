@@ -171,7 +171,7 @@ private:
     bool xflag;
     
     vector<struct Coordinate >obstacle_point_list2;
-    vector<struct Coordinate >dictance;
+    vector<struct Coordinate >distance;
     vector<struct Coordinate> final;
     vector<struct Coordinate> group1;
     vector<struct Coordinate> group2;
