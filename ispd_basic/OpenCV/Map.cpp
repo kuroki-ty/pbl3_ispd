@@ -1,4 +1,4 @@
-//#include "Map.h"
+#include "Map.h"
  
 //	tmp1 = coord2.getY()-coord1.getY(); //y'-y
 //				↓
@@ -23,9 +23,8 @@ void Map::calcLine()
 {
     
     /*デバッグ用，txtファイルから読み込み*/
-    /*
     //txtファイルから読み込む
-    std::ifstream inFile_Location2("/Users/ispd/Workspace/Xcode/pbl3/opencv_test/opencv_test/obstacle_list.txt");
+    std::ifstream inFile_Location2("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/obstacle_list.txt");
 	if(!inFile_Location2.is_open())
 	{
         std::cout<<"could not open the file \"obstacle_list.txt\"\n";
@@ -37,7 +36,7 @@ void Map::calcLine()
     int num_Location2=0;
     std::ifstream fin;//打开文本
     
-    fin.open("/Users/ispd/Workspace/Xcode/pbl3/opencv_test/opencv_test/obstacle_list.txt");
+    fin.open("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/obstacle_list.txt");
     while(getline(fin,str2))
         ++num_Location2;
     fin.close(); //关闭文本
@@ -59,14 +58,14 @@ void Map::calcLine()
     /*********************************/
     
     /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/   
-     for(int i=0;i<obstacle_point_list.size();i++)
+/*     for(int i=0;i<obstacle_point_list.size();i++)
      {
      Coordinate tmp_wall;
      tmp_wall.x = (obstacle_point_list[i].x+500)/10;
      tmp_wall.y = (obstacle_point_list[i].y+500)/10;
      wall.push_back(tmp_wall);
      }
-     /*********************************/
+*/     /*********************************/
     
     std::vector<float> a(LINE_NUM);
     std::vector<float> b(LINE_NUM);
@@ -121,16 +120,55 @@ void Map::calcLine()
 
 
 
-void Map::point()
+void Map::dividePoint()
 {
     
+    /*デバッグ用，txtファイルから読み込み*/
+    //txtファイルから読み込む
+    std::ifstream inFile_Location2("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/cluster_list.txt");
+	if(!inFile_Location2.is_open())
+	{
+        std::cout<<"could not open the file \"cluster_list.txt\"\n";
+        std::cout<<"program terminating!\n";
+		exit(EXIT_FAILURE);
+	}
+    
+    std::string str1,str2;
+    int num_Location2=0;
+    std::ifstream fin;//打开文本
+    
+    fin.open("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/cluster_list.txt");
+    while(getline(fin,str2))
+        ++num_Location2;
+    fin.close(); //关闭文本
+    Location *cluster_list = new Location[num_Location2];
+    if(inFile_Location2.is_open())
+    {
+        for(int i=0;i<num_Location2;i++)
+        {
+            Coordinate tmp_cluster;
+            inFile_Location2 >> cluster_list[i].number  >> cluster_list[i].X >> cluster_list[i].Y;
+            std::cout << cluster_list[i].number <<"  "<< cluster_list[i].X << "  " << cluster_list[i].Y << std::endl;
+            
+            tmp_cluster.x = (cluster_list[i].X+500);
+            tmp_cluster.y = (cluster_list[i].Y+500);
+            
+            obstacle_point_list2.push_back(tmp_cluster);
+        }
+    }
+    /*********************************/
+    
+    /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/
+    /*
     struct Coordinate ob;
     for(int i=0;i<obstacle_point_list2.size();i++)
     {
-        ob.x = (obstacle_point_list[i].x+500);
-        ob.y = (obstacle_point_list[i].y+500);
+        ob.x = (obstacle_point_list2[i].x+500)/10;
+        ob.y = (obstacle_point_list2[i].y+500)/10;
         obstacle_point_list2.push_back(ob);
     }
+    */
+    /***********************************/
     
     
     //一番近い二つの点の距離が25以上の点を削除する、残るの点をfinalに保存する
@@ -171,7 +209,7 @@ void Map::point()
         dis_over.y=y;
         if (dis>25) {
             //dis_over.number=create_list[i].number;
-            dictance.push_back(dis_over);
+            distance.push_back(dis_over);
             
         }
         else
@@ -212,6 +250,9 @@ void Map::point()
     int x2=group_a[0].x;
     int y2=group_a[0].y;
     double dis2=0;
+    
+    std::cout << "group_aの配列サイズ:" << group_a.size() << std::endl;
+    
     for (int j=1; j<group_a.size(); j++)
     {
         int x1=group_a[j].x;
@@ -311,8 +352,8 @@ void Map::showMap()
     tate=sqrt(abs(p1.x-p2.x)*abs(p1.x-p2.x)+abs(p1.y-p2.y)*abs(p1.y-p2.y));
     yoko=sqrt(abs(p1.x-p4.x)*abs(p1.x-p4.x)+abs(p1.y-p4.y)*abs(p1.y-p4.y));
     
-    cout << "縦の長さは　："　<< tate << endl;
-    cout << "横の長さは　："　<< yoko << endl;
+    std::cout << "縦の長さは ：" << tate << std::endl;
+    std::cout << "横の長さは ：" << yoko << std::endl;
     
     double k1 = (p2.y-p1.y)/(p2.x-p1.x);
     double k2 = (p3.y-p2.y)/(p3.x-p2.x);
@@ -337,16 +378,15 @@ void Map::showMap()
     printf("$$$$$$$$   %f  %f    %f   %f   $$$$$$",ang_1,ang_2,ang_3,ang_4);
     
     
-    ofstream outfile("/Users/gaohonghong/Documents/pblについて/result.txt",ios::in);
+    std::ofstream outfile("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/result.txt",std::ios::in);
     if(!outfile)
     {
-        cerr<<"open result.txt error!\n";
-        return 0;
+        std::cerr<<"open result.txt error!\n";
+        exit(EXIT_FAILURE);
     }
-    outfile<<"角度は　" << ang_1 << " " << ang_2  << " " << ang_3 << " " << ang_4 <<endl;
-    outfile<<"縦の長さは　" << tate  <<endl;
-    outfile<<"横の長さは　" << yoko  <<endl;
-    outfile.close();
+    outfile<<"角度は　" << ang_1 << " " << ang_2  << " " << ang_3 << " " << ang_4 << std::endl;
+    outfile<<"縦の長さは " << tate << std::endl;
+    outfile<<"横の長さは　" << yoko << std::endl;
     
     
     //壁の長さ、角度の計算とoutputーーーーここまで
@@ -371,7 +411,7 @@ void Map::showMap()
 
     //障害物を色分けで描画
     CvPoint create_point;//障害物の点
-    for (i =0; i<group1.size(); i++) {
+    for (int i =0; i<group1.size(); i++) {
         create_point.x = group1[i].x;
         create_point.y = group1[i].y;
         rcolor = CV_RGB (255,0,0);//点（丸）の色を設定
@@ -381,7 +421,7 @@ void Map::showMap()
     
     
     
-    for (i =0; i<group2.size(); i++) {
+    for (int i =0; i<group2.size(); i++) {
         create_point.x = group2[i].x;
         create_point.y = group2[i].y;
         rcolor = CV_RGB (255,255,0);//点（丸）の色を設定
@@ -389,7 +429,7 @@ void Map::showMap()
         cvCircle (img, create_point, 10, rcolor,-5, CV_AA, 3);//点を描く
     }
     
-    for (i =0; i<group3.size(); i++) {
+    for (int i =0; i<group3.size(); i++) {
         create_point.x = group3[i].x;
         create_point.y = group3[i].y;
         rcolor = CV_RGB (0,255,255);//点（丸）の色を設定
@@ -444,19 +484,12 @@ void Map::showMap()
     double b3_y=(g3_y/group3.size())*4;
     //cout << b1_x<<" "<<b1_y<<"  "<<b2_x<<"  "<<b2_y<<"  "<<b3_x<<"  "<<b3_y<<endl;
     
-    
-    ofstream outfile("/Users/gaohonghong/Documents/pblについて/result.txt",ios::in);
-    if(!outfile)
-    {
-        cerr<<"open result.txt error!\n";
-        return 0;
-    }
-    outfile<<"障害物1の横、縦の長さは" << b1_x << " " << b1_y   <<endl;
-    outfile<<"障害物2の横、縦の長さは" << b2_x << " " << b3_y   <<endl;
-    outfile<<"障害物3の横、縦の長さは" << b3_x << " " << b3_y   <<endl;
-    outfile<<"障害物1の重心は" << center_g1.x << " " << center_g1.y   <<endl;
-    outfile<<"障害物2の重心は" << center_g2.x << " " << center_g2.y   <<endl;
-    outfile<<"障害物3の重心は" << center_g3.x << " " << center_g3.y   <<endl;
+    outfile<<"障害物1の横、縦の長さは" << b1_x << " " << b1_y   << std::endl;
+    outfile<<"障害物2の横、縦の長さは" << b2_x << " " << b3_y   << std::endl;
+    outfile<<"障害物3の横、縦の長さは" << b3_x << " " << b3_y   << std::endl;
+    outfile<<"障害物1の重心は" << center_g1.x << " " << center_g1.y   << std::endl;
+    outfile<<"障害物2の重心は" << center_g2.x << " " << center_g2.y   << std::endl;
+    outfile<<"障害物3の重心は" << center_g3.x << " " << center_g3.y   << std::endl;
     
     outfile.close();
     
@@ -468,7 +501,7 @@ void Map::showMap()
     
     cvShowImage ("Drawing", img);
     
-    cvSaveImage("/Users/ispd/Workspace/Xcode/pbl3/opencv_test/opencv_test/img.png",img);
+    cvSaveImage("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/img.png",img);
     cvWaitKey (0);
     
     cvDestroyWindow ("Drawing");
@@ -519,7 +552,7 @@ void Map::gauss(Coordinate coord1, Coordinate coord2, float &A, float &B, float 
 ////各直線の交点の位置関係を求める
 void Map::line(double a,double b)
 {
-    if(0<a<400 && 0<b<400)
+    if(a<400 && b<400)
     {
         if(a<100)
         {
