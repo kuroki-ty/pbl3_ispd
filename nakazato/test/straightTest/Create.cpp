@@ -17,22 +17,27 @@ int Create::driveCreate(int velocity, int distance_max)
 float Create::turnCreate(int velocity, int angle_max)
 {
 	int angle=0;
-
+	this->init();
 	drive(velocity, 1);
 	while(1)
 	{
 		angle += getAngle();
-		if(fabs(angle) >= angle_max)
+		if(fabs(angle) >= fabs(angle_max))
 		{
 			this->stopRun();
 			break;
 		}
 	}
 	waitTime(0.5);
-	if(angle >=0 )
+	if(angle >0 )
 	{
 			std::cout <<"turn------------------------:" << P_TURN_A100 * angle + P_TURN_B100 << std::endl;
 			return P_TURN_A100 * angle + P_TURN_B100;
+	}
+	else if(angle == 0)
+	{
+			std::cout <<"turn------------------------:" << P_TURN_A100 * angle << std::endl;
+			return P_TURN_A100 * angle;
 	}
 	else
 	{
@@ -41,62 +46,52 @@ float Create::turnCreate(int velocity, int angle_max)
 	}
 }
 
-
-float Create::getAngleFromCreate( int velocity )
+/***********************
+*
+* 	超音波センサで座標をとりながら回転
+*	返り値：取得した座標
+*
+*
+************************/
+float Create::turnCreateGettingObstacleCoord(int velocity, int angle_max, std::vector<Coordinate> &obstacle_coord )
 {
-	int x;
-	float angle;
-	x = getAngle();
-	if(this->StopTurn)	// Stop → Run
-	{
-		if(velocity == 200)
-		{
-			angle = 0.01329*x + 31.642 + x;
-		}
-		else if(velocity == -200)
-		{
-			angle = 0.01329*x - 31.642 + x;
-		}
-		else if(velocity == 100)
-		{
-			angle = 0.0593*x + 14.843 + x;
-		}
-		else if(velocity = -100)
-		{
-			angle = 0.04914*x + -15.122 + x;
-		}
-	}
-	else	// Run → Run
-	{
-		if(velocity == 200)
-		{
-			angle = 0.01329*x + x;
-		}
-		else if(velocity == -200)
-		{
-			angle = 0.01329*x + x;
-		}			
-		else if(velocity == 100)
-		{
-			angle = 0.0593*x + x;
-		}
-		else if(velocity = -100)
-		{
-			angle = 0.04914*x + x;
-		}
-	}
-	if(angle>360)
-	{
-		return angle-360;
-	}
-	else if(angle<-360)
-	{
-		return angle+360;
-	}
 
-	return angle;
+	int angle=0;
+	this->init();
+	float soner_distance;;
+	drive(velocity, 1);
+	while(1)
+	{
 
+		soner_distance = this->getDistanceBySoner();
+		if(soner_distance < RECORD_OBSTACLE_TH)
+		{
+			obstacle_coord.push_back(this->calcSonerHitPointCoordinate(soner_distance));
+		}
+
+		angle += getAngle();
+		std::cout << angle << std::endl;
+		if(fabs(angle) >= fabs(angle_max))
+		{
+			this->stopRun();
+			break;
+		}
+	}
+//	waitTime(0.0);
+	if(angle >0 )
+	{
+			return P_TURN_A100 * angle + P_TURN_B100;
+	}
+	else if(angle == 0)
+	{
+			return P_TURN_A100 * angle;
+	}
+	else
+	{
+			return N_TURN_A100 * angle + N_TURN_B100;
+	}
 }
+
 
 void Create::addAngle(float angle)
 {
@@ -236,8 +231,8 @@ void Create::run()
 		this->Stop = false;
 	}
 	//this->goStraightCurveWithSoner();
-	this->goStraightTurnWithSoner();
-	//this->goStraight();
+	//this->goStraightTurnWithSoner();
+	this->goStraight();
 }
 
 // 障害物に当たったら、方向転換する関数
@@ -248,7 +243,7 @@ void Create::changeDirection()
 
 //std::cout << "angle : " << angle << std::endl;
 	int tmp_distance;
-	tmp_distance = driveCreate(-VELOCITY_H,50);	//5cm後退
+	tmp_distance = driveCreate(-VELOCITY_H,100);	//5cm後退
 	this->addDistance(tmp_distance);
 	this->StopRun = true;
 	this->calcCurrentCoordinate(tmp_distance);
@@ -294,7 +289,7 @@ void Create::changeDirection()
 	{
 		turn_angle = 90;
 	}
-		//turn_angle = 30;
+	turn_angle = 79;
 
 	this->push_bumper == NONE;
 	std::cout << "turn angle" << turn_angle << std::endl;
@@ -316,60 +311,6 @@ void Create::changeDirection()
 
 
 // Createの現在座標の計算関数
-Coordinate Create::calcCurrentCoordinate()
-{
-	int distance = this->getDistanceFromCreate();
-	this->addDistance(distance);
-	//int last_angle = this->getTotalAngle();
-	float current_angle_r;// [rad]
-
-	float tmp_x, tmp_y; //計算用相対座標
-	
-	float pri_x, pri_y;
-	
-	//float crt_angle_r = (float) last_angle * (M_PI / 180); //createの角度[rad]
-
-	this->addAngle( this->getAngleFromCreate( VELOCITY_H ) );	// Create角度更新
-
-	float angle_r; //[rad]
-	current_angle_r = (float)this->getTotalAngle() * (M_PI / 180);
-
-	if(this->Straight_Run)
-	{
-		tmp_x = (float) distance * cos(current_angle_r);
-		tmp_y = (float) distance * sin(current_angle_r);
-		this->Straight_Run = false;
-	}
-	else
-	{
-		float radius;	// 回転半径
-		if  (this->Right_Run) 
-		{
-			radius = RADIUS_RIGHT;
-			this->Right_Run = false;
-		}
-		else//(this->Left_Run)
-		{
-			radius = RADIUS_LEFT;
-			this->Left_Run = false;
-		}
-
-		angle_r = (float)( distance / radius ); //[rad]
-		tmp_x = 2 * radius * sin(angle_r/2) * cos(angle_r/2 + current_angle_r);
-		tmp_y = 2 * radius * sin(angle_r/2) * sin(angle_r/2 + current_angle_r);
-//std::cout << "tmp:(" << tmp_x << ", " << tmp_y << ")" << (float)current_angle_r *(180/M_PI) << std::endl;
-
-	}
-
-	pri_x= this->current_coord.x;	//map_point_list内の最新の座標を得る（前回記録した位置）
-	pri_y= this->current_coord.y;
-
-	this->updateCurrentCoordinateXY( pri_x + tmp_x, pri_y + tmp_y );	// Createの現在座標を更新
-
-	return this->getCurrentCoordinate();
-}
-
-// 距離と角度を引数にした、Createの現在座標の計算関数
 Coordinate Create::calcCurrentCoordinate(int distance )
 {
 	float current_angle_r;//[rad]
@@ -390,22 +331,22 @@ Coordinate Create::calcCurrentCoordinate(int distance )
 		{
 			if(distance >= 0)	// 前進の場合
 			{
-				distance_x = -0.01196*distance+66.97+distance;
-				distance_y = -0.0242 * distance;	// 横ずれ
+				distance_x = P_DRIVEX_A200*distance+P_DRIVEX_B200;
+				distance_y = P_DRIVEY_A200 * distance;	// 横ずれ
 std::cout << "------------------------1------------------------" << std::endl;
 			}
 			else				// 後退の場合
 			{
-				distance_x = -0.01196*distance-66.97+distance;
-				distance_y = -0.0242 * distance;	// 横ずれ
+				distance_x = N_DRIVEX_A200*distance+N_DRIVEX_B200+distance;
+				distance_y = N_DRIVEY_A200 * distance;	// 横ずれ
 			}
 			this->StopRun = false;
 
 		}
 		else
 		{	
-				distance_x = -0.01196*distance+distance;
-				distance_y = -0.0242 * distance;	// 横ずれ	
+				distance_x = (P_DRIVEX_A100 - 1.0)*distance+distance;
+				distance_y = P_DRIVEY_A100 * distance;	// 横ずれ	
 		}
 
 		tmp_x = (float) distance_x * cos(current_angle_r) - distance_y * sin(current_angle_r);
@@ -519,13 +460,10 @@ Coordinate Create::calcBumperHitPointCoordinate()
 void Create::doBumperHitMode(int bumper_hit, Coordinate &create, Coordinate &obstacle)
 {
 	int distance = this->getDistanceFromCreate();
-	//int angle 	 = this->getAngleFromCreate( VELOCITY_H );	
-	//int angle 	 = getAngle();	
 	this->stopRun();//値だけ取得してストップ
 
 	this->soner_dist.clear(); // 壁にぶつかったので、今まで計測していたsoner_distをクリア
 
-	//this->addAngle(angle);	// Create角度更新
 	this->addDistance(distance);// Distanceを更新、Angleは後のcalculateCreateCoordinate（）内で更新
 
 	if(bumper_hit == 1)
@@ -548,19 +486,99 @@ void Create::doBumperHitMode(int bumper_hit, Coordinate &create, Coordinate &obs
 
 }
 
-void Create::searchObstacle()
+std::vector<Coordinate> Create::searchObstacle(std::vector<Coordinate> &create)
 {
-	// 発進
-	//while(1周するまで)
-	//{
-	// create座標登録
-	// 超音波センサで取得
-	// 一定値内であれば、障害物として登録
-	// ある値以上離れたら止まる
-	// 15度回転
-	// 発進
+	float soner_distance;
+	std::vector<Coordinate> obstacle_coord;
+	std::vector<Coordinate> turn_obstacle_coord;
 
-	//}
+	int bumper_hit;	
+	float soner_ave[5]={0.0,0.0,0.0,0.0,0.0};
+
+	int count=0;
+	int dist;
+
+	// 発進
+	drive(VELOCITY_H, 0);
+	int k=0;
+	while(count < 1000)
+	{
+		dist = getDistance();
+		count += dist;
+		// 超音波センサで取得
+std::cout << "angle===============" << this->total_angle <<  std::endl;
+		soner_ave[k%5] = this->getDistanceBySoner();
+if(k>5)
+{
+		for(int i=0;i<5;i++)
+		{
+			soner_distance +=soner_ave[i];
+			soner_ave[i] = 0.0;
+		}
+		k=0;		
+
+		soner_distance /=5.0; 
+		// 一定値内であれば、障害物として登録
+		if(soner_distance < RECORD_OBSTACLE_TH)
+		{
+			obstacle_coord.push_back(this->calcSonerHitPointCoordinate(soner_distance));
+		}
+
+//std::cout << "soner_obstacle_dist================" << soner_distance << std::endl;
+		// 壁がある値以上離れたら止まる
+		if(soner_distance > OBSTACLE_SEARCH_H_TH || soner_distance < OBSTACLE_SEARCH_L_TH)
+		{
+			this->stopRun();
+			// 20度回転
+			turn_obstacle_coord.clear();
+			if(soner_distance > OBSTACLE_SEARCH_H_TH)
+			{
+				this->addAngle (this->turnCreateGettingObstacleCoord(-VELOCITY_L, 15, turn_obstacle_coord));
+			}
+			else
+			{
+				this->addAngle (this->turnCreateGettingObstacleCoord(VELOCITY_L, 15, turn_obstacle_coord));
+			}
+			// 回転中に取得した障害物座標を登録
+			for(int i=0;i<turn_obstacle_coord.size();i++)
+			{
+				obstacle_coord.push_back(turn_obstacle_coord[i]);
+			}
+			int tmp_distance;
+			tmp_distance = driveCreate(VELOCITY_H,10);	//5cm前進
+			this->addDistance(tmp_distance);
+			this->StopRun = true;
+			create.push_back(this->calcCurrentCoordinate(tmp_distance));
+			count += tmp_distance;
+
+			drive(VELOCITY_H, 0);
+
+		}
+
+}
+		bumper_hit = getBumpsAndWheelDrops();
+		if( bumper_hit!=0)// バンパーが反応したら
+		{
+			this->stopRun();
+			create.push_back(this->calcCurrentCoordinate( dist ));
+			Coordinate tmp_create;
+			Coordinate tmp_obstacle;
+
+			this->doBumperHitMode(bumper_hit, tmp_create, tmp_obstacle);
+			create.push_back(tmp_create);
+			obstacle_coord.push_back(tmp_obstacle);
+			drive(VELOCITY_L, 0);
+		}
+		else
+		{
+			create.push_back(this->calcCurrentCoordinate( dist ));
+		}
+	// 発進
+	k++;
+	}
+
+	return obstacle_coord;
+
 }
 
 
@@ -589,7 +607,7 @@ void Create::doBumperHitModeAtObstacleSerch(int distance, int angle, int bumper_
 	this->changeDirection();	// 方向転換
 	
 	// 障害物の周りを回る　超音波センサをつかって、障害物を記録
-	this->searchObstacle();
+	//this->searchObstacle();
 
 
 }
@@ -622,7 +640,6 @@ void Create::driveDistanceSearchingObstacle(int distance, std::vector<Coordinate
 {
 
 	int count = 0;
-	int angle = 0;
 	int bumper_hit;
 	int dist;
 	float soner_distance;
@@ -635,13 +652,12 @@ std::cout << "distance:" << distance << std::endl;
 		usleep (20000);
 		dist = getDistanceFromCreate();
 		count += dist;
-		angle += getAngleFromCreate( VELOCITY_H );
 
 		bumper_hit = getBumpsAndWheelDrops();
 		if( bumper_hit!=0)// バンパーが反応したら
 		{
 			this->stopRun();
-
+			create.push_back(this->calcCurrentCoordinate( dist ));
 			Coordinate tmp_create;
 			Coordinate tmp_obstacle;
 
@@ -653,8 +669,6 @@ std::cout << "distance:" << distance << std::endl;
 
 			break;
 		}
-
-		create.push_back(this->calcCurrentCoordinate( dist ));
 		// 超音波センサを使って障害物の位置をサーチ
 		soner_distance = this->getDistanceBySoner();	
 		// RECORD_OBSTACLE_TH 以上離れた障害物は記録しない
@@ -673,6 +687,7 @@ std::cout << "distance:" << distance << std::endl;
 			this->addDistance(count);
 			break;
 		}
+		create.push_back(this->calcCurrentCoordinate( dist ));
 	}
 
 
@@ -698,40 +713,49 @@ void Create::runNextPoint(Coordinate move_point, bool &Bumper_Hit, std::vector<C
 	float angle = acos(fabs(dist_x) / distance);
 	float direction_angle = 0.0;
 	int tmp_angle;
-	int create_angle=this->total_angle * M_PI/180;
-	
+	int create_angle=this->total_angle;
+
+	std::cout << "angle前---------------------------------(" << angle * ( 180.0/M_PI ) << std::endl;		
 	if(dist_x<0 && dist_y<0)
 	{
-		angle +=2*(M_PI-angle);
+		angle =M_PI+angle;
+	}
+	else if(dist_x<0 && dist_y>0)
+	{
+		angle =M_PI-angle;
 	}
 	else if(dist_x>0 && dist_y<0)
 	{
 		angle =2*M_PI-angle;
 	}
+	std::cout << "angle後---------------------------------(" << angle * ( 180.0/M_PI ) << std::endl;	
+
+	angle = angle*( 180.0/M_PI );
+
+
+	if(create_angle < 0)
+	{
+		create_angle +=360;
+		this->addAngle(360);
+	}
+
 
 	if(create_angle > angle)
 	{
-		if(create_angle-angle > M_PI)
+		if(create_angle-angle > 180)
 		{
 			direction_angle = 360-(create_angle-angle);
 		}
 		else
 		{
-			direction_angle = create_angle-angle;
+			direction_angle = -(create_angle-angle);
 		}
 	}
 	else
 	{
-		if(angle-create_angle > M_PI)
+		if(angle-create_angle > 180)
 		{
-			if(create_angle>0)
-			{
-				direction_angle = 360-(angle-create_angle);
-			}
-			else
-			{
-				direction_angle = -(360-(angle-create_angle));
-			}
+			direction_angle = -(360-(angle-create_angle));
 		}
 		else
 		{
@@ -739,17 +763,48 @@ void Create::runNextPoint(Coordinate move_point, bool &Bumper_Hit, std::vector<C
 		}
 	}
 
-	std::cout << "direction_angle---------------------------------" << direction_angle * ( 180.0/M_PI ) << std::endl;	
+/*
+else
+{
+		if(angle-create_angle > 180 && angle-create_angle < 360)
+		{
+			direction_angle = -(360-(angle-create_angle));
+		}
+		else if(angle-create_angle >= 360)
+		{
+			direction_angle = 720-(angle-create_angle);
+			if(direction_angle > 180)
+			{
+				direction_angle = 360 - direction_angle;
+			}
+		}
+		else
+		{
+			direction_angle = angle-create_angle;
+		}
+}
+*/
+
+	if(fabs(direction_angle) <1.0)
+	{
+		direction_angle = 0.0;
+	}
+
+	std::cout << "direction_angle前---------------------------------(" << direction_angle << std::endl;	
 	// direction_angleを誤差を踏まえた値に変換
 	if(direction_angle>0)
 	{
-		direction_angle = (direction_angle - P_TURN_B100)/(P_TURN_A100 + 1.0);  
+		direction_angle = (direction_angle - P_TURN_B100)/(P_TURN_A100);  
+	}
+	else if(direction_angle==0)
+	{
+		direction_angle = 0.0;  
 	}
 	else
 	{
-		direction_angle = (direction_angle - N_TURN_B100)/(N_TURN_A100 + 1.0);
+		direction_angle = (direction_angle - N_TURN_B100)/(N_TURN_A100);
 	}
-
+	std::cout << "direction_angle後---------------------------------(" << direction_angle << std::endl;	
 	// 回転
 	if(direction_angle>=0)
 	{

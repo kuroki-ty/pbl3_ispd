@@ -37,9 +37,9 @@
 #define N_TURN_A100 1.1002386
 #define N_TURN_B100 (-2.247255)
 
-#define VELOCITY -100.0
+#define VELOCITY 100.0
 #define RADIUS 1		//-1:右回転 1:左回転
-#define RAD_MAX 10
+#define RAD_MAX 180
 
 
 int main()
@@ -67,12 +67,13 @@ int main()
 			if(fabs(angle) >= RAD_MAX)//RAD_MAX)
 			{
 				drive (0, 0);
+				waitTime(1.0);
 				total_angle += angle;
 				hosei_angle +=P_TURN_A100*angle + P_TURN_B100;
-				fprintf(stdout, "正回転角度:%f\n", P_TURN_A100*angle + P_TURN_B100);
-				fprintf(stdout, "負回転角度:%f\n", N_TURN_A100*angle + N_TURN_B100+angle);
-				fprintf(stdout, "回転角度:%d\n", angle);
-				fprintf(stdout, "総回転角度:%f\n", hosei_angle);
+				std::cout << "正回転角度==========" <<  P_TURN_A100*angle + P_TURN_B100 << std::endl;
+				std::cout << "負回転角度==========" <<  N_TURN_A100*angle + N_TURN_B100 << std::endl;
+				std::cout << "補正無し回転角度=====" <<  angle << std::endl;
+				std::cout << "総回転角度==========" <<  hosei_angle << std::endl;
 				break;
 			}
 		}
@@ -81,7 +82,7 @@ int main()
 	printf("start_d:%d\n",getDistance());
 	printf("start_a:%d\n",getAngle());
 
-		waitTime(1.0);
+	waitTime(1.0);
 	printf("start_d:%d\n",getDistance());
 	printf("start_a:%d\n\n",getAngle());
 

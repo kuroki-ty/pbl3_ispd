@@ -61,6 +61,11 @@ public:
 	{
 		this->create_point_list.push_back( coord );
 	}
+	// 壁の座標リストをプッシュバック
+	void push_back_WallPointList( Coordinate coord )
+	{
+		this->wall_point_list.push_back(coord);
+	}
 
 	// 障害物の座標リストをプッシュバック
 	void push_back_ObstaclePointList( Coordinate coord )
@@ -101,6 +106,12 @@ public:
     {
         return this->create_point_list;
     }
+
+    std::vector<Coordinate> getWallPointList()
+    {
+        return this->wall_point_list;
+    }
+
 
     std::vector<Coordinate> getObstaclePointList()
     {
@@ -160,6 +171,7 @@ private:
     //変数
     //  Coordinate max;
 	std::vector<Coordinate> create_point_list;			// create座標リスト
+	std::vector<Coordinate> wall_point_list;			// wall座標リスト
 	std::vector<Coordinate> obstacle_point_list;	// （マップ生成用）障害物座標リスト
     CvPoint p1,p2,p3,p4;        //各直線の交点
     std::vector<CvPoint> p;     //各直線の交点

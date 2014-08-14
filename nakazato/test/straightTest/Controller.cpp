@@ -121,7 +121,7 @@ std::cout << "direction:"<< this->create.direction << std::endl;
 			{
 				Bumper_Hit = false;
 				this->block.setMeshMark(tmp_obstacle_list[tmp_obstacle_list.size()-1], true);//
-				this->create.searchObstacle();
+		//		this->create.searchObstacle();
 				break;
 			}
 

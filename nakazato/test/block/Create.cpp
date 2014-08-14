@@ -46,6 +46,53 @@ float Create::turnCreate(int velocity, int angle_max)
 	}
 }
 
+/***********************
+*
+* 	超音波センサで座標をとりながら回転
+*	返り値：取得した座標
+*
+*
+************************/
+float Create::turnCreateGettingObstacleCoord(int velocity, int angle_max, std::vector<Coordinate> &obstacle_coord )
+{
+
+	int angle=0;
+	this->init();
+	float soner_distance;;
+	drive(velocity, 1);
+	while(1)
+	{
+
+		soner_distance = this->getDistanceBySoner();
+		if(soner_distance < RECORD_OBSTACLE_TH)
+		{
+			obstacle_coord.push_back(this->calcSonerHitPointCoordinate(soner_distance));
+		}
+
+		angle += getAngle();
+		std::cout << angle << std::endl;
+		if(fabs(angle) >= fabs(angle_max))
+		{
+			this->stopRun();
+			break;
+		}
+	}
+//	waitTime(0.0);
+	if(angle >0 )
+	{
+			return P_TURN_A100 * angle + P_TURN_B100;
+	}
+	else if(angle == 0)
+	{
+			return P_TURN_A100 * angle;
+	}
+	else
+	{
+			return N_TURN_A100 * angle + N_TURN_B100;
+	}
+}
+
+
 void Create::addAngle(float angle)
 {
 	float current_angle;
@@ -196,7 +243,7 @@ void Create::changeDirection()
 
 //std::cout << "angle : " << angle << std::endl;
 	int tmp_distance;
-	tmp_distance = driveCreate(-VELOCITY_H,50);	//5cm後退
+	tmp_distance = driveCreate(-VELOCITY_H,100);	//5cm後退
 	this->addDistance(tmp_distance);
 	this->StopRun = true;
 	this->calcCurrentCoordinate(tmp_distance);
@@ -439,19 +486,100 @@ void Create::doBumperHitMode(int bumper_hit, Coordinate &create, Coordinate &obs
 
 }
 
-void Create::searchObstacle()
+std::vector<Coordinate> Create::searchObstacle(std::vector<Coordinate> &create)
 {
-	// 発進
-	//while(1周するまで)
-	//{
-	// create座標登録
-	// 超音波センサで取得
-	// 一定値内であれば、障害物として登録
-	// ある値以上離れたら止まる
-	// 15度回転
-	// 発進
+	float soner_distance;
+	std::vector<Coordinate> obstacle_coord;
+	std::vector<Coordinate> turn_obstacle_coord;
 
-	//}
+	int bumper_hit;	
+	float soner_ave[5]={0.0,0.0,0.0,0.0,0.0};
+
+	int count=0;
+	int dist;
+
+	// 発進
+	drive(VELOCITY_H, 0);
+	int k=0;
+	while(count < 1000)
+	{
+		dist = getDistance();
+		count += dist;
+		// 超音波センサで取得
+std::cout << "angle===============" << this->total_angle <<  std::endl;
+		soner_ave[k%5] = this->getDistanceBySoner();
+if(k>5)
+{
+		for(int i=0;i<5;i++)
+		{
+			soner_distance +=soner_ave[i];
+			soner_ave[i] = 0.0;
+		}
+		k=0;		
+
+		soner_distance /=5.0; 
+		// 一定値内であれば、障害物として登録
+		if(soner_distance < RECORD_OBSTACLE_TH)
+		{
+			obstacle_coord.push_back(this->calcSonerHitPointCoordinate(soner_distance));
+		}
+
+//std::cout << "soner_obstacle_dist================" << soner_distance << std::endl;
+		// 壁がある値以上離れたら止まる
+		if(soner_distance > OBSTACLE_SEARCH_H_TH || soner_distance < OBSTACLE_SEARCH_L_TH)
+		{
+			this->stopRun();
+			// 20度回転
+			turn_obstacle_coord.clear();
+			if(soner_distance > OBSTACLE_SEARCH_H_TH)
+			{
+				this->addAngle (this->turnCreateGettingObstacleCoord(-VELOCITY_L, 15, turn_obstacle_coord));
+			}
+			else
+			{
+				this->addAngle (this->turnCreateGettingObstacleCoord(VELOCITY_L, 15, turn_obstacle_coord));
+			}
+			// 回転中に取得した障害物座標を登録
+			for(int i=0;i<turn_obstacle_coord.size();i++)
+			{
+				obstacle_coord.push_back(turn_obstacle_coord[i]);
+			}
+			int tmp_distance;
+			tmp_distance = driveCreate(VELOCITY_H,10);	//5cm前進
+			this->addDistance(tmp_distance);
+			this->StopRun = true;
+			create.push_back(this->calcCurrentCoordinate(tmp_distance));
+			count += tmp_distance;
+
+			drive(VELOCITY_H, 0);
+
+		}
+
+}
+		bumper_hit = getBumpsAndWheelDrops();
+		if( bumper_hit!=0)// バンパーが反応したら
+		{
+			this->stopRun();
+			create.push_back(this->calcCurrentCoordinate( dist ));
+			Coordinate tmp_create;
+			Coordinate tmp_obstacle;
+
+			this->doBumperHitMode(bumper_hit, tmp_create, tmp_obstacle);
+			create.push_back(tmp_create);
+			obstacle_coord.push_back(tmp_obstacle);
+			drive(VELOCITY_L, 0);
+		}
+		else
+		{
+			create.push_back(this->calcCurrentCoordinate( dist ));
+		}
+	// 発進
+	k++;
+	}
+	this->stopRun();
+
+	return obstacle_coord;
+
 }
 
 
@@ -480,7 +608,7 @@ void Create::doBumperHitModeAtObstacleSerch(int distance, int angle, int bumper_
 	this->changeDirection();	// 方向転換
 	
 	// 障害物の周りを回る　超音波センサをつかって、障害物を記録
-	this->searchObstacle();
+	//this->searchObstacle();
 
 
 }
@@ -530,7 +658,7 @@ std::cout << "distance:" << distance << std::endl;
 		if( bumper_hit!=0)// バンパーが反応したら
 		{
 			this->stopRun();
-
+			create.push_back(this->calcCurrentCoordinate( dist ));
 			Coordinate tmp_create;
 			Coordinate tmp_obstacle;
 
@@ -542,8 +670,6 @@ std::cout << "distance:" << distance << std::endl;
 
 			break;
 		}
-
-		create.push_back(this->calcCurrentCoordinate( dist ));
 		// 超音波センサを使って障害物の位置をサーチ
 		soner_distance = this->getDistanceBySoner();	
 		// RECORD_OBSTACLE_TH 以上離れた障害物は記録しない
@@ -562,6 +688,7 @@ std::cout << "distance:" << distance << std::endl;
 			this->addDistance(count);
 			break;
 		}
+		create.push_back(this->calcCurrentCoordinate( dist ));
 	}
 
 

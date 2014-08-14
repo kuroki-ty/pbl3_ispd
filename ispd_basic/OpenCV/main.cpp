@@ -31,6 +31,7 @@ std::cout << "distance" << controller.create.getTotalDistance() << std::endl;
 
 	// 記録した座標値を出力
 	controller.output_CreateList();
+	controller.output_WallList();
 	controller.output_ObstacleList();
 
 	return 0;

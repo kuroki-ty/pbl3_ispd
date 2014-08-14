@@ -28,20 +28,32 @@
 #define BUMPER_PLACE_ANGLE_L  ((180-BUMPER_PLACE_ANGLE_R) * (M_PI / 180))
 
 // 超音波センサで障害物の座標を記録する際の閾値　この距離より遠い座標は記録しない
-#define RECORD_OBSTACLE_TH 500
+#define RECORD_OBSTACLE_TH 300
 
 // 壁探索時の飛び値対策
 #define WALL_SEARCH_TH 600
 
+// 障害物の端に入ったときの検知閾値
+#define OBSTACLE_SEARCH_H_TH 300
+#define OBSTACLE_SEARCH_L_TH 170
+
 // 壁探索の直進回転走行の復帰回転角度
 #define RETURN_ANGLE 4
 
-// 回転誤差
+// 回転誤差補正値
 #define P_TURN_A100 1.1002386
 #define P_TURN_B100 2.247255
 
 #define N_TURN_A100 1.1002386
 #define N_TURN_B100 (-2.247255)
+
+// 直進誤差補正値
+#define P_DRIVE_A200 1.1002386
+#define P_DRIVE_B200 2.247255
+
+#define N_DRIVE_A100 1.1002386
+#define N_DRIVE_B100 (-2.247255)
+
 
 
 /*****************************************************************************
@@ -122,6 +134,8 @@ public:
 
 	int driveCreate(int velocity, int distance_max);
 	float turnCreate(int velocity, int angle_max);
+	// 障害物の座標値をとりながら回転	
+	float turnCreateGettingObstacleCoord(int velocity, int angle_max, std::vector<Coordinate> &obstacle_coord );
 
 
 	// Createの現在座標（world）を計算
@@ -152,7 +166,7 @@ public:
 	void runNextPoint(Coordinate move_point, bool &Bumper_Hit, std::vector<Coordinate> &create, std::vector<Coordinate> &obstacle);
 
 	// 障害物を探索するメソッド
-	void searchObstacle();
+	std::vector<Coordinate> searchObstacle(std::vector<Coordinate> &create);
 
 
 
