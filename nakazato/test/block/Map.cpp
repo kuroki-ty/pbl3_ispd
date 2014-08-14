@@ -1,4 +1,4 @@
-#include "Map.h"
+//#include "Map.h"
  
 //	tmp1 = coord2.getY()-coord1.getY(); //y'-y
 //				↓
@@ -21,7 +21,7 @@ Map::Map()
 
 void Map::calcLine()
 {
-    
+   #if 0
     /*デバッグ用，txtファイルから読み込み*/
     //txtファイルから読み込む
     std::ifstream inFile_Location2("./test/obstacle_list.txt");
@@ -55,17 +55,18 @@ void Map::calcLine()
             wall.push_back(tmp_wall);
         }
     }
+   #endif
     /*********************************/
     
     /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/   
-/*     for(int i=0;i<obstacle_point_list.size();i++)
+     for(int i=0;i<this->wall_point_list.size();i++)
      {
      Coordinate tmp_wall;
-     tmp_wall.x = (obstacle_point_list[i].x+500)/10;
-     tmp_wall.y = (obstacle_point_list[i].y+500)/10;
+     tmp_wall.x = (this->wall_point_list[i].x+1000)/10;
+     tmp_wall.y = (this->wall_point_list[i].y+1000)/10;
      wall.push_back(tmp_wall);
      }
-*/     /*********************************/
+     /*********************************/
     
     std::vector<float> a(LINE_NUM);
     std::vector<float> b(LINE_NUM);
@@ -122,7 +123,7 @@ void Map::calcLine()
 
 void Map::dividePoint()
 {
-    
+#if 0
     /*デバッグ用，txtファイルから読み込み*/
     //txtファイルから読み込む
     std::ifstream inFile_Location2("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/cluster_list.txt");
@@ -150,24 +151,25 @@ void Map::dividePoint()
             inFile_Location2 >> cluster_list[i].number  >> cluster_list[i].X >> cluster_list[i].Y;
             std::cout << cluster_list[i].number <<"  "<< cluster_list[i].X << "  " << cluster_list[i].Y << std::endl;
             
-            tmp_cluster.x = (cluster_list[i].X+500);
-            tmp_cluster.y = (cluster_list[i].Y+500);
+            tmp_cluster.x = (cluster_list[i].X+1000);
+            tmp_cluster.y = (cluster_list[i].Y+1000);
             
             obstacle_point_list2.push_back(tmp_cluster);
         }
     }
+#endif
     /*********************************/
     
     /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/
-    /*
+    
     struct Coordinate ob;
-    for(int i=0;i<obstacle_point_list2.size();i++)
+    for(int i=0;i<wall_point_list.size();i++)
     {
-        ob.x = (obstacle_point_list2[i].x+500)/10;
-        ob.y = (obstacle_point_list2[i].y+500)/10;
-        obstacle_point_list2.push_back(ob);
+        ob.x = (wall_point_list[i].x+1000)/10;
+        ob.y = (wall_point_list[i].y+1000)/10;
+        this->obstacle_point_list2.push_back(ob);
     }
-    */
+    
     /***********************************/
     
     
@@ -278,6 +280,19 @@ void Map::dividePoint()
 void Map::showMap2()
 {
 
+	std::cout << p1.x << "," << p1.y << std::endl;
+	std::cout << p2.x << "," << p2.y << std::endl;
+	std::cout << p3.x << "," << p3.y << std::endl;
+	std::cout << p4.x << "," << p4.y << std::endl;
+
+	for(int i =0;i<RANSAC_A.size();i++)
+{
+	std::cout << RANSAC_A[i] << std::endl;
+	std::cout << RANSAC_B[i] << std::endl;
+	std::cout << RANSAC_C[i] << std::endl;
+}
+
+
     IplImage *img = 0;//図を定義する
     CvScalar rcolor;//色を定義する
     
@@ -350,7 +365,7 @@ void Map::showMap2()
     
     cvShowImage ("Drawing", img);
     
-    cvSaveImage("/Users/ispd/Workspace/Xcode/pbl3/opencv_test/opencv_test/img.png",img);
+    cvSaveImage("./test/img.png",img);
     cvWaitKey (0);
     
     cvDestroyWindow ("Drawing");
@@ -588,7 +603,7 @@ void Map::showMap()
     
     cvShowImage ("Drawing", img);
     
-    cvSaveImage("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/img.png",img);
+    cvSaveImage("./test/img.png",img);
     cvWaitKey (0);
     
     cvDestroyWindow ("Drawing");
@@ -639,11 +654,11 @@ void Map::gauss(Coordinate coord1, Coordinate coord2, float &A, float &B, float 
 ////各直線の交点の位置関係を求める
 void Map::line(double a,double b)
 {
-    if(a<400 && b<400)
+    if(a<400 && b<400 && a>0 && b>0)
     {
-        if(a<100)
+        if(a<200)
         {
-            if(b<100)
+            if(b<200)
             {
                 p1.x=a;
                 p1.y=b;
@@ -657,7 +672,7 @@ void Map::line(double a,double b)
         }
         else
         {
-            if(b>100)
+            if(b>200)
             {
                 p3.x=a;
                 p3.y=b;

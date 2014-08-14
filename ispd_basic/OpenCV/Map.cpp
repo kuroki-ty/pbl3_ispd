@@ -1,4 +1,4 @@
-#include "Map.h"
+//#include "Map.h"
  
 //	tmp1 = coord2.getY()-coord1.getY(); //y'-y
 //				↓
@@ -22,9 +22,9 @@ Map::Map()
 void Map::calcLine()
 {
     
-    /*デバッグ用，txtファイルから読み込み*/
+    /*デバッグ用，txtファイルから読み込み
     //txtファイルから読み込む
-    std::ifstream inFile_Location2("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/obstacle_list.txt");
+    std::ifstream inFile_Location2("./test/obstacle_list.txt");
 	if(!inFile_Location2.is_open())
 	{
         std::cout<<"could not open the file \"obstacle_list.txt\"\n";
@@ -36,7 +36,7 @@ void Map::calcLine()
     int num_Location2=0;
     std::ifstream fin;//打开文本
     
-    fin.open("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/obstacle_list.txt");
+    fin.open("./test/obstacle_list.txt");
     while(getline(fin,str2))
         ++num_Location2;
     fin.close(); //关闭文本
@@ -49,23 +49,24 @@ void Map::calcLine()
             inFile_Location2 >> obstacle_list[i].number  >> obstacle_list[i].X >> obstacle_list[i].Y;
             std::cout << obstacle_list[i].number <<"  "<< obstacle_list[i].X << "  " << obstacle_list[i].Y << std::endl;
             
-            tmp_wall.x = (obstacle_list[i].X+500)/10;
-            tmp_wall.y = (obstacle_list[i].Y+500)/10;
+            tmp_wall.x = (obstacle_list[i].X+1000)/10;
+            tmp_wall.y = (obstacle_list[i].Y+1000)/10;
             
             wall.push_back(tmp_wall);
         }
     }
+*/
     /*********************************/
     
     /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/   
-/*     for(int i=0;i<obstacle_point_list.size();i++)
+     for(int i=0;i<wall_point_list.size();i++)
      {
      Coordinate tmp_wall;
-     tmp_wall.x = (obstacle_point_list[i].x+500)/10;
-     tmp_wall.y = (obstacle_point_list[i].y+500)/10;
+     tmp_wall.x = (wall_point_list[i].x+1000)/10;
+     tmp_wall.y = (wall_point_list[i].y+1000)/10;
      wall.push_back(tmp_wall);
      }
-*/     /*********************************/
+     /*********************************/
     
     std::vector<float> a(LINE_NUM);
     std::vector<float> b(LINE_NUM);
@@ -122,7 +123,8 @@ void Map::calcLine()
 
 void Map::dividePoint()
 {
-    
+  
+#if 0
     /*デバッグ用，txtファイルから読み込み*/
     //txtファイルから読み込む
     std::ifstream inFile_Location2("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/cluster_list.txt");
@@ -156,18 +158,20 @@ void Map::dividePoint()
             obstacle_point_list2.push_back(tmp_cluster);
         }
     }
+
+#endif
     /*********************************/
     
     /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/
-    /*
+    
     struct Coordinate ob;
-    for(int i=0;i<obstacle_point_list2.size();i++)
+    for(int i=0;i<obstacle_point_list.size();i++)
     {
-        ob.x = (obstacle_point_list2[i].x+500)/10;
-        ob.y = (obstacle_point_list2[i].y+500)/10;
+        ob.x = (obstacle_point_list[i].x+1000)/10;
+        ob.y = (obstacle_point_list[i].y+1000)/10;
         obstacle_point_list2.push_back(ob);
     }
-    */
+    
     /***********************************/
     
     
@@ -235,7 +239,7 @@ void Map::dividePoint()
         dis_over2.y= y1;
         //dis_over2.number=final[j].number;
         
-        if(dis>300)
+        if(dis>30)
         {
             group_a.push_back(dis_over2);
             
@@ -262,7 +266,7 @@ void Map::dividePoint()
         dis_over2.y= y1;
         //dis_over2.number=group_a[j].number;
         
-        if(dis>300)
+        if(dis>30)
         {
             group3.push_back(dis_over2);
         }
@@ -274,6 +278,93 @@ void Map::dividePoint()
 
     
 }
+
+void Map::showMap2()
+{
+
+    IplImage *img = 0;//図を定義する
+    CvScalar rcolor;//色を定義する
+    
+    IplImage *test;//図を定義する
+    test = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
+    cvZero (test);
+    for(int x=0;x<test->height;x++){
+        for(int y=0;y<test->width;y++) {
+            test->imageData[test->widthStep * y + x * 3]     = 255; //B
+            test->imageData[test->widthStep * y + x * 3 + 1] = 255; //G
+            test->imageData[test->widthStep * y + x * 3 + 2] = 255; //R
+        }
+    }
+    
+    // 画像領域を確保し初期化する
+    img = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
+    cvZero (img);
+    //画像の背景を白にする
+    for(int x=0;x<img->height;x++){
+        for(int y=0;y<img->width;y++) {
+            img->imageData[img->widthStep * y + x * 3]     = 255; //B
+            img->imageData[img->widthStep * y + x * 3 + 1] = 255; //G
+            img->imageData[img->widthStep * y + x * 3 + 2] = 255; //R
+        }
+    }
+
+
+	for(int i = 0; i < LINE_NUM; i++)
+	{        
+        wall.clear();
+		wall = outliers;
+		outliers.clear();
+        // 点の描画 ----- ここから
+        CvPoint testpoint;
+        rcolor = CV_RGB (255,200,0);
+        for(int j=0;j<inliers_s[i].size();j++)
+        {
+            int x = (int)(inliers_s[i][j].x);
+            int y = (int)(inliers_s[i][j].y);
+            testpoint = cvPoint(x, y);
+            
+            cvCircle(img, testpoint, 2, rcolor, -5);
+        }
+        // 点の描画 ----- ここまで
+        
+        
+        wall.clear();
+		wall = outliers;
+		outliers.clear();
+	}
+    
+    // 線の描画 ----- ここから
+    rcolor = CV_RGB (200,0,200);
+    for(int i=0; i<LINE_NUM; i++)
+    {
+        if(i != LINE_NUM-1)
+        {
+            cvLine (img, p[i], p[i+1], rcolor, 2, CV_AA, 0);
+        }
+        else
+        {
+            cvLine (img, p[i], p[0], rcolor, 2, CV_AA, 0);
+
+        }
+    }
+    // 線の描画 ----- ここまで
+    
+    cvFlip(img, NULL,0);//図を上下回転する
+    cvNamedWindow ("Drawing", CV_WINDOW_AUTOSIZE);
+    
+    cvShowImage ("Drawing", img);
+    
+    cvSaveImage("./test/img.png",img);
+    cvWaitKey (0);
+    
+    cvDestroyWindow ("Drawing");
+    cvReleaseImage (&img);
+ 
+    cvDestroyWindow ("testDrawing");
+    cvReleaseImage (&test);
+    
+}
+
 //マップを描画する
 void Map::showMap()
 {
@@ -378,7 +469,7 @@ void Map::showMap()
     printf("$$$$$$$$   %f  %f    %f   %f   $$$$$$",ang_1,ang_2,ang_3,ang_4);
     
     
-    std::ofstream outfile("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/result.txt",std::ios::in);
+    std::ofstream outfile("./test/result.txt",std::ios::in);
     if(!outfile)
     {
         std::cerr<<"open result.txt error!\n";
@@ -501,7 +592,7 @@ void Map::showMap()
     
     cvShowImage ("Drawing", img);
     
-    cvSaveImage("/Users/ispd/Workspace/Xcode/pbl3/gao_map/gao_map/img.png",img);
+    cvSaveImage("./test/img.png",img);
     cvWaitKey (0);
     
     cvDestroyWindow ("Drawing");
@@ -552,7 +643,7 @@ void Map::gauss(Coordinate coord1, Coordinate coord2, float &A, float &B, float 
 ////各直線の交点の位置関係を求める
 void Map::line(double a,double b)
 {
-    if(a<400 && b<400)
+    if(a<400 && b<400 && a>0 && b>0)
     {
         if(a<100)
         {

@@ -78,6 +78,12 @@ public:
 		this->obstacle_point_list.clear();
 		this->obstacle_point_list = list;
 	}
+	// 障害物の座標リストをset テスト用
+	void setWallPointList( std::vector<Coordinate> list )
+	{
+		this->wall_point_list.clear();
+		this->wall_point_list = list;
+	}
 
     // get method
 	float getCurrentCreatePoint_X()
@@ -132,8 +138,8 @@ public:
         for(int i=0; i<p.size(); i++)
         {
             //縮尺を元に戻してpush_back
-            tmp.x = p[i].x*10-500;
-            tmp.y = p[i].y*10-500;
+            tmp.x = p[i].x*10-1000;
+            tmp.y = p[i].y*10-1000;
             tmp_p.push_back(tmp);
         }
         

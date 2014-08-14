@@ -15,6 +15,9 @@ std::cout << "(" << this->create.getCurrentCoordinate().x << ", " << this->creat
 std::cout << "direction:"<< this->create.direction << std::endl;
 	this->block.showMesh();
 
+std::cout << "current mesh:" << this->block.getCurrentMeshNum(this->create.getCurrentCoordinate()) << std::endl;
+
+
 // 1.壁探索
 	if(this->search_flag == WALL)
 	{
@@ -54,6 +57,7 @@ std::cout << "direction:"<< this->create.direction << std::endl;
 
 	    if(this->block.isStartMesh( start_coord, create_coord,  total_distance))
 		{
+std::cout << "--------------------------1----------------------------" << std::endl;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める
 			this->search_flag = OBSTACLE;
 
@@ -64,19 +68,27 @@ std::cout << "direction:"<< this->create.direction << std::endl;
     		std::vector< std::vector<float> > ransac;	//壁直線の係数を格納する2次元配列 ransac[i][0]:a, ransac[i][1]:b ransac[i][2]:c
 
 			this->map.calcLine();	//Mapクラスのobstacleリストから直線式を計算する
+std::cout << "--------------------------2----------------------------" << std::endl;
 			p = this->map.getIntersectionLine();	//直線の交点をgetする
+std::cout << "--------------------------3----------------------------" << std::endl;
     		ransac = this->map.getCoefficientLine(xflag);	//直線式の係数をgetする
-    
+std::cout << "--------------------------4----------------------------" << std::endl;
+			this->map.showMap2();
+std::cout << "--------------------------5----------------------------" << std::endl;    
     		this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
+std::cout << "--------------------------6----------------------------" << std::endl;
 			this->block.fillMesh();							//壁のメッシュの外側を全て埋める
+std::cout << "--------------------------7----------------------------" << std::endl;
 			this->block.showMesh();
 			/***************************************************/
 
 		}
 		else if(this->create.getTotalDistance() > 6000)
 		{
-			this->search_flag = OBSTACLE;
+			this->search_flag = DOCK;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める
+std::cout << "--------------------------8----------------------------" << std::endl;
+			//this->map.showMap2();
 		}
 	}
 

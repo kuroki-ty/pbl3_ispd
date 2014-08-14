@@ -52,6 +52,7 @@ public:
 	
     //メソッド
     void showMap();     //マップを描画する
+    void showMap2();     //マップを描画する
     void calcLine();    //壁を示す直線を算出する
     void dividePoint(); // 障害物の余計な点を除去する
 
@@ -71,6 +72,12 @@ public:
 	void push_back_ObstaclePointList( Coordinate coord )
 	{
 		this->obstacle_point_list.push_back(coord);
+	}
+	// 障害物の座標リストをset テスト用
+	void setObstaclePointList( std::vector<Coordinate> list )
+	{
+		this->obstacle_point_list.clear();
+		this->obstacle_point_list = list;
 	}
 
     // get method
@@ -96,6 +103,12 @@ public:
 	{
 		return this->create_point_list.size();
 	}
+
+	int getWallListSize()
+	{
+		return this->wall_point_list.size();
+	}
+
 	// obstacle list の配列数を取得
 	int getObstacleListSize()
 	{
@@ -126,8 +139,8 @@ public:
         for(int i=0; i<p.size(); i++)
         {
             //縮尺を元に戻してpush_back
-            tmp.x = p[i].x*10-500;
-            tmp.y = p[i].y*10-500;
+            tmp.x = p[i].x*10-1000;
+            tmp.y = p[i].y*10-1000;
             tmp_p.push_back(tmp);
         }
         

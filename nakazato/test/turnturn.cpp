@@ -31,15 +31,24 @@
 #include <math.h>
 
 // 回転誤差
-#define P_TURN_A100 1.1002386
-#define P_TURN_B100 2.247255
+//#define P_TURN_A100 1.1002386
+//#define P_TURN_B100 2.247255
 
-#define N_TURN_A100 1.1002386
-#define N_TURN_B100 (-2.247255)
+//#define N_TURN_A100 1.1002386
+//#define N_TURN_B100 (-2.247255)
 
 #define VELOCITY 100.0
 #define RADIUS 1		//-1:右回転 1:左回転
-#define RAD_MAX 180
+#define RAD_MAX 90
+
+// 回転誤差補正値
+#define P_TURN_A100 (-0.0003)
+#define P_TURN_B100 0.1227
+#define P_TURN_C100 2.6985
+
+#define N_TURN_A100 (-0.0003)
+#define N_TURN_B100 0.1227
+#define N_TURN_C100 (-2.6985)
 
 
 int main()
@@ -67,10 +76,10 @@ int main()
 			if(fabs(angle) >= RAD_MAX)//RAD_MAX)
 			{
 				drive (0, 0);
-				waitTime(1.0);
+				//waitTime(1.0);
 				total_angle += angle;
-				hosei_angle +=P_TURN_A100*angle + P_TURN_B100;
-				std::cout << "正回転角度==========" <<  P_TURN_A100*angle + P_TURN_B100 << std::endl;
+				hosei_angle +=P_TURN_A100*angle*angle + P_TURN_B100*angle + P_TURN_C100 + angle;
+				std::cout << "正回転角度==========" <<  P_TURN_A100*angle*angle + P_TURN_B100*angle + P_TURN_C100 + angle << std::endl;
 				std::cout << "負回転角度==========" <<  N_TURN_A100*angle + N_TURN_B100 << std::endl;
 				std::cout << "補正無し回転角度=====" <<  angle << std::endl;
 				std::cout << "総回転角度==========" <<  hosei_angle << std::endl;

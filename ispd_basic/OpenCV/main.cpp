@@ -15,7 +15,20 @@ int main()
 	controller.create.init();
 //	controller.create.run();
 	int counter = 0;
-	waitTime(2.0);
+	//waitTime(2.0);
+
+	int wait=0;
+	while(1)
+	{
+		waitTime(0.2);
+		std::cout << controller.create.getDistanceBySoner() << std::endl;
+		if(wait>20)
+		{
+			break;
+		}
+		wait++;
+	}
+
 	while(!controller.finished)	
 	{
 		controller.checkState();	// バンパーに当たったら回避モードに移行

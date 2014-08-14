@@ -28,11 +28,11 @@ float Create::turnCreate(int velocity, int angle_max)
 			break;
 		}
 	}
-	waitTime(0.5);
+	waitTime(0.2);
 	if(angle >0 )
 	{
-			std::cout <<"turn------------------------:" << P_TURN_A100 * angle + P_TURN_B100 << std::endl;
-			return P_TURN_A100 * angle + P_TURN_B100;
+			std::cout <<"turn------------------------:" << P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100 << std::endl;
+			return P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100 + angle;
 	}
 	else if(angle == 0)
 	{
@@ -42,7 +42,7 @@ float Create::turnCreate(int velocity, int angle_max)
 	else
 	{
 			std::cout <<"turn------------------------:" << N_TURN_A100*angle + N_TURN_B100 << std::endl;
-			return N_TURN_A100 * angle + N_TURN_B100;
+			return N_TURN_A100 * angle * angle + N_TURN_B100 * angle + N_TURN_C100 + angle;
 	}
 }
 
@@ -80,7 +80,7 @@ float Create::turnCreateGettingObstacleCoord(int velocity, int angle_max, std::v
 //	waitTime(0.0);
 	if(angle >0 )
 	{
-			return P_TURN_A100 * angle + P_TURN_B100;
+			return P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100;
 	}
 	else if(angle == 0)
 	{
@@ -88,7 +88,7 @@ float Create::turnCreateGettingObstacleCoord(int velocity, int angle_max, std::v
 	}
 	else
 	{
-			return N_TURN_A100 * angle + N_TURN_B100;
+			return N_TURN_A100 * angle * angle + N_TURN_B100 * angle + N_TURN_C100;
 	}
 }
 
@@ -170,7 +170,7 @@ void Create::checkDistToWall(float &ave_dist)
 {
 	float total = 0.0;
 	float soner_distance = this->getDistanceBySoner();
-	ave_dist = 200;
+	ave_dist = 300;
 	std::cout << "soner--------------------------:" << soner_distance << std::endl;
 	if(soner_distance < WALL_SEARCH_TH)
 	{
@@ -231,8 +231,8 @@ void Create::run()
 		this->Stop = false;
 	}
 	//this->goStraightCurveWithSoner();
-	//this->goStraightTurnWithSoner();
-	this->goStraight();
+	this->goStraightTurnWithSoner();
+	//this->goStraight();
 }
 
 // 障害物に当たったら、方向転換する関数
@@ -289,7 +289,7 @@ void Create::changeDirection()
 	{
 		turn_angle = 90;
 	}
-	turn_angle = 79;
+	//turn_angle = 79;
 
 	this->push_bumper == NONE;
 	std::cout << "turn angle" << turn_angle << std::endl;
@@ -331,28 +331,25 @@ Coordinate Create::calcCurrentCoordinate(int distance )
 		{
 			if(distance >= 0)	// 前進の場合
 			{
-				distance_x = -0.01196*distance+66.97+distance;
-				distance_y = -0.0242 * distance;	// 横ずれ
-std::cout << "------------------------1------------------------" << std::endl;
+				distance_x = P_DRIVEX_A200*distance+P_DRIVEX_B200+distance;
+				distance_y = P_DRIVEY_A200 * distance;	// 横ずれ
 			}
 			else				// 後退の場合
 			{
-				distance_x = -0.01196*distance-66.97+distance;
-				distance_y = -0.0242 * distance;	// 横ずれ
+				distance_x = N_DRIVEX_A100*distance+N_DRIVEX_B100;
+				distance_y = N_DRIVEY_A100;// * distance;	// 横ずれ
 			}
 			this->StopRun = false;
 
 		}
 		else
 		{	
-				distance_x = -0.01196*distance+distance;
-				distance_y = -0.0242 * distance;	// 横ずれ	
+				distance_x = P_DRIVEX_A200 * distance + distance;
+				distance_y = P_DRIVEY_A200 * distance;	// 横ずれ	
 		}
 
 		tmp_x = (float) distance_x * cos(current_angle_r) - distance_y * sin(current_angle_r);
 		tmp_y = (float) distance_x * sin(current_angle_r) + distance_y * cos(current_angle_r);
-
-std::cout << "補正後(x,y)-----------------------------(" << tmp_x << " : " << tmp_y << std::endl;
 
 		this->Straight_Run = false;
 	}

@@ -40,7 +40,7 @@ public:
 		std::vector<Coordinate> create_list;
 		create_list = this->map.getCreatePointList();
 
-		std::ofstream ofs("/home/qito-asmd-2/output/create_list");
+		std::ofstream ofs("/home/qito-asmd-2/output/create_list.txt");
 		for(int i=0;i<this->map.getCreateListSize();i++)
 		{
 			ofs << i << "\t" << create_list[i].x << "\t" << create_list[i].y << std::endl;
@@ -48,12 +48,12 @@ public:
 		ofs.close();
 	}
 
-	void output_wallList()
+	void output_WallList()
 	{
 		std::vector<Coordinate> wall_list;
-		wall_list = this->map.getObstaclePointList();
+		wall_list = this->map.getWallPointList();
 
-		std::ofstream ofs("/home/qito-asmd-2/output/wall_list");
+		std::ofstream ofs("/home/qito-asmd-2/output/wall_list.txt");
 		for(int i=0;i<this->map.getWallListSize();i++)
 		{
 			ofs << i << "\t" << wall_list[i].x << "\t" << wall_list[i].y << std::endl;
@@ -67,7 +67,7 @@ public:
 		std::vector<Coordinate> obstacle_list;
 		obstacle_list = this->map.getObstaclePointList();
 
-		std::ofstream ofs("/home/qito-asmd-2/output/obstacle_list");
+		std::ofstream ofs("/home/qito-asmd-2/output/obstacle_list.txt");
 		for(int i=0;i<this->map.getObstacleListSize();i++)
 		{
 			ofs << i << "\t" << obstacle_list[i].x << "\t" << obstacle_list[i].y << std::endl;
