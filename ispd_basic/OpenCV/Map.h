@@ -20,7 +20,7 @@
  ** Define
  *****************************************************************************/
 #define MAX_COORD_SIZE 29.4 //[m] block lenghが0.35[m]なので合計84ブロックになる
-#define LINE_NUM 4  //ライン数
+#define LINE_NUM 2  //ライン数
 //ransac用 -------------------------------
 #define SEARCH 500 	// 直線サーチ回数
 #define THRESHOLD 5  // 最小二乗の閾値
@@ -194,6 +194,7 @@ private:
     std::vector<Coordinate> wall, outliers, inliers;
     std::vector< std::vector<Coordinate> > outliers_s, inliers_s;
     bool xflag;
+	int inliers_max;
     
     std::vector<Coordinate >obstacle_point_list2;
     std::vector<Coordinate >distance;

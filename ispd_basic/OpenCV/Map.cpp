@@ -67,53 +67,7 @@ void Map::calcLine()
         tmp_wall.y = (wall_point_list[i].y+1000)/10;
         wall.push_back(tmp_wall);
     }
-    /*********************************/
-    
-    //txtファイルから読み込む
-    std::ifstream inFile_Location2("./test/obstacle_list.txt");
-	if(!inFile_Location2.is_open())
-	{
-        std::cout<<"could not open the file \"obstacle_list.txt\"\n";
-        std::cout<<"program terminating!\n";
-		exit(EXIT_FAILURE);
-	}
-    
-    std::string str1,str2;
-    int num_Location2=0;
-    std::ifstream fin;//打开文本
-    
-    fin.open("./test/obstacle_list.txt");
-    while(getline(fin,str2))
-        ++num_Location2;
-    fin.close(); //关闭文本
-    Location *obstacle_list = new Location[num_Location2];
-    if(inFile_Location2.is_open())
-    {
-        for(int i=0;i<num_Location2;i++)
-        {
-            Coordinate tmp_wall;
-            inFile_Location2 >> obstacle_list[i].number  >> obstacle_list[i].X >> obstacle_list[i].Y;
-            std::cout << obstacle_list[i].number <<"  "<< obstacle_list[i].X << "  " << obstacle_list[i].Y << std::endl;
-            
-            tmp_wall.x = (obstacle_list[i].X+1000)/10;
-            tmp_wall.y = (obstacle_list[i].Y+1000)/10;
-            
-            wall.push_back(tmp_wall);
-        }
-    }
-    */
-    /*********************************/
-    
-    /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/
-    for(int i=0;i<wall_point_list.size();i++)
-    {
-        Coordinate tmp_wall;
-        tmp_wall.x = (wall_point_list[i].x+1000)/10;
-        tmp_wall.y = (wall_point_list[i].y+1000)/10;
-        wall.push_back(tmp_wall);
-    }
-    /*********************************/
-    
+    /*********************************/    
     
     std::vector<float> a(LINE_NUM);
     std::vector<float> b(LINE_NUM);
@@ -378,7 +332,7 @@ void Map::showMap2()
         }
     }
     
-    int max=0,inliers_max=0;
+    int max=0;
 	for(int i = 0; i < LINE_NUM; i++)
 	{
         wall.clear();
@@ -449,91 +403,6 @@ void Map::showMap2()
     
 }
 
-void Map::showMap2()
-{
-    
-    IplImage *img = 0;//図を定義する
-    CvScalar rcolor;//色を定義する
-    
-    IplImage *test;//図を定義する
-    test = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
-    cvZero (test);
-    for(int x=0;x<test->height;x++){
-        for(int y=0;y<test->width;y++) {
-            test->imageData[test->widthStep * y + x * 3]     = 255; //B
-            test->imageData[test->widthStep * y + x * 3 + 1] = 255; //G
-            test->imageData[test->widthStep * y + x * 3 + 2] = 255; //R
-        }
-    }
-    
-    // 画像領域を確保し初期化する
-    img = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
-    cvZero (img);
-    //画像の背景を白にする
-    for(int x=0;x<img->height;x++){
-        for(int y=0;y<img->width;y++) {
-            img->imageData[img->widthStep * y + x * 3]     = 255; //B
-            img->imageData[img->widthStep * y + x * 3 + 1] = 255; //G
-            img->imageData[img->widthStep * y + x * 3 + 2] = 255; //R
-        }
-    }
-    
-    
-	for(int i = 0; i < LINE_NUM; i++)
-	{
-        wall.clear();
-		wall = outliers;
-		outliers.clear();
-        // 点の描画 ----- ここから
-        CvPoint testpoint;
-        rcolor = CV_RGB (255,200,0);
-        for(int j=0;j<inliers_s[i].size();j++)
-        {
-            int x = (int)(inliers_s[i][j].x);
-            int y = (int)(inliers_s[i][j].y);
-            testpoint = cvPoint(x, y);
-            
-            cvCircle(img, testpoint, 2, rcolor, -5);
-        }
-        // 点の描画 ----- ここまで
-        
-        
-        wall.clear();
-		wall = outliers;
-		outliers.clear();
-	}
-    
-    // 線の描画 ----- ここから
-    rcolor = CV_RGB (200,0,200);
-    for(int i=0; i<LINE_NUM; i++)
-    {
-        if(i != LINE_NUM-1)
-        {
-            cvLine (img, p[i], p[i+1], rcolor, 2, CV_AA, 0);
-        }
-        else
-        {
-            cvLine (img, p[i], p[0], rcolor, 2, CV_AA, 0);
-            
-        }
-    }
-    // 線の描画 ----- ここまで
-    
-    cvFlip(img, NULL,0);//図を上下回転する
-    cvNamedWindow ("Drawing", CV_WINDOW_AUTOSIZE);
-    
-    cvShowImage ("Drawing", img);
-    
-    cvSaveImage("./test/img.png",img);
-    cvWaitKey (0);
-    
-    cvDestroyWindow ("Drawing");
-    cvReleaseImage (&img);
-    
-    cvDestroyWindow ("testDrawing");
-    cvReleaseImage (&test);
-    
-}
 
 //マップを描画する
 void Map::showMap()
@@ -639,7 +508,7 @@ void Map::showMap()
     printf("$$$$$$$$   %f  %f    %f   %f   $$$$$$",ang_1,ang_2,ang_3,ang_4);
     
     
-    std::ofstream outfile("./test/result.txt",std::ios::in);
+    std::ofstream outfile("./result.txt",std::ios::in);
     if(!outfile)
     {
         std::cerr<<"open result.txt error!\n";

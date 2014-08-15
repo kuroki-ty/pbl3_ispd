@@ -299,7 +299,7 @@ void Create::changeDirection()
 	{
 		turn_angle = 90;
 	}
-	turn_angle = 79;
+	//turn_angle = 79;
 
 	this->push_bumper == NONE;
 	std::cout << "turn angle" << turn_angle << std::endl;

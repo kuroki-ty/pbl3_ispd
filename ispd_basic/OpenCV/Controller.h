@@ -23,6 +23,8 @@ public:
 	}
 
 	void checkState();
+	void showWall2();
+	void showWall4();
 
 	// Createの座標を記録
 	void recordCreateCoordinate( Coordinate coord )

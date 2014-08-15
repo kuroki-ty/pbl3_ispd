@@ -1,3 +1,52 @@
+void Controller::showWall4()
+{
+			/*壁のメッシュを埋める処理 yamasaki記述*/
+			/*setMeshMarksメソッド(壁探索後に壁のメッシュを埋めるメソッド)で使用する変数*/
+			std::vector<Coordinate> p;		//壁直線の交点を格納する配列
+    		std::vector<bool> xflag;		//壁直線がy=ax+bかy=cかを判定する変数
+    		std::vector< std::vector<float> > ransac;	//壁直線の係数を格納する2次元配列 ransac[i][0]:a, ransac[i][1]:b ransac[i][2]:c
+
+			this->map.calcLine();	//Mapクラスのobstacleリストから直線式を計算する
+std::cout << "--------------------------2----------------------------" << std::endl;
+			p = this->map.getIntersectionLine();	//直線の交点をgetする
+std::cout << "--------------------------3----------------------------" << std::endl;
+    		ransac = this->map.getCoefficientLine(xflag);	//直線式の係数をgetする
+std::cout << "--------------------------4----------------------------" << std::endl;
+			this->map.showMap2();
+std::cout << "--------------------------5----------------------------" << std::endl;    
+    		this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
+std::cout << "--------------------------6----------------------------" << std::endl;
+			this->block.fillMesh();							//壁のメッシュの外側を全て埋める
+std::cout << "--------------------------7----------------------------" << std::endl;
+			this->block.showMesh();
+			/***************************************************/
+}
+
+void Controller::showWall2()
+{
+			/*壁のメッシュを埋める処理 yamasaki記述*/
+			/*setMeshMarksメソッド(壁探索後に壁のメッシュを埋めるメソッド)で使用する変数*/
+			std::vector<Coordinate> p;		//壁直線の交点を格納する配列
+    		std::vector<bool> xflag;		//壁直線がy=ax+bかy=cかを判定する変数
+    		std::vector< std::vector<float> > ransac;	//壁直線の係数を格納する2次元配列 ransac[i][0]:a, ransac[i][1]:b ransac[i][2]:c
+
+			this->map.calcLine();	//Mapクラスのobstacleリストから直線式を計算する
+std::cout << "--------------------------2----------------------------" << std::endl;
+			p = this->map.getIntersectionLine();	//直線の交点をgetする
+std::cout << "--------------------------3----------------------------" << std::endl;
+    		ransac = this->map.getCoefficientLine(xflag);	//直線式の係数をgetする
+std::cout << "--------------------------4----------------------------" << std::endl;
+			this->map.showMap2();
+std::cout << "--------------------------5----------------------------" << std::endl;    
+    		this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
+std::cout << "--------------------------6----------------------------" << std::endl;
+			this->block.fillMesh();							//壁のメッシュの外側を全て埋める
+std::cout << "--------------------------7----------------------------" << std::endl;
+			this->block.showMesh();
+			/***************************************************/
+}
+
+
 /*
 *
 *
@@ -54,37 +103,21 @@ std::cout << "current mesh:" << this->block.getCurrentMeshNum(this->create.getCu
 //1-3.壁探索終了の判定
 		Coordinate start_coord;
 		int total_distance = this->create.getTotalDistance();
-
+#if 0
 	    if(this->block.isStartMesh( start_coord, create_coord,  total_distance))
 		{
 std::cout << "--------------------------1----------------------------" << std::endl;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める
 			this->search_flag = OBSTACLE;
 
-			/*壁のメッシュを埋める処理 yamasaki記述*/
-			/*setMeshMarksメソッド(壁探索後に壁のメッシュを埋めるメソッド)で使用する変数*/
-			std::vector<Coordinate> p;		//壁直線の交点を格納する配列
-    		std::vector<bool> xflag;		//壁直線がy=ax+bかy=cかを判定する変数
-    		std::vector< std::vector<float> > ransac;	//壁直線の係数を格納する2次元配列 ransac[i][0]:a, ransac[i][1]:b ransac[i][2]:c
-
-			this->map.calcLine();	//Mapクラスのobstacleリストから直線式を計算する
-std::cout << "--------------------------2----------------------------" << std::endl;
-			p = this->map.getIntersectionLine();	//直線の交点をgetする
-std::cout << "--------------------------3----------------------------" << std::endl;
-    		ransac = this->map.getCoefficientLine(xflag);	//直線式の係数をgetする
-std::cout << "--------------------------4----------------------------" << std::endl;
-			this->map.showMap2();
-std::cout << "--------------------------5----------------------------" << std::endl;    
-    		this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
-std::cout << "--------------------------6----------------------------" << std::endl;
-			this->block.fillMesh();							//壁のメッシュの外側を全て埋める
-std::cout << "--------------------------7----------------------------" << std::endl;
-			this->block.showMesh();
-			/***************************************************/
-
+			// 壁を描画する
+			this->showWall2();
 		}
-		else if(this->create.getTotalDistance() > 5800)
+#endif
+		if(this->create.getTotalDistance() > 6000)
 		{
+			this->create.stopRun();// 壁探索が終わったら、即Createを止める
+			this->showWall2();
 			this->search_flag = DOCK;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める
 std::cout << "--------------------------8----------------------------" << std::endl;
@@ -156,7 +189,13 @@ std::cout << "--------------------------8----------------------------" << std::e
 // 3.ドッキングステーションへゴール
 	else if(this->search_flag == DOCK)
 	{
+		//else if(this->create.isDockFound())
+		//{
+		//	this->create.stopRun();// 壁探索が終わったら、即Createを止める
+		//	this->search_flag = DOCK;			
+		//}
 		this->create.stopRun();
+		runDemo(DEMO_COVER_AND_DOCK);
 		this->finished = true;
 		std::cout << "finished!" << std::endl;
 	}
