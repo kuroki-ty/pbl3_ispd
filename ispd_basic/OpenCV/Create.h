@@ -223,6 +223,8 @@ public:
 		return this->current_coord;
 	}
 
+	bool isDockFound();		//ドッキングステーションを発見したかどうか判断する 発見:true 未発見:false
+
 
 
 //public 変数
