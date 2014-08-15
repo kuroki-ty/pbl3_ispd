@@ -723,3 +723,45 @@ void Create::runNextPoint(Coordinate move_point, bool &Bumper_Hit, Coordinate &c
 
 }
 
+bool Create::isDockFound()
+{
+	bool dock_f = false;
+	int sensor_value;
+
+	sensor_value = readSensor(SENSOR_INFRARED);
+	switch(sensor_value){
+	case 248:
+		printf("Red Buoy!\n");
+		dock_f = true;
+		break;
+	case 244:
+		printf("Green Buoy!\n");
+		dock_f = true;
+		break;
+	case 242:
+		printf("Force Field!\n");
+		dock_f = false;
+		break;
+	case 252:
+		printf("Red Buoy and Green Buoy!\n");
+		dock_f = true;
+		break;
+	case 250:
+		printf("Red Buoy and Force Field!\n");
+		dock_f = true;
+		break;
+	case 246:
+		printf("Green Buoy and Force Field!\n");
+		dock_f = true;
+		break;
+	case 254:
+		printf("Red Buoy, Green Buoy and Force Field!\n");
+		dock_f = true;
+		break;
+	default:
+		dock_f = false;
+		break;
+	}
+	
+	return dock_f;
+}
