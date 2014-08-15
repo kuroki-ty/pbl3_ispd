@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <math.h>
 
-#define VELOCITY 	100.0
-#define DISTANCE_MAX 	300
+#define VELOCITY 	-100.0
+#define DISTANCE_MAX 	-50
 
 int main()
 {
@@ -23,24 +23,33 @@ int main()
 
 	int distance=0,angle=0;
 	float x,y,current_angle;
+	printf("start_d:%d\n",getDistance());
+	printf("start_a:%d\n",getAngle());
+
 
 	drive(VELOCITY, 0);
 	while(1)
 	{
 		distance += getDistance();
 		angle += getAngle();
+		//printf("%d\n",distance);
 
-		if(distance >= DISTANCE_MAX)
+		if(distance <= DISTANCE_MAX)
 		{
+			drive(0, 0);
 			current_angle = (float)(angle * (M_PI / 180));
 			x = (float)distance * cos(current_angle);
 			y = (float)distance * sin(current_angle);
 
 			fprintf(stdout, "x座標: %f , y座標: %f\n", x, y);
-
+			x = -0.0122*x+67.354+x;			
+			y = -0.0242*x;
+			fprintf(stdout, "補正x座標: %f , 補正y座標: %f\n", x, y);
+			printf("angle:%d  :  distance:%d\n",angle,distance);
+			waitTime(1.0);
 			break;
 		}
 	}
-
 	stopOI_MT();
+
 }

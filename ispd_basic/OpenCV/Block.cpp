@@ -451,7 +451,7 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     //x軸のノード番号を求める
     for(int i=0; i<total_block_x; i++)
     {
-        if((coord.x >= (float)(i*block_x-2.0*block_x)) && (coord.x < (float)((i+1)*block_x-2.0*block_x)))
+        if((coord.x >= (float)(i*block_x-10.0*block_x)) && (coord.x < (float)((i+1)*block_x-10.0*block_x)))
         {
             node_num_x = i;
             break;
@@ -461,7 +461,7 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     //y軸のノード番号を求める
     for(int i=0; i<total_block_y; i++)
     {
-        if((coord.y >= (float)(i*block_y-2.0*block_y)) && (coord.y < (float)((i+1)*block_y-2.0*block_y)))
+        if((coord.y >= (float)(i*block_y-10.0*block_y)) && (coord.y < (float)((i+1)*block_y-10.0*block_y)))
         {
             node_num_y = i;
             break;
