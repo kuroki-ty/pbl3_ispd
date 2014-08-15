@@ -287,8 +287,8 @@ Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
 {
     tmp.num = count;
     tmp.mark = UNKNOWN;
-    tmp.center.x = x*block_x+block_x/2.0 - 2.0*block_x;     //余白を2*block_x取る
-    tmp.center.y = y*block_y+block_y/2.0 - 2.0*block_y;     //余白を2*block_y取る
+    tmp.center.x = x*block_x+block_x/2.0 - 10.0*block_x;     //余白を2*block_x取る
+    tmp.center.y = y*block_y+block_y/2.0 - 10.0*block_y;     //余白を2*block_y取る
     tmp.ir_value = 0;
 
     return tmp;
