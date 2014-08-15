@@ -11,8 +11,9 @@
 #define WALL_DISTANCE_LOW  180.0	//壁とCreateの距離_低[cm]  straight curve用
 #define WALL_DISTANCE_HIGH 230.0	//壁とCreateの距離_高[cm]
 
-#define WALL_DIST_L 200	//壁とCreateの距離_低[cm]	straight turn 用
-#define WALL_DIST_H 400	//壁とCreateの距離_高[cm]
+#define WALL_DIST_L 120	//壁とCreateの距離_低[cm]	straight turn 用
+#define WALL_DIST_H 190	//壁とCreateの距離_高[cm]
+#define AVE_DIST ((WALL_DIST_H+WALL_DIST_L)/2)
 
 
 #define CREATE_SIZE 330 // 縦 [mm]
@@ -42,12 +43,14 @@
 
 // 回転誤差補正値
 #define P_TURN_A100 (-0.0003)
-#define P_TURN_B100 0.1227
-#define P_TURN_C100 2.6985
+//#define P_TURN_B100 0.1227
+#define P_TURN_B100 0.2027
+//#define P_TURN_C100 2.6985
+#define P_TURN_C100 3.3513
 
-#define N_TURN_A100 (-0.0003)
-#define N_TURN_B100 0.1227
-#define N_TURN_C100 (-2.6985)
+#define N_TURN_A100 (0.0002)
+#define N_TURN_B100 0.12
+#define N_TURN_C100 (-3.3513)
 
 // 直進誤差補正値
 #define P_DRIVEX_A200 (-0.009189)
@@ -132,8 +135,8 @@ public:
 	// 止まる
 	void stopRun()
 	{
-		this->Stop = true;
 		drive(0,0);
+		this->Stop = true;
 		this->init();
 	}
 

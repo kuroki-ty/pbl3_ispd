@@ -15,7 +15,7 @@ OPENCVLIB = `pkg-config --libs opencv`
 default: all
 
 
-all: drive sonerSensor getCoordinate setMesh cluster testBumper turnturn kmeans serchObstacle runNextPoint serchWall
+all: drive sonerSensor getCoordinate setMesh cluster testBumper turnturn kmeans serchObstacle runNextPoint testsoner testturn
 
 drive: drive.cpp
 	$(CC) drive.cpp $(LIBS) -o drive
@@ -47,8 +47,11 @@ serchObstacle: serchObstacle.cpp
 runNextPoint: runNextPoint.cpp
 	$(CC) runNextPoint.cpp $(LIBS) -o runNextPoint
 
-serchWall: serchWall.cpp
-	$(CC) serchWall.cpp $(LIBS) $(OPENCVLIB) -o serchWall
+testsoner: testsoner.cpp
+	$(CC) testsoner.cpp $(LIBS) -o testsoner
+
+testturn: testturn.cpp
+	$(CC) testturn.cpp $(LIBS) -o testturn
 
 
 clean:

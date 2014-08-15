@@ -29,7 +29,7 @@ int main()
 	// obstacle_coord読み込み
     std::ostringstream obstacle_file_path;
 //	obstacle_file_path << "./test/obstacle_list.txt";
-	obstacle_file_path << "/home/qito-asmd-2/output/wall_list.txt";
+	obstacle_file_path << "/home/qito-asmd-2/output/wall_list_test.txt";
     std::ifstream obstacle_file(obstacle_file_path.str().c_str());
 	std::vector<float> obstacle(std::istream_iterator<float>(obstacle_file), (std::istream_iterator<float>()));
 

@@ -18,12 +18,14 @@ float Create::turnCreate(int velocity, int angle_max)
 {
 	int angle=0;
 	this->init();
+	this->init();
 	drive(velocity, 1);
 	while(1)
 	{
 		angle += getAngle();
 		if(fabs(angle) >= fabs(angle_max))
 		{
+			drive(0,0);
 			this->stopRun();
 			break;
 		}
@@ -31,7 +33,7 @@ float Create::turnCreate(int velocity, int angle_max)
 	waitTime(0.2);
 	if(angle >0 )
 	{
-			std::cout <<"turn------------------------:" << P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100 << std::endl;
+			std::cout <<"turn------------------------:" << P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100+ angle << std::endl;
 			return P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100 + angle;
 	}
 	else if(angle == 0)
@@ -41,8 +43,16 @@ float Create::turnCreate(int velocity, int angle_max)
 	}
 	else
 	{
-			std::cout <<"turn------------------------:" << N_TURN_A100*angle + N_TURN_B100 << std::endl;
-			return N_TURN_A100 * angle * angle + N_TURN_B100 * angle + N_TURN_C100 + angle;
+		//if(fabs(angle) < 10)
+		//{
+			std::cout <<"turn------------------------:" << -P_TURN_A100 * angle * angle + P_TURN_B100 * angle - P_TURN_C100 + angle << std::endl;
+			return -P_TURN_A100 * angle * angle + P_TURN_B100 * angle - P_TURN_C100 + angle;
+	//	}
+		//else
+	//	{
+		//	std::cout <<"turn------------------------:" << N_TURN_A100 * angle * angle + N_TURN_B100 * angle + N_TURN_C100 + angle << std::endl;
+		//	return N_TURN_A100 * angle * angle + N_TURN_B100 * angle + N_TURN_C100 + angle;			
+	//	}
 	}
 }
 
@@ -170,7 +180,7 @@ void Create::checkDistToWall(float &ave_dist)
 {
 	float total = 0.0;
 	float soner_distance = this->getDistanceBySoner();
-	ave_dist = 300;
+	ave_dist = AVE_DIST;
 	std::cout << "soner--------------------------:" << soner_distance << std::endl;
 	if(soner_distance < WALL_SEARCH_TH)
 	{
@@ -275,21 +285,21 @@ void Create::changeDirection()
 
 	if(this->push_bumper == LEFT)
 	{
-		turn_angle = 109;
+		turn_angle = 108;
 	}
 	else if(this->push_bumper == RIGHT )
 	{
-		turn_angle = 27;
+		turn_angle = 38;
 	}
 	else if(this->push_bumper == CENTER )
 	{
-		turn_angle = 68;
+		turn_angle = 79;
 	}
 	else
 	{
 		turn_angle = 90;
 	}
-	//turn_angle = 79;
+	turn_angle = 79;
 
 	this->push_bumper == NONE;
 	std::cout << "turn angle" << turn_angle << std::endl;

@@ -83,7 +83,7 @@ std::cout << "--------------------------7----------------------------" << std::e
 			/***************************************************/
 
 		}
-		else if(this->create.getTotalDistance() > 6000)
+		else if(this->create.getTotalDistance() > 5800)
 		{
 			this->search_flag = DOCK;
 			this->create.stopRun();// 壁探索が終わったら、即Createを止める
