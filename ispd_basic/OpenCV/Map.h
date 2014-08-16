@@ -79,6 +79,11 @@ public:
 		this->obstacle_point_list.clear();
 		this->obstacle_point_list = list;
 	}
+	// 2ラインで描画する壁の座標リストをset
+	void set2LinePoint()
+	{
+		this->wall_point_list2 = this->wall_point_list;
+	}
 
     // get method
 	float getCurrentCreatePoint_X()
@@ -185,6 +190,7 @@ private:
     //  Coordinate max;
 	std::vector<Coordinate> create_point_list;			// create座標リスト
 	std::vector<Coordinate> wall_point_list;			// wall座標リスト
+	std::vector<Coordinate> wall_point_list2;			// wall座標リスト
 	std::vector<Coordinate> obstacle_point_list;	// （マップ生成用）障害物座標リスト
     CvPoint p1,p2,p3,p4;        //各直線の交点
     std::vector<CvPoint> p;     //各直線の交点

@@ -18,8 +18,8 @@ public:
 	{
 		this->finished = false;
 		this->map.push_back_CreatePointList(this->create.getCurrentCoordinate());
-
 		this->search_flag = WALL;
+		this->LinePointSet = false;
 	}
 
 	void checkState();
@@ -83,6 +83,7 @@ public:
 	Block block;
 	enum SearchFlag search_flag;
 	bool finished;
+	bool LinePointSet;
 private:
 
 };

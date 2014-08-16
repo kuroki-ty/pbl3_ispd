@@ -62,7 +62,6 @@ std::cout << "total_distance:" << this->create.getTotalDistance() << std::endl;
 std::cout << "angle:" << this->create.getTotalAngle() << std::endl;
 std::cout << "(" << this->create.getCurrentCoordinate().x << ", " << this->create.getCurrentCoordinate().y << ")" << std::endl;
 std::cout << "direction:"<< this->create.direction << std::endl;
-	this->block.showMesh();
 
 std::cout << "current mesh:" << this->block.getCurrentMeshNum(this->create.getCurrentCoordinate()) << std::endl;
 
@@ -74,6 +73,7 @@ std::cout << "current mesh:" << this->block.getCurrentMeshNum(this->create.getCu
 		Coordinate wall_coord;
 //1-1.バンパーに衝突したかを判定
 // 1-1-1.バンパセンサ反応無し → 現在座標、超音波センサの観測座標を記録
+		this->block.showMesh();
 		if(bumper_hit == 0)
 		{
 			float soner_distance;
@@ -114,15 +114,23 @@ std::cout << "--------------------------1----------------------------" << std::e
 			this->showWall2();
 		}
 #endif
-		if(this->create.getTotalDistance() > 6000)
+		if(this->create.getTotalDistance() > 6000 && !this->LinePointSet)
 		{
-			this->create.stopRun();// 壁探索が終わったら、即Createを止める
-			this->showWall2();
-			this->search_flag = DOCK;
-			this->create.stopRun();// 壁探索が終わったら、即Createを止める
-std::cout << "--------------------------8----------------------------" << std::endl;
-			//this->map.showMap2();
+			this->create.stopRun(); 	// 壁探索が終わったら、即Createを止める
+std::cout << "2line point set!" << std::endl;
+			this->map.set2LinePoint();	// 	2辺分の座標値をwall_point_list2に入れる
+			this->LinePointSet = true;
+
 		}
+		else if(this->create.getTotalDistance() > 10000 && this->create.isDockFound())
+		{
+			this->create.stopRun(); // 壁探索が終わったら、即Createを止める
+std::cout << "Docking!" << std::endl;
+			this->search_flag = OBSTACLE;
+			//this->showWall2();
+			//this->showWall4();
+		}
+
 	}
 
 //2.障害物探索
@@ -133,6 +141,7 @@ std::cout << "--------------------------8----------------------------" << std::e
 		std::vector<Coordinate> move_point_list;  // Createが辿る座標を格納したリスト
 		std::vector<Coordinate> tmp_create_list;
 		std::vector<Coordinate> tmp_obstacle_list;
+		this->block.showMesh();
 
 		bool Bumper = false;
 
@@ -148,6 +157,9 @@ std::cout << "--------------------------8----------------------------" << std::e
 			this->create.runNextPoint(move_point_list[i], Bumper, tmp_create_list, tmp_obstacle_list);
 			if(Bumper)	// runNextPoint()中に障害物に衝突したら
 			{
+				this->create.changeDirection();
+				break;
+#if 0
 				std::vector<Coordinate> SOC_list;	// search obstacle create list 障害物を探索する時のcreateの座標値リスト
 				Bumper = false;
 				tmp_obstacle_list = create.searchObstacle(SOC_list);	// 衝突した障害物の周りを回る
@@ -163,7 +175,8 @@ std::cout << "--------------------------8----------------------------" << std::e
 					this->block.setMeshMark(SOC_list[i], false);// 
 					//create_list.push_back(create_coord[i]);
 				}
-		}
+#endif
+			}
 			// 2-3-2 移動後の座標値を渡して、メッシュを更新
 			for(int j=0;j<tmp_create_list.size();j++)
 			{
@@ -176,6 +189,7 @@ std::cout << "--------------------------8----------------------------" << std::e
 //				this->block.setMeshMark(tmp_obstacle_list[j], true);// 
 				this->map.push_back_ObstaclePointList( tmp_obstacle_list[j] );
 			}
+			this->block.showMesh();
 
 		}
 // 2-4.全部のメッシュをチェックし終えたかを判定
@@ -189,11 +203,6 @@ std::cout << "--------------------------8----------------------------" << std::e
 // 3.ドッキングステーションへゴール
 	else if(this->search_flag == DOCK)
 	{
-		//else if(this->create.isDockFound())
-		//{
-		//	this->create.stopRun();// 壁探索が終わったら、即Createを止める
-		//	this->search_flag = DOCK;			
-		//}
 		this->create.stopRun();
 		runDemo(DEMO_COVER_AND_DOCK);
 		this->finished = true;
