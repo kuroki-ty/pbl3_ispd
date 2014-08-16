@@ -102,7 +102,7 @@ void Map::calcLine()
 	}
     
     double x,y;
-    /*
+    
      for(int i=0;i<LINE_NUM;i++)
      {
      for(int j=i+1;j<LINE_NUM;j++)
@@ -112,12 +112,14 @@ void Map::calcLine()
      line(x, y);
      }
      }
-     */
+    
+    
     //p1から順番にp配列にpush_backする
+    /*
     x=(b[1]-b[0])/(a[0]-a[1]);
     y=a[0]*(b[1]-b[0])/(a[0]-a[1])+b[0];
     line(x, y);
-    p.push_back(p1);
+    
     
     p2.x=30;
     p2.y=30;
@@ -134,8 +136,8 @@ void Map::calcLine()
     
     p4.y=(p1.y/k)-(m/k);
     p4.x=k*p1.x+m;
-    
-    
+    */
+    p.push_back(p1);
     p.push_back(p2);
     p.push_back(p3);
     p.push_back(p4);
@@ -366,7 +368,7 @@ void Map::showMap2()
     }
     // 線の描画 ----- ここから
     rcolor = CV_RGB (200,0,200);
-    /*
+    
      for(int i=0; i<LINE_NUM; i++)
      {
      if(i != LINE_NUM-1)
@@ -379,12 +381,11 @@ void Map::showMap2()
      
      }
      }
-     */
-    cvLine (img, p2, p1, rcolor, 2, CV_AA, 0);
-    cvLine (img, p1, p3, rcolor, 2, CV_AA, 0);
-    //cvLine (img, p2, p3, rcolor, 2, CV_AA, 0);
-    cvLine (img, p2, p4, rcolor, 2, CV_AA, 0);
+    
+    cvLine (img, p1, p2, rcolor, 2, CV_AA, 0);
+    cvLine (img, p2, p3, rcolor, 2, CV_AA, 0);
     cvLine (img, p3, p4, rcolor, 2, CV_AA, 0);
+    cvLine (img, p4, p1, rcolor, 2, CV_AA, 0);
     // 線の描画 ----- ここまで
     
     cvFlip(img, NULL,0);//図を上下回転する
@@ -485,10 +486,10 @@ void Map::showMap()
     std::cout << "縦の長さは ：" << tate << std::endl;
     std::cout << "横の長さは ：" << yoko << std::endl;
     
-    double k1 = (p2.y-p4.y)/(p2.x-p4.x);
-    double k2 = (p3.y-p4.y)/(p3.x-p4.x);
-    double k3 = (p1.y-p3.y)/(p1.x-p3.x);
-    double k4 = (p1.y-p2.y)/(p1.x-p2.x);
+    double k1 = (p2.y-p1.y)/(p2.x-p1.x);
+    double k2 = (p3.y-p2.y)/(p3.x-p2.x);
+    double k3 = (p4.y-p3.y)/(p4.x-p3.x);
+    double k4 = (p1.y-p4.y)/(p1.x-p4.x);
     
     double tan_1 = (abs(k1-k2))/(1+k1*k2);
     double ang_1 = atan(tan_1)*double(180)/pi;
@@ -682,7 +683,7 @@ void Map::gauss(Coordinate coord1, Coordinate coord2, float &A, float &B, float 
 ////各直線の交点の位置関係を求める
 void Map::line(double a,double b)
 {
-    /*
+    
      
      if(a<400 && b<400 && a>0 && b>0)
      {
@@ -715,14 +716,15 @@ void Map::line(double a,double b)
      }
      }
      }
-     */
+     /*
     if (a>0 && a<400 &&b>0 &&b<400) {
         if (a>200 ) {
             p1.x=a;
             p1.y=b;
         }
-        
+     
     }
+      */
 }
 
 
