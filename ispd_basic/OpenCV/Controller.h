@@ -63,6 +63,19 @@ public:
 		ofs.close();
 	}
 
+	void output_WallList2()
+	{
+		std::vector<Coordinate> wall_list;
+		wall_list = this->map.getWallPointList2();
+
+		std::ofstream ofs("/home/qito-asmd-2/output/wall_list2.txt");
+		for(int i=0;i<this->map.getWallListSize();i++)
+		{
+			ofs << i << "\t" << wall_list[i].x << "\t" << wall_list[i].y << std::endl;
+		}
+		ofs.close();
+	}
+
 
 	void output_ObstacleList()
 	{

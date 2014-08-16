@@ -21,6 +21,7 @@
  *****************************************************************************/
 #define MAX_COORD_SIZE 29.4 //[m] block lenghが0.35[m]なので合計84ブロックになる
 #define LINE_NUM 2  //ライン数
+#define LINE_NUM4 4
 //ransac用 -------------------------------
 #define SEARCH 500 	// 直線サーチ回数
 #define THRESHOLD 5  // 最小二乗の閾値
@@ -53,7 +54,7 @@ public:
     //メソッド
     void showMap();     //マップを描画する
     void showMap2();     //マップを描画する
-    void calcLine();    //壁を示す直線を算出する
+    void calc2Line();    //壁を示す直線を算出する
     void dividePoint(); // 障害物の余計な点を除去する
 
     // set method
@@ -125,6 +126,11 @@ public:
         return this->create_point_list;
     }
 
+    std::vector<Coordinate> getWallPointList2()
+    {
+        return this->wall_point_list2;
+    }
+
     std::vector<Coordinate> getWallPointList()
     {
         return this->wall_point_list;
@@ -144,7 +150,7 @@ public:
         for(int i=0; i<p.size(); i++)
         {
             //縮尺を元に戻してpush_back
-            tmp.x = p[i].x*10-1000;
+            tmp.x = p[i].x*10-2000;
             tmp.y = p[i].y*10-1000;
             tmp_p.push_back(tmp);
         }

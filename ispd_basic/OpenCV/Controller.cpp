@@ -6,13 +6,13 @@ void Controller::showWall4()
     		std::vector<bool> xflag;		//壁直線がy=ax+bかy=cかを判定する変数
     		std::vector< std::vector<float> > ransac;	//壁直線の係数を格納する2次元配列 ransac[i][0]:a, ransac[i][1]:b ransac[i][2]:c
 
-			this->map.calcLine();	//Mapクラスのobstacleリストから直線式を計算する
+			this->map.calc2Line();	//Mapクラスのobstacleリストから直線式を計算する
 std::cout << "--------------------------2----------------------------" << std::endl;
 			p = this->map.getIntersectionLine();	//直線の交点をgetする
 std::cout << "--------------------------3----------------------------" << std::endl;
     		ransac = this->map.getCoefficientLine(xflag);	//直線式の係数をgetする
 std::cout << "--------------------------4----------------------------" << std::endl;
-			this->map.showMap2();
+			this->map.showMap();
 std::cout << "--------------------------5----------------------------" << std::endl;    
     		this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
 std::cout << "--------------------------6----------------------------" << std::endl;
@@ -30,17 +30,12 @@ void Controller::showWall2()
     		std::vector<bool> xflag;		//壁直線がy=ax+bかy=cかを判定する変数
     		std::vector< std::vector<float> > ransac;	//壁直線の係数を格納する2次元配列 ransac[i][0]:a, ransac[i][1]:b ransac[i][2]:c
 
-			this->map.calcLine();	//Mapクラスのobstacleリストから直線式を計算する
-std::cout << "--------------------------2----------------------------" << std::endl;
-			p = this->map.getIntersectionLine();	//直線の交点をgetする
-std::cout << "--------------------------3----------------------------" << std::endl;
-    		ransac = this->map.getCoefficientLine(xflag);	//直線式の係数をgetする
-std::cout << "--------------------------4----------------------------" << std::endl;
+			this->map.calc2Line();	//Mapクラスのobstacleリストから直線式を計算する
 			this->map.showMap2();
 std::cout << "--------------------------5----------------------------" << std::endl;    
-    		this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
+    		//this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
 std::cout << "--------------------------6----------------------------" << std::endl;
-			this->block.fillMesh();							//壁のメッシュの外側を全て埋める
+			//this->block.fillMesh();							//壁のメッシュの外側を全て埋める
 std::cout << "--------------------------7----------------------------" << std::endl;
 			this->block.showMesh();
 			/***************************************************/
@@ -119,6 +114,8 @@ std::cout << "--------------------------1----------------------------" << std::e
 			this->create.stopRun(); 	// 壁探索が終わったら、即Createを止める
 std::cout << "2line point set!" << std::endl;
 			this->map.set2LinePoint();	// 	2辺分の座標値をwall_point_list2に入れる
+			this->output_WallList2();
+			this->showWall2();
 			this->LinePointSet = true;
 
 		}
