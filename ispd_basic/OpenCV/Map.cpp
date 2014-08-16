@@ -102,7 +102,7 @@ void Map::calcLine()
 	}
     
     double x,y;
-    
+    /*
      for(int i=0;i<LINE_NUM;i++)
      {
      for(int j=i+1;j<LINE_NUM;j++)
@@ -112,7 +112,7 @@ void Map::calcLine()
      line(x, y);
      }
      }
-    
+    */
     
     //p1から順番にp配列にpush_backする
     /*
@@ -137,10 +137,44 @@ void Map::calcLine()
     p4.y=(p1.y/k)-(m/k);
     p4.x=k*p1.x+m;
     */
+    x=(b[1]-b[0])/(a[0]-a[1]);
+    y=a[0]*(b[1]-b[0])/(a[0]-a[1])+b[0];
+    line(x, y);
+    cout << x << "      " <<y <<endl;
     p.push_back(p1);
+
+    
+    p4.x=80;
+    p4.y=80;
+    p2.x=inliers[inliers_max].x;
+    p2.y=inliers[inliers_max].y;
+    
+    
+    double c3=0,c4=0,a3=0,a4=0;
+    if (RANSAC_A[0]>RANSAC_A[1])
+    {
+        a3=RANSAC_A[0];
+        a4=RANSAC_A[1];
+    }
+    else
+    {
+        a4=RANSAC_A[0];
+        a3=RANSAC_A[1];
+        
+    }
+    cout << a3 <<"  ---     "<<a4<<endl;
+    
+    c3=p2.y-a3*p2.x;
+    c4=p4.y-a4*p4.x;
+    
+    p3.x=(c3-c4)/(a4-a3);
+    p3.y=a3*(c3-c4)/(a4-a3)+c3;
+    
+    /*
     p.push_back(p2);
     p.push_back(p3);
     p.push_back(p4);
+     */
     
 }
 //離散している障害物点を削除、残りの点をgroup1,2,3の中に保存する
@@ -683,7 +717,7 @@ void Map::gauss(Coordinate coord1, Coordinate coord2, float &A, float &B, float 
 ////各直線の交点の位置関係を求める
 void Map::line(double a,double b)
 {
-    
+    /*
      
      if(a<400 && b<400 && a>0 && b>0)
      {
@@ -716,7 +750,8 @@ void Map::line(double a,double b)
      }
      }
      }
-     /*
+     */
+    
     if (a>0 && a<400 &&b>0 &&b<400) {
         if (a>200 ) {
             p1.x=a;
@@ -724,7 +759,7 @@ void Map::line(double a,double b)
         }
      
     }
-      */
+    
 }
 
 
