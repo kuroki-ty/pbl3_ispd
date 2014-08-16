@@ -17,6 +17,8 @@ Map::Map()
         RANSAC_B.push_back(0);
         RANSAC_C.push_back(0);
     }
+	inliers_maxi = 0;
+	inliers_maxj = 0;
 }
 
 void Map::calc2Line()
@@ -137,6 +139,21 @@ void Map::calc2Line()
     p4.y=(p1.y/k)-(m/k);
     p4.x=k*p1.x+m;
     */
+    int max = 0;
+    //右壁の一番yが大きい点を選択
+    for (int i=0;i<inliers_s.size();i++)
+    {
+	    for (int j=0;j<inliers_s[i].size();j++)
+	    {
+	        if (inliers_s[i][j].y>max) 
+			{
+	            max = inliers_s[i][j].y;
+	            inliers_maxi=i;
+	            inliers_maxj=j;
+	        }
+		}
+    }
+
     x=(b[1]-b[0])/(a[0]-a[1]);
     y=a[0]*(b[1]-b[0])/(a[0]-a[1])+b[0];
     line(x, y);
@@ -145,8 +162,8 @@ void Map::calc2Line()
     
     p4.x=80;
     p4.y=80;
-    p2.x=inliers[inliers_max].x;
-    p2.y=inliers[inliers_max].y;
+    p2.x=inliers_s[inliers_maxi][inliers_maxj].x;
+    p2.y=inliers_s[inliers_maxi][inliers_maxj].y;
     
     std::cout << "p2:" << p2.x <<"	"<<p2.y<<std::endl;
     double c3=0,c4=0,a3=0,a4=0;
@@ -355,7 +372,7 @@ void Map::showMap()
     }
     
     // 画像領域を確保し初期化する
-    img = cvCreateImage (cvSize (400, 400), IPL_DEPTH_8U, 3);
+    img = cvCreateImage (cvSize (500, 500), IPL_DEPTH_8U, 3);
     cvZero (img);
     //画像の背景を白にする
     for(int x=0;x<img->height;x++){
@@ -366,7 +383,7 @@ void Map::showMap()
         }
     }
     
-    int max=0;
+
 	for(int i = 0; i < LINE_NUM; i++)
 	{
         wall.clear();
@@ -390,14 +407,7 @@ void Map::showMap()
 		wall = outliers;
 		outliers.clear();
 	}
-    //右壁の一番yが大きい点を選択
-    for (int i=0;i<inliers.size();i++)
-    {
-        if (inliers[i].y>max) {
-            max = inliers[i].y;
-            inliers_max=i;
-        }
-    }
+
     // 線の描画 ----- ここから
     rcolor = CV_RGB (200,0,200);
     
@@ -463,7 +473,6 @@ void Map::showMap2()
         }
     }
     
-    
 	for(int i = 0; i < LINE_NUM; i++)
 	{
         wall.clear();
@@ -487,7 +496,7 @@ void Map::showMap2()
 		wall = outliers;
 		outliers.clear();
 	}
-    
+
     // 線の描画 ----- ここから
     rcolor = CV_RGB (200,0,200);
     for(int i=0; i<LINE_NUM4; i++)
@@ -502,15 +511,6 @@ void Map::showMap2()
             
         }
     }
-
-    cvFlip(img, NULL,0);//図を上下回転する
-    cvNamedWindow ("Drawing", CV_WINDOW_AUTOSIZE);
-       std::cout << "----------------1-----------------" << std::endl; 
-    cvShowImage ("Drawing", img);
-    std::cout << "----------------2-----------------" << std::endl;    
-    cvSaveImage("./img.png",img);
-    cvWaitKey (0);
-
     
     // 線の描画 ----- ここまで
     
@@ -672,14 +672,12 @@ void Map::showMap2()
     
     //障害物の色分け、重心、長さの計算とoutputーーーーーここまで
 #endif    
-/*    cvFlip(img, NULL,0);//図を上下回転する
+    cvFlip(img, NULL,0);//図を上下回転する
     cvNamedWindow ("Drawing", CV_WINDOW_AUTOSIZE);
-       std::cout << "----------------1-----------------" << std::endl; 
     cvShowImage ("Drawing", img);
-    std::cout << "----------------2-----------------" << std::endl;    
     cvSaveImage("./img.png",img);
     cvWaitKey (0);
- */   
+ 
     cvDestroyWindow ("Drawing");
     cvReleaseImage (&img);
     

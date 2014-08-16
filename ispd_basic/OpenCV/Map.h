@@ -206,7 +206,8 @@ private:
     std::vector<Coordinate> wall, outliers, inliers;
     std::vector< std::vector<Coordinate> > outliers_s, inliers_s;
     bool xflag;
-	int inliers_max;
+	int inliers_maxi;
+	int inliers_maxj;
     
     std::vector<Coordinate >obstacle_point_list2;
     std::vector<Coordinate >distance;
