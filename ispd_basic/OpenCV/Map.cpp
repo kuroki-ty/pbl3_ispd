@@ -160,7 +160,7 @@ void Map::calc2Line()
 		}
     }
     p2.x=inliers_s[inliers_maxi][inliers_maxj].x;
-    p2.y=inliers_s[inliers_maxi][inliers_maxj].y;
+    p2.y=inliers_s[inliers_maxi][inliers_maxj].y+50;
 
 	float min = FLT_MAX;
     for (int i=0;i<inliers_s.size();i++)
@@ -258,7 +258,7 @@ void Map::dividePoint()
     struct Coordinate ob;
     for(int i=0;i<obstacle_point_list.size();i++)
     {
-        ob.x = (obstacle_point_list[i].x+1000)/10;
+        ob.x = (obstacle_point_list[i].x+2000)/10;
         ob.y = (obstacle_point_list[i].y+1000)/10;
         obstacle_point_list2.push_back(ob);
     }
@@ -462,6 +462,34 @@ void Map::showMap()
 //マップを描画する
 void Map::showMap2()
 {
+
+    /*********************************/
+    
+    /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/
+    
+    struct Coordinate ob;
+    for(int i=0;i<obstacle_point_list.size();i++)
+    {
+        ob.x = (obstacle_point_list[i].x+2000)/10;
+        ob.y = (obstacle_point_list[i].y+1000)/10;
+        obstacle_point_list2.push_back(ob);
+    }
+    
+    /***********************************/
+
+    /*********************************/
+    
+    /*競技プログラム用，Mapが保持しているobstacle_point_listから読み込み*/
+    std::vector<Coordinate> create_point_list2;
+    for(int i=0;i<create_point_list.size();i++)
+    {
+        ob.x = (create_point_list[i].x+2000)/10;
+        ob.y = (create_point_list[i].y+1000)/10;
+        create_point_list2.push_back(ob);
+    }
+    
+    /***********************************/
+
     
     IplImage *img = 0;//図を定義する
     CvScalar rcolor;//色を定義する
@@ -505,6 +533,7 @@ void Map::showMap2()
             
             cvCircle(img, testpoint, 2, rcolor, -5);
         }
+
         // 点の描画 ----- ここまで
         
         
@@ -512,6 +541,26 @@ void Map::showMap2()
 		wall = outliers;
 		outliers.clear();
 	}
+
+	// 障害物の描画
+		CvPoint testpoint2;
+        for(int i=0;i<obstacle_point_list2.size();i++)
+        {
+            int x = (int)(obstacle_point_list2[i].x);
+            int y = (int)(obstacle_point_list2[i].y);
+            testpoint2 = cvPoint(x, y);
+            
+            cvCircle(img, testpoint2, 2, rcolor, -5);
+        }
+	// create座標値の描画
+        for(int i=0;i<create_point_list2.size();i++)
+        {
+            int x = (int)(create_point_list2[i].x);
+            int y = (int)(create_point_list2[i].y);
+            testpoint2 = cvPoint(x, y);
+            
+            cvCircle(img, testpoint2, 2, rcolor, -5);
+        }
 
     // 線の描画 ----- ここから
     rcolor = CV_RGB (200,0,200);
