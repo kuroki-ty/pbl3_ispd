@@ -654,7 +654,31 @@ if(k>5)
 			tmp_distance = driveCreate(VELOCITY_H,0);	//5cm前進
 			//this->addDistance(tmp_distance);
 			this->StopRun = true;
-			create.push_back(this->calcCurrentCoordinate(tmp_distance));
+
+			Coordinate tmp_coord;	//角度によってCreate座標を修正するためのtmp
+			switch(direction){
+			case PLUS_X:
+				tmp_coord = calcCurrentCoordinate(tmp_distance);
+				tmp_coord.y -= 500.0;
+				create.push_back(tmp_coord);
+				break;
+			case MINUS_X:
+				tmp_coord = calcCurrentCoordinate(tmp_distance);
+				tmp_coord.y += 500.0;
+				create.push_back(tmp_coord);
+				break;
+			case PLUS_Y:
+				tmp_coord = calcCurrentCoordinate(tmp_distance);
+				tmp_coord.x += 500.0;
+				create.push_back(tmp_coord);
+				break;
+			case MINUS_Y:
+				tmp_coord = calcCurrentCoordinate(tmp_distance);
+				tmp_coord.x -= 500.0;
+				create.push_back(tmp_coord);
+				break;
+			}
+
 			count += tmp_distance;
 
 			drive(VELOCITY_H, 0);

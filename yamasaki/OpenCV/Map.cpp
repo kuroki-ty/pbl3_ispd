@@ -725,7 +725,7 @@ CvPoint testpoint2;
     cvDestroyWindow ("Drawing");
     cvReleaseImage (&img);
     
-    cvDestroyWindow ("testDrawing");
+//    cvDestroyWindow ("testDrawing");
     cvReleaseImage (&test);
     
 }
