@@ -77,7 +77,7 @@ public:
     //次に向かうノード番号を取得する
     int getNextMeshNum()
     {
-        for(int i=0; i<total_block_y; i++)
+        for(int i=total_block_y; i>=0; i--)
         {
             if(i%2 == 0)
             {
