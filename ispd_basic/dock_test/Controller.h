@@ -18,11 +18,13 @@ public:
 	{
 		this->finished = false;
 		this->map.push_back_CreatePointList(this->create.getCurrentCoordinate());
-
 		this->search_flag = WALL;
+		this->LinePointSet = false;
 	}
 
 	void checkState();
+	void showWall2();
+	void showWall4();
 
 	// Createの座標を記録
 	void recordCreateCoordinate( Coordinate coord )
@@ -40,7 +42,19 @@ public:
 		std::vector<Coordinate> create_list;
 		create_list = this->map.getCreatePointList();
 
-		std::ofstream ofs("/home/qito-asmd-2/output/create_list");
+		std::ofstream ofs("/home/qito-asmd-2/output/create_list.txt");
+		for(int i=0;i<this->map.getCreateListSize();i++)
+		{
+			ofs << i << "\t" << create_list[i].x << "\t" << create_list[i].y << std::endl;
+		}
+		ofs.close();
+	}
+	void output_CreateList_line2()
+	{
+		std::vector<Coordinate> create_list;
+		create_list = this->map.getCreatePointList();
+
+		std::ofstream ofs("/home/qito-asmd-2/output/create_list_line2.txt");
 		for(int i=0;i<this->map.getCreateListSize();i++)
 		{
 			ofs << i << "\t" << create_list[i].x << "\t" << create_list[i].y << std::endl;
@@ -48,12 +62,39 @@ public:
 		ofs.close();
 	}
 
+	void output_WallList()
+	{
+		std::vector<Coordinate> wall_list;
+		wall_list = this->map.getWallPointList();
+
+		std::ofstream ofs("/home/qito-asmd-2/output/wall_list.txt");
+		for(int i=0;i<this->map.getWallListSize();i++)
+		{
+			ofs << i << "\t" << wall_list[i].x << "\t" << wall_list[i].y << std::endl;
+		}
+		ofs.close();
+	}
+
+	void output_WallList2()
+	{
+		std::vector<Coordinate> wall_list;
+		wall_list = this->map.getWallPointList2();
+
+		std::ofstream ofs("/home/qito-asmd-2/output/wall_list2.txt");
+		for(int i=0;i<this->map.getWallListSize();i++)
+		{
+			ofs << i << "\t" << wall_list[i].x << "\t" << wall_list[i].y << std::endl;
+		}
+		ofs.close();
+	}
+
+
 	void output_ObstacleList()
 	{
 		std::vector<Coordinate> obstacle_list;
 		obstacle_list = this->map.getObstaclePointList();
 
-		std::ofstream ofs("/home/qito-asmd-2/output/obstacle_list");
+		std::ofstream ofs("/home/qito-asmd-2/output/obstacle_list.txt");
 		for(int i=0;i<this->map.getObstacleListSize();i++)
 		{
 			ofs << i << "\t" << obstacle_list[i].x << "\t" << obstacle_list[i].y << std::endl;
@@ -67,6 +108,7 @@ public:
 	Block block;
 	enum SearchFlag search_flag;
 	bool finished;
+	bool LinePointSet;
 private:
 
 };

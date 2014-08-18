@@ -102,15 +102,16 @@ std::cout << "2line point set!" << std::endl;
 			this->map.set2LinePoint();	// 	2辺分の座標値をwall_point_list2に入れる
 			this->output_WallList2();
 			this->LinePointSet = true;
+			this->showWall2();
 
 		}
 		// 1個目ドッキング検知
-		else if(this->create.getTotalDistance() > 8000  && this->LinePointSet)
+		else if(this->create.getTotalDistance() > 500 && this->create.isDockFound() && !this->LinePointSet)
 		{
-std::cout << "2line point set!" << std::endl;
+			this->output_CreateList_line2();
 			std::vector<Coordinate> tmp_obstacle_list;
 			std::vector<Coordinate> SOC_list;	// search obstacle create list 障害物を探索する時のcreateの座標値リスト
-			this->create.stopRun(); 	// 壁探索が終わったら、即Createを止める
+			this->create.stopRun(); 	// irが反応したら、即Createを止める
 
 //			this->showWall2();
 			this->LinePointSet = true;
@@ -126,7 +127,7 @@ std::cout << "2line point set!" << std::endl;
 			}
 
 			this->search_flag = DOCK;
-			this->showWall2();
+//			this->showWall2();
 
 		}
 		else if(this->create.getTotalDistance() > 10000 && this->create.isDockFound()) // 2個目ドッキング検知

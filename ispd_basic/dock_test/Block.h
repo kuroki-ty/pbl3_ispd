@@ -23,8 +23,8 @@
 #define     COST_LITTLE 1       //移動コスト小
 #define     COST_BIG    2       //移動コスト大
 #define		COST_MAX	999     //仮無限値
-#define     FIERD_X     1980.0  //フィールドの横の長さ[mm](x座標)
-#define     FIELD_Y     1980.0  //フィールドの縦の長さ[mm](y座標)
+#define     FIERD_X     5500.0  //フィールドの横の長さ[mm](x座標)
+#define     FIELD_Y     5500.0  //フィールドの縦の長さ[mm](y座標)
 #define     IROBOT_D    330     //iRobotCreateの直径[mm] 330
 
 /*****************************************************************************
@@ -77,7 +77,7 @@ public:
     //次に向かうノード番号を取得する
     int getNextMeshNum()
     {
-        for(int i=0; i<total_block_y; i++)
+        for(int i=total_block_y; i>=0; i--)
         {
             if(i%2 == 0)
             {
@@ -103,6 +103,12 @@ public:
         
         return (-1);       //例外処理，-1を返す
     }
+
+    //Createの現在位置を引数に，現在のメッシュ番号を渡す
+    int getCurrentMeshNum(Coordinate coord)
+    {
+        return meshNumToCurrentPosition(coord);
+    }
     
     
     //set method
@@ -124,6 +130,10 @@ public:
         num = meshNumToCurrentPosition(coord);
         block[num/total_block_x][num%total_block_x].mark = mark;
     }
+    
+    /*壁があるメッシュにIMPASSABLE情報をセットする(長いので処理はBlock.cpp内に書く)
+    引数:(壁直線の交点座標，壁直線式の係数，xflag(直線がy=ax+bかy=cからのbool))*/
+    void setMeshMarks(std::vector<Coordinate>& , std::vector< std::vector<float> >&, std::vector<bool>&);
 
     //IR値をメッシュにセットする
     void setIRMark(Coordinate coord, int value)

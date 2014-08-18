@@ -16,8 +16,8 @@ Block::Block()
 {
     block_x = IROBOT_D;     //メッシュ一個分の横の長さ
     block_y = IROBOT_D;     //メッシュ一個分の縦の長さ
-    total_block_x = ceil(FIERD_X/block_x);  //横のメッシュ総数
-    total_block_y = ceil(FIELD_Y/block_y);  //縦のメッシュ総数
+    total_block_x = 2*ceil(FIERD_X/block_x);  //横のメッシュ総数(余白を含む)
+    total_block_y = 2*ceil(FIELD_Y/block_y);  //縦のメッシュ総数(余白を含む)
     
     //ノード間移動コスト配列の初期設定
     std::vector<int> list_c;
@@ -67,7 +67,7 @@ bool Block::isStartMesh(Coordinate start, Coordinate current_pos, int distance)
     start_num = meshNumToCurrentPosition(start);
     current_pos_num = meshNumToCurrentPosition(current_pos);
     
-    if(start_num == current_pos_num && distance > 2*block_x)
+    if(current_pos_num - total_block_x -1 <= 0 && distance > total_block_x*block_x)
     {
         return (true);     //スタートノードに戻ってきた場合はtrue
     }
@@ -121,6 +121,48 @@ void Block::showMesh()
     
 }
 
+//壁探索終了後に壁の外のメッシュを全て探索済みにする
+void Block::fillMesh()
+{
+    std::vector<Wall> wall;     //壁の始まりと終わりを行ごとに記録するための配列
+    Wall tmp;
+    for(int i=0; i<total_block_y; i++)
+    {
+        tmp.start = -1;
+        tmp.end = -1;
+        wall.push_back(tmp);    //初期値は0
+    }
+    
+    /*横方向に壁の外のメッシュを埋める*/
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x; j++)
+        {
+            if(block[i][j].mark == IMPASSABLE)
+            {
+                if(wall[i].start == -1){    //壁の始まりは初期値だった時のみ記録
+                    wall[i].start = j;
+                }
+                wall[i].end = j;            //壁の終わりは毎回記録
+            }
+        }
+    }
+    
+    //壁の外にあるメッシュをIMPASSABLEにする
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_x; j++)
+        {
+            if((j<wall[i].start) || (j>wall[i].end))
+            {
+                block[i][j].mark = IMPASSABLE;
+            }
+        }
+    }
+    /*****************************/
+}
+
+
 //ダイクストラ法で現在位置から目標位置までの最短経路を探索するメソッド
 std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirection direction, int goal)
 {
@@ -139,15 +181,116 @@ std::vector<Coordinate> Block::getMovePointList(Coordinate coord, IRobotDirectio
     return (movePointList);
 }
 
+//ダイクストラ法で現在位置からDockまでの最短経路を探索するメソッド
+std::vector<Coordinate> Block::getMovePointListToDock(Coordinate coord, IRobotDirection direction)
+{
+    int start, goal = 0;
+    int goalset_flag = 0;
+    
+    //startは現在座標
+    start = meshNumToCurrentPosition(coord);
+    addCost(start, direction);
+
+    //goalは赤外線の値が強いメッシュ
+    for(int i=0; i<total_block_y; i++)
+    {
+        for(int j=0; j<total_block_y; j++)
+        {
+            if((block[i][j].ir_value == 254) || (block[i][j].ir_value == 246) || (block[i][j].ir_value == 250) || (block[i][j].ir_value == 252))
+            {
+                goal = block[i][j].num;
+                goalset_flag = 1;
+                std::cout << "ドッキングステーションが見つかりました" << std::endl; 
+                std::cout << "ノード番号：" << goal << "へ向かいます" << std::endl; 
+                break;
+            }
+        }
+    }
+    if(goalset_flag == 0)
+    {
+        for(int i=0; i<total_block_y; i++)
+        {
+            for(int j=0; j<total_block_y; j++)
+            {
+                if((block[i][j].ir_value == 244) || (block[i][j].ir_value == 248))
+                {
+                    goal = block[i][j].num;
+                    std::cout << "ドッキングステーションが見つかりました" << std::endl; 
+                    std::cout << "ノード番号：" << goal << "へ向かいます" << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+    
+    Dijkstra dijkstra(start, goal, total_block_x*total_block_y);
+    dijkstra.setCost(cost);
+    dijkstra.useDijkstra();
+    route = dijkstra.getRoute();
+    
+    movePointList = routeCoordinateToRouteMeshNum(route);
+    
+    return (movePointList);
+}
+
+
+void Block::setMeshMarks(std::vector<Coordinate> &p, std::vector< std::vector<float> > &ransac, std::vector<bool> &flag)
+{
+    int resolution = 100;
+    float dx;
+    std::vector<float> x;
+    Coordinate coord;
+    
+    for(int i=0; i<p.size(); i++)
+    {
+        if(i == p.size())
+        {
+            dx = (p[i].x-p[0].x)/resolution;
+            for(int k=0; k < resolution; k++)
+            {
+                x.push_back(p[i].x+k*dx);
+            }
+        }
+        else
+        {
+            dx = (p[i+1].x-p[i].x)/resolution;
+            for(int k=0; k < resolution; k++)
+            {
+                x.push_back(p[i].x+k*dx);
+            }
+        }
+        
+        for(int j=0; j<x.size(); j++)
+        {
+            
+            coord.x = x[j];
+            
+            if(flag[i])
+            {
+                coord.y = ransac[i][2];     //y=c
+            }
+            else
+            {
+                coord.y = ransac[i][0] * coord.x + ransac[i][1];  //y=ax+b
+            }
+            
+            setMeshMark(coord, true);
+        }
+        
+        x.clear();
+    }
+}
+
 /*vectorで動的配列を作成するためのメソッド
  構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
 Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
 {
     tmp.num = count;
     tmp.mark = UNKNOWN;
-    tmp.center.x = x*block_x+block_x/2.0;
-    tmp.center.y = y*block_y+block_y/2.0;
-    
+    tmp.center.x = x*block_x+block_x/2.0 - 10.0*block_x;     //余白を2*block_x取る
+    tmp.center.y = y*block_y+block_y/2.0 - 10.0*block_y;     //余白を2*block_y取る
+    tmp.ir_value = 0;
+
     return tmp;
 }
 
@@ -308,7 +451,7 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     //x軸のノード番号を求める
     for(int i=0; i<total_block_x; i++)
     {
-        if((coord.x >= (float)(i*block_x)) && (coord.x < (float)((i+1)*block_x)))
+        if((coord.x >= (float)(i*block_x-10.0*block_x)) && (coord.x < (float)((i+1)*block_x-10.0*block_x)))
         {
             node_num_x = i;
             break;
@@ -318,13 +461,12 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     //y軸のノード番号を求める
     for(int i=0; i<total_block_y; i++)
     {
-        if((coord.y >= (float)(i*block_y)) && (coord.y < (float)((i+1)*block_y)))
+        if((coord.y >= (float)(i*block_y-10.0*block_y)) && (coord.y < (float)((i+1)*block_y-10.0*block_y)))
         {
             node_num_y = i;
             break;
         }
     }
-    
     return ((node_num_y*total_block_x)+node_num_x);
 }
 
@@ -346,10 +488,11 @@ std::vector<Coordinate> Block::routeCoordinateToRouteMeshNum(std::vector<int> ro
 
 int main(){
     Block block;
-    block.calcRoute(0, 0, UP, 0, 8);
+    
+    block.showMesh();
     
     return 0;
 }
  
-******************************************************************************/
+*****************************************************************************/
 

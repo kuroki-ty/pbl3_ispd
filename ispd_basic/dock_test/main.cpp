@@ -15,7 +15,20 @@ int main()
 	controller.create.init();
 //	controller.create.run();
 	int counter = 0;
-	waitTime(2.0);
+	//waitTime(2.0);
+
+	int wait=0;
+	while(1)
+	{
+		waitTime(0.2);
+		std::cout << controller.create.getDistanceBySoner() << std::endl;
+		if(wait>20)
+		{
+			break;
+		}
+		wait++;
+	}
+
 	while(!controller.finished)	
 	{
 		controller.checkState();	// バンパーに当たったら回避モードに移行
@@ -31,6 +44,7 @@ std::cout << "distance" << controller.create.getTotalDistance() << std::endl;
 
 	// 記録した座標値を出力
 	controller.output_CreateList();
+	controller.output_WallList();
 	controller.output_ObstacleList();
 
 	return 0;

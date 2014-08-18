@@ -644,11 +644,11 @@ if(k>5)
 			// 10度回転
 			if(soner_distance > OBSTACLE_SEARCH_H_TH)
 			{
-				this->addAngle(this->turnCreate(-VELOCITY_L, 10));
+				this->addAngle(this->turnCreate(-VELOCITY_L, 18));
 			}
 			else
 			{
-				this->addAngle(this->turnCreate(VELOCITY_L, 10));
+				this->addAngle(this->turnCreate(VELOCITY_L, 18));
 			}
 			int tmp_distance;
 			tmp_distance = driveCreate(VELOCITY_H,0);	//5cm前進

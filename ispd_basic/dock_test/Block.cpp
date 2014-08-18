@@ -233,14 +233,62 @@ std::vector<Coordinate> Block::getMovePointListToDock(Coordinate coord, IRobotDi
     return (movePointList);
 }
 
+
+void Block::setMeshMarks(std::vector<Coordinate> &p, std::vector< std::vector<float> > &ransac, std::vector<bool> &flag)
+{
+    int resolution = 100;
+    float dx;
+    std::vector<float> x;
+    Coordinate coord;
+    
+    for(int i=0; i<p.size(); i++)
+    {
+        if(i == p.size())
+        {
+            dx = (p[i].x-p[0].x)/resolution;
+            for(int k=0; k < resolution; k++)
+            {
+                x.push_back(p[i].x+k*dx);
+            }
+        }
+        else
+        {
+            dx = (p[i+1].x-p[i].x)/resolution;
+            for(int k=0; k < resolution; k++)
+            {
+                x.push_back(p[i].x+k*dx);
+            }
+        }
+        
+        for(int j=0; j<x.size(); j++)
+        {
+            
+            coord.x = x[j];
+            
+            if(flag[i])
+            {
+                coord.y = ransac[i][2];     //y=c
+            }
+            else
+            {
+                coord.y = ransac[i][0] * coord.x + ransac[i][1];  //y=ax+b
+            }
+            
+            setMeshMark(coord, true);
+        }
+        
+        x.clear();
+    }
+}
+
 /*vectorで動的配列を作成するためのメソッド
  構造体で配列を作っているため，内部のデータを個別に設定する必要がある*/
 Mesh Block::addFirstBlock(int y, int x, int count, Mesh tmp)
 {
     tmp.num = count;
     tmp.mark = UNKNOWN;
-    tmp.center.x = x*block_x+block_x/2.0 - 2.0*block_x;     //余白を2*block_x取る
-    tmp.center.y = y*block_y+block_y/2.0 - 2.0*block_y;     //余白を2*block_y取る
+    tmp.center.x = x*block_x+block_x/2.0 - 10.0*block_x;     //余白を2*block_x取る
+    tmp.center.y = y*block_y+block_y/2.0 - 10.0*block_y;     //余白を2*block_y取る
     tmp.ir_value = 0;
 
     return tmp;
@@ -403,7 +451,7 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     //x軸のノード番号を求める
     for(int i=0; i<total_block_x; i++)
     {
-        if((coord.x >= (float)(i*block_x-2.0*block_x)) && (coord.x < (float)((i+1)*block_x-2.0*block_x)))
+        if((coord.x >= (float)(i*block_x-10.0*block_x)) && (coord.x < (float)((i+1)*block_x-10.0*block_x)))
         {
             node_num_x = i;
             break;
@@ -413,7 +461,7 @@ int Block::meshNumToCurrentPosition(Coordinate coord)
     //y軸のノード番号を求める
     for(int i=0; i<total_block_y; i++)
     {
-        if((coord.y >= (float)(i*block_y-2.0*block_y)) && (coord.y < (float)((i+1)*block_y-2.0*block_y)))
+        if((coord.y >= (float)(i*block_y-10.0*block_y)) && (coord.y < (float)((i+1)*block_y-10.0*block_y)))
         {
             node_num_y = i;
             break;

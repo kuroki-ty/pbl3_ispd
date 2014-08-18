@@ -65,7 +65,7 @@ void Map::calc2Line()
     for(int i=0;i<this->wall_point_list2.size();i++)
     {
         Coordinate tmp_wall;
-        tmp_wall.x = (this->wall_point_list2[i].x+2000)/10;
+        tmp_wall.x = (this->wall_point_list2[i].x+1000)/10;
         tmp_wall.y = (this->wall_point_list2[i].y+1000)/10;
         wall.push_back(tmp_wall);
     }
@@ -160,7 +160,7 @@ void Map::calc2Line()
 		}
     }
     p2.x=inliers_s[inliers_maxi][inliers_maxj].x;
-    p2.y=inliers_s[inliers_maxi][inliers_maxj].y+50;
+    p2.y=inliers_s[inliers_maxi][inliers_maxj].y;
 
 	float min = FLT_MAX;
     for (int i=0;i<inliers_s.size();i++)
@@ -258,7 +258,7 @@ void Map::dividePoint()
     struct Coordinate ob;
     for(int i=0;i<obstacle_point_list.size();i++)
     {
-        ob.x = (obstacle_point_list[i].x+2000)/10;
+        ob.x = (obstacle_point_list[i].x+1000)/10;
         ob.y = (obstacle_point_list[i].y+1000)/10;
         obstacle_point_list2.push_back(ob);
     }
@@ -388,7 +388,7 @@ void Map::showMap()
     }
     
     // 画像領域を確保し初期化する
-    img = cvCreateImage (cvSize (500, 500), IPL_DEPTH_8U, 3);
+    img = cvCreateImage (cvSize (600, 600), IPL_DEPTH_8U, 3);
     cvZero (img);
     //画像の背景を白にする
     for(int x=0;x<img->height;x++){
@@ -470,7 +470,7 @@ void Map::showMap2()
     struct Coordinate ob;
     for(int i=0;i<obstacle_point_list.size();i++)
     {
-        ob.x = (obstacle_point_list[i].x+2000)/10;
+        ob.x = (obstacle_point_list[i].x+1000)/10;
         ob.y = (obstacle_point_list[i].y+1000)/10;
         obstacle_point_list2.push_back(ob);
     }
@@ -483,7 +483,7 @@ void Map::showMap2()
     std::vector<Coordinate> create_point_list2;
     for(int i=0;i<create_point_list.size();i++)
     {
-        ob.x = (create_point_list[i].x+2000)/10;
+        ob.x = (create_point_list[i].x+1000)/10;
         ob.y = (create_point_list[i].y+1000)/10;
         create_point_list2.push_back(ob);
     }
@@ -560,7 +560,7 @@ void Map::showMap2()
             int y = (int)(create_point_list2[i].y);
             testpoint2 = cvPoint(x, y);
             
-            cvCircle(img, testpoint2, 2, rcolor, -5);
+            //cvCircle(img, testpoint2, 2, rcolor, -5);
         }
 
     // 線の描画 ----- ここから
@@ -877,8 +877,8 @@ void Map::line(double a,double b)
      }
      */
     
-    if (a>0 && a<500 &&b>0 &&b<500) {
-        if (a>200 ) {
+    if (a>0 && a<600 &&b>0 &&b<600) {
+        if (a>300 ) {
             p1.x=a;
             p1.y=b;
         }
