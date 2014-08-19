@@ -83,6 +83,7 @@ float Create::turnCreateGettingObstacleCoord(int velocity, int angle_max, std::v
 		std::cout << angle << std::endl;
 		if(fabs(angle) >= fabs(angle_max))
 		{
+			drive(0,0);
 			this->stopRun();
 			break;
 		}
@@ -90,15 +91,18 @@ float Create::turnCreateGettingObstacleCoord(int velocity, int angle_max, std::v
 //	waitTime(0.0);
 	if(angle >0 )
 	{
-			return P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100;
+			std::cout <<"turn------------------------:" << P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100+ angle << std::endl;
+			return P_TURN_A100 * angle * angle + P_TURN_B100 * angle + P_TURN_C100 + angle;
 	}
 	else if(angle == 0)
 	{
+			std::cout <<"turn------------------------:" << P_TURN_A100 * angle << std::endl;
 			return P_TURN_A100 * angle;
 	}
 	else
 	{
-			return N_TURN_A100 * angle * angle + N_TURN_B100 * angle + N_TURN_C100;
+			std::cout <<"turn------------------------:" << -P_TURN_A100 * angle * angle + P_TURN_B100 * angle - P_TURN_C100 + angle << std::endl;
+			return -P_TURN_A100 * angle * angle + P_TURN_B100 * angle - P_TURN_C100 + angle;
 	}
 }
 
@@ -492,7 +496,7 @@ void Create::doBumperHitMode(int bumper_hit, Coordinate &create, Coordinate &obs
 	this->changeDirection();	// 方向転換
 
 }
-
+#if 0
 std::vector<Coordinate> Create::searchObstacle(std::vector<Coordinate> &create)
 {
 	float soner_distance;
@@ -583,6 +587,161 @@ if(k>5)
 	// 発進
 	k++;
 	}
+
+	return obstacle_coord;
+
+}
+#endif
+
+
+std::vector<Coordinate> Create::searchObstacle(std::vector<Coordinate> &create, bool &touch)
+{
+	float soner_distance;
+	std::vector<Coordinate> approach_coord;
+	std::vector<Coordinate> so_obstacle_coord;
+	std::vector<Coordinate> obstacle_coord;
+	bool Bumper_Hit;
+
+	// 90度回転
+	this->addAngle(turnCreate(VELOCITY_L, 89));
+
+	//ドッキングにぶつかるまで
+	this->driveDistanceSearchingObstacle(20000, approach_coord, so_obstacle_coord, Bumper_Hit);
+
+
+	int bumper_hit;	
+	float soner_ave[5]={0.0,0.0,0.0,0.0,0.0};
+
+	int count=0;
+	int dist;
+
+	// 発進
+	drive(VELOCITY_H, 0);
+	int k=0;
+	while(1)
+	{
+		dist = getDistance();
+		count += dist;
+		// 超音波センサで取得
+std::cout << "angle===============" << this->total_angle << "count:" << count << std::endl;
+		soner_ave[k%5] = this->getDistanceBySoner();
+if(k>5)
+{
+		for(int i=0;i<5;i++)
+		{
+			soner_distance +=soner_ave[i];
+			soner_ave[i] = 0.0;
+		}
+		k=0;		
+
+		soner_distance /=5.0; 
+
+//std::cout << "soner_obstacle_dist================" << soner_distance << std::endl;
+		// 壁がある値以上離れたら止まる
+		if(soner_distance > OBSTACLE_SEARCH_H_TH || soner_distance < OBSTACLE_SEARCH_L_TH)
+		{
+			this->stopRun();
+			// 10度回転
+			if(soner_distance > OBSTACLE_SEARCH_H_TH)
+			{
+				this->addAngle(this->turnCreate(-VELOCITY_L, 18));
+			}
+			else
+			{
+				this->addAngle(this->turnCreate(VELOCITY_L, 18));
+			}
+			int tmp_distance;
+			tmp_distance = driveCreate(VELOCITY_H,0);	//5cm前進
+			//this->addDistance(tmp_distance);
+			this->StopRun = true;
+
+			Coordinate tmp_coord;	//角度によってCreate座標を修正するためのtmp
+			tmp_coord = calcCurrentCoordinate(tmp_distance);
+			create.push_back(tmp_coord);
+			switch(direction){
+			case PLUS_X:
+				tmp_coord.y -= 200.0;
+				break;
+			case MINUS_X:
+				tmp_coord.y += 200.0;
+				break;
+			case PLUS_Y:
+				tmp_coord.x += 200.0;
+				break;
+			case MINUS_Y:
+				tmp_coord.x -= 200.0;
+				break;
+			}
+			obstacle_coord.push_back(tmp_coord);
+
+			count += tmp_distance;
+
+			drive(VELOCITY_H, 0);
+
+		}
+
+}
+		bumper_hit = getBumpsAndWheelDrops();
+		if( bumper_hit!=0)// バンパーが反応したら
+		{
+			this->stopRun();
+			create.push_back(this->calcCurrentCoordinate( dist ));
+			Coordinate tmp_create;
+			Coordinate tmp_obstacle;
+
+			this->doBumperHitMode(bumper_hit, tmp_create, tmp_obstacle);
+			create.push_back(tmp_create);
+			obstacle_coord.push_back(tmp_obstacle);
+			drive(VELOCITY_L, 0);
+		}
+		else
+		{
+			Coordinate tmp_coord;	//角度によってCreate座標を修正するためのtmp
+			tmp_coord = this->calcCurrentCoordinate( dist );
+			create.push_back(tmp_coord);
+
+			tmp_coord = create[create.size()-1];
+			switch(direction){
+			case PLUS_X:
+				tmp_coord.y -= 200.0;
+				break;
+			case MINUS_X:
+				tmp_coord.y += 200.0;
+				break;
+			case PLUS_Y:
+				tmp_coord.x += 200.0;
+				break;
+			case MINUS_Y:
+				tmp_coord.x -= 200.0;
+				break;
+			}
+			obstacle_coord.push_back(tmp_coord);
+
+		}
+
+
+		if(count > 2000 && this->isDockFound())
+		{
+			break;
+		}
+		if(count > 5000 )
+		{
+			touch = true; 
+			this->addAngle(turnCreate(VELOCITY_L, 79));
+			this->driveDistanceSearchingObstacle(20000, approach_coord, so_obstacle_coord, Bumper_Hit);
+			break;
+		}
+
+	// 発進
+	k++;
+	}
+
+	// 90度回転
+	//this->addAngle(turnCreate(-VELOCITY_L, 79));
+
+	//ドッキングにぶつかるまで
+//	this->driveDistanceSearchingObstacle(10000, approach_coord, so_obstacle_coord, Bumper_Hit);
+
 
 	return obstacle_coord;
 
@@ -716,12 +875,16 @@ void Create::runNextPoint(Coordinate move_point, bool &Bumper_Hit, std::vector<C
 	// 進む距離を計算（現在座標、次の座標）→出力 距離
 	float dist_x = move_point.x - this->current_coord.x;
 	float dist_y = move_point.y - this->current_coord.y;
-	int distance = sqrt( dist_x*dist_x + dist_y*dist_y );
+	std::cout << "distxy---------------------------------(" << dist_x << ", " << dist_y << std::endl;
+	float distance = sqrt( dist_x*dist_x + dist_y*dist_y );
+	std::cout << "distance---------------------------------(" << distance << std::endl;
 	float angle = acos(fabs(dist_x) / distance);
+	std::cout << "angle---------------------------------(" << angle << std::endl;
 	float direction_angle = 0.0;
-	int tmp_angle;
-	int create_angle=this->total_angle;
-
+	float tmp_angle;
+	float create_angle=this->total_angle;
+	std::cout << "move_point---------------------------------(" << move_point.x << ", " << move_point.y << std::endl;
+	std::cout << "move_point---------------------------------(" << this->current_coord.x << ", " << this->current_coord.y << std::endl;		
 	std::cout << "angle前---------------------------------(" << angle * ( 180.0/M_PI ) << std::endl;		
 	if(dist_x<0 && dist_y<0)
 	{
@@ -791,7 +954,7 @@ else
 		}
 }
 */
-
+	// 回転が1度未満なら回転しない
 	if(fabs(direction_angle) <1.0)
 	{
 		direction_angle = 0.0;
@@ -799,23 +962,27 @@ else
 
 	std::cout << "direction_angle前---------------------------------(" << direction_angle << std::endl;	
 	// direction_angleを誤差を踏まえた値に変換
-	if(direction_angle>0)
+	if(direction_angle>5)
 	{
-		direction_angle = (direction_angle - P_TURN_B100)/(P_TURN_A100);  
+		direction_angle = ((-(P_TURN_B100+1))+sqrt((P_TURN_B100+1)*(P_TURN_B100+1)-4*P_TURN_A100*(P_TURN_C100 - direction_angle)))/(2*(P_TURN_A100));  
 	}
 	else if(direction_angle==0)
 	{
 		direction_angle = 0.0;  
 	}
-	else
+	else if(direction_angle < -5)
 	{
-		direction_angle = (direction_angle - N_TURN_B100)/(N_TURN_A100);
+		direction_angle = ((-(P_TURN_B100+1))+sqrt((P_TURN_B100+1)*(P_TURN_B100+1)-4*(-P_TURN_A100)*(-P_TURN_C100 - direction_angle)))/(2*(-P_TURN_A100));  
 	}
 	std::cout << "direction_angle後---------------------------------(" << direction_angle << std::endl;	
 	// 回転
-	if(direction_angle>=0)
+	if(direction_angle>0)
 	{
 		tmp_angle = turnCreate(VELOCITY_L, direction_angle);
+	}
+	else if(direction_angle == 0)
+	{
+		tmp_angle = turnCreate(0, 0);
 	}
 	else
 	{

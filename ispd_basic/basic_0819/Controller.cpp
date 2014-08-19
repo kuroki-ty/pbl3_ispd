@@ -7,7 +7,6 @@ void Controller::showWall4()
     		std::vector< std::vector<float> > ransac;	//壁直線の係数を格納する2次元配列 ransac[i][0]:a, ransac[i][1]:b ransac[i][2]:c
 
 			this->map.calc2Line();	//Mapクラスのobstacleリストから直線式を計算する
-std::cout << "--------------------------2----------------------------" << std::endl;
 			p = this->map.getIntersectionLine();	//直線の交点をgetする
 std::cout << "--------------------------3----------------------------" << std::endl;
     		ransac = this->map.getCoefficientLine(xflag);	//直線式の係数をgetする
@@ -31,12 +30,11 @@ void Controller::showWall2()
     		std::vector< std::vector<float> > ransac;	//壁直線の係数を格納する2次元配列 ransac[i][0]:a, ransac[i][1]:b ransac[i][2]:c
 
 			this->map.calc2Line();	//Mapクラスのobstacleリストから直線式を計算する
+			p = this->map.getIntersectionLine();	//直線の交点をgetする
+    		ransac = this->map.getCoefficientLine(xflag);	//直線式の係数をgetする
 			this->map.showMap2();
-std::cout << "--------------------------5----------------------------" << std::endl;    
-    		//this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
-std::cout << "--------------------------6----------------------------" << std::endl;
-			//this->block.fillMesh();							//壁のメッシュの外側を全て埋める
-std::cout << "--------------------------7----------------------------" << std::endl;
+    		this->block.setMeshMarks(p, ransac, xflag);		//壁のメッシュをまとめて埋める
+			this->block.fillMesh();							//壁のメッシュの外側を全て埋める
 			this->block.showMesh();
 			/***************************************************/
 }
@@ -98,34 +96,52 @@ std::cout << "current mesh:" << this->block.getCurrentMeshNum(this->create.getCu
 //1-3.壁探索終了の判定
 		Coordinate start_coord;
 		int total_distance = this->create.getTotalDistance();
-#if 0
-	    if(this->block.isStartMesh( start_coord, create_coord,  total_distance))
-		{
-std::cout << "--------------------------1----------------------------" << std::endl;
-			this->create.stopRun();// 壁探索が終わったら、即Createを止める
-			this->search_flag = OBSTACLE;
-
-			// 壁を描画する
-			this->showWall2();
-		}
-#endif
 		if(this->create.getTotalDistance() > 6000 && !this->LinePointSet)
 		{
-			this->create.stopRun(); 	// 壁探索が終わったら、即Createを止める
 std::cout << "2line point set!" << std::endl;
 			this->map.set2LinePoint();	// 	2辺分の座標値をwall_point_list2に入れる
 			this->output_WallList2();
-			//this->showWall2();
 			this->LinePointSet = true;
+			this->showWall2();
 
 		}
-		else if(this->create.getTotalDistance() > 10000 && this->create.isDockFound())
+		// 1個目ドッキング検知
+		else if(this->create.getTotalDistance() > 7000 && this->create.isDockFound() && this->LinePointSet && !this->touch_obstacle)
+		{
+			this->output_CreateList_line2();
+			std::vector<Coordinate> tmp_obstacle_list;
+			std::vector<Coordinate> SOC_list;	// search obstacle create list 障害物を探索する時のcreateの座標値リスト
+			this->create.stopRun(); 	// irが反応したら、即Createを止める
+
+//			this->showWall2();
+			this->LinePointSet = true;
+
+			tmp_obstacle_list = create.searchObstacle(SOC_list, touch_obstacle);	// 衝突した障害物の周りを回る
+			for(int i=0;i<SOC_list.size();i++)
+			{
+				this->map.push_back_CreatePointList( SOC_list[i] );
+			}
+			for(int i=0;i<tmp_obstacle_list.size();i++)
+			{
+				this->map.push_back_ObstaclePointList( tmp_obstacle_list[i] );
+			}
+
+			if(!touch_obstacle)  // 障害物にひっかからなかったら
+			{
+				this->search_flag = DOCK;
+				this->showWall2();
+			}
+
+		}
+		else if(this->create.getTotalDistance() > 10000 && this->create.isDockFound() && this->touch_obstacle) // 2個目ドッキング検知
 		{
 			this->create.stopRun(); // 壁探索が終わったら、即Createを止める
+
+
+
 std::cout << "Docking!" << std::endl;
 			this->search_flag = DOCK;
 			this->showWall2();
-			//this->showWall4();
 		}
 
 	}
@@ -141,7 +157,6 @@ std::cout << "Docking!" << std::endl;
 		this->block.showMesh();
 
 		bool Bumper = false;
-
 // 2-1.createの現在座標を取得
 		create_coord = this->create.getCurrentCoordinate();
 // 2-2.createの現在座標から向かうメッシュを計算し、辿る座標リストを得る
@@ -156,10 +171,10 @@ std::cout << "Docking!" << std::endl;
 			{
 				this->create.changeDirection();
 				break;
-#if 0
+#if 1
 				std::vector<Coordinate> SOC_list;	// search obstacle create list 障害物を探索する時のcreateの座標値リスト
 				Bumper = false;
-				tmp_obstacle_list = create.searchObstacle(SOC_list);	// 衝突した障害物の周りを回る
+				//tmp_obstacle_list = create.searchObstacle(SOC_list);	// 衝突した障害物の周りを回る
 				for(int i=0;i<tmp_obstacle_list.size();i++)
 				{
 					this->map.push_back_ObstaclePointList( tmp_obstacle_list[i] );

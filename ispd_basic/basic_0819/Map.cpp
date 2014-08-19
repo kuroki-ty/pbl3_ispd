@@ -611,13 +611,13 @@ void Map::showMap2()
 	k3=e/e2;
 	k4=f/f2;
     double tan_1 = (abs(k1-k2))/(1+k1*k2);
-    double ang_1 = atan(tan_1)*double(180)/pi;
+    double ang_1 = abs(atan(tan_1)*double(180)/pi);
     double tan_2 = (abs(k2-k3))/(1+k2*k3);
-    double ang_2 =180-( atan(tan_2)*double(180)/pi);
+    double ang_2 =180-abs( atan(tan_2)*double(180)/pi);
     double tan_3 = (abs(k3-k4))/(1+k3*k4);
-    double ang_3 = atan(tan_3)*double(180)/pi;
+    double ang_3 = abs(atan(tan_3)*double(180)/pi);
     double tan_4 = (abs(k4-k1))/(1+k4*k1);
-    double ang_4 =180-( atan(tan_4)*double(180)/pi);
+    double ang_4 =180-abs(( atan(tan_4)*double(180)/pi));
     
     //printf("$$$$$$$$   %f  %f    %f   %f   $$$$$$",ang_1,ang_2,ang_3,ang_4);
     
@@ -672,13 +672,14 @@ void Map::showMap2()
         std::cerr<<"open result.txt error!\n";
         exit(EXIT_FAILURE);
     }
-    outfile<<"各角の角度は　" << ang_1 << "°, " << ang_2  << "°, " << ang_3 << "°, " << ang_4 << "°" << std::endl;
-    outfile<<"壁の縦の長さは " << tate*10 << "[mm]" << std::endl;
-    outfile<<"壁の横の長さは　" << yoko*10 << "[mm]" << std::endl;
+    outfile<<"各角の角度　" << "右下：" << ang_1 << "°, "<< "右上：" << ang_2  << "°, "<< "左上：" << ang_3 << "°, " << "左下："<< ang_4 << "°" << std::endl;
+    outfile<<"壁のy(縦)の長さ " << tate*10 << "[mm]" << std::endl;
+    outfile<<"壁のx(横)の長さ　" << yoko*10 << "[mm]" << std::endl;
+    outfile<<"アス比(y/x)　" << tate*10/yoko*10  << std::endl;
     outfile<<"縮尺は1/10　" << std::endl;
 
-    outfile<<"障害物の縦の長さは " << ob_tate*10 << "[mm]" << std::endl;
-    outfile<<"障害物の横の長さは　" << ob_yoko*10 << "[mm]" << std::endl;
+    outfile<<"障害物のy(縦)の長さ " << ob_tate*10 << "[mm]" << std::endl;
+    outfile<<"障害物のx(横)の長さ　" << ob_yoko*10 << "[mm]" << std::endl;
     outfile<<"障害物の重心位置 (x, y)=" << "("<< ob_gx*10 << "," << ob_gy*10 <<")" << std::endl;
 
     

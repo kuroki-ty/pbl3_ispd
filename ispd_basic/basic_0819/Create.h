@@ -174,7 +174,7 @@ public:
 	void runNextPoint(Coordinate move_point, bool &Bumper_Hit, std::vector<Coordinate> &create, std::vector<Coordinate> &obstacle);
 
 	// 障害物を探索するメソッド
-	std::vector<Coordinate> searchObstacle(std::vector<Coordinate> &create);
+	std::vector<Coordinate> searchObstacle(std::vector<Coordinate> &create, bool &touch);
 
 
 

@@ -20,6 +20,7 @@ public:
 		this->map.push_back_CreatePointList(this->create.getCurrentCoordinate());
 		this->search_flag = WALL;
 		this->LinePointSet = false;
+		this->touch_obstacle = false;
 	}
 
 	void checkState();
@@ -109,6 +110,7 @@ public:
 	enum SearchFlag search_flag;
 	bool finished;
 	bool LinePointSet;
+	bool touch_obstacle;
 private:
 
 };
